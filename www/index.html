@@ -8,14 +8,17 @@
     <meta name="author" content="">
     <!--<link rel="icon" href="../../favicon.ico">-->
 
-    <title>BLE Temperature Logging System</title>
+    <title>TCC rides signup</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <!--<link href="css/bootstrap.min.css" rel="stylesheet">-->
     <link href="css/index.css" rel="stylesheet">
+    <link href="css/gpx.css" rel="stylesheet">
     <link href="css/datepicker3.css" rel="stylesheet">
     <link href="css/ion.rangeSlider.css" rel="stylesheet">
     <link href="css/ion.rangeSlider.skinHTML5.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <!--<link href="css/jquery.bootstrap-touchspin.min.css" rel="stylesheet">-->
 
 </head>
@@ -31,7 +34,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" style="color:blue" id="realtime">BLE Log<span style="color:black; font-size:small"></span></a>
+                <a class="navbar-brand" style="color:blue" id="realtime">TCC rides<span style="color:black; font-size:small"></span></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right" role="tablist">
@@ -70,12 +73,13 @@
                     </div> <!-- /col-md-4 -->
                     <p></p>
                     <div class="col-md-4">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading" id="newChartName">Chart</div>
+                        <!--<div class="panel panel-primary">-->
+
+                            <div class="panel-heading" id="newChartName">chart</div>
                             <div class="panel-body">
                                 <div class="newChart">  <div data-role="content" class="amChart" id="newChart"></div>  </div>
                             </div>
-                        </div>
+                        <!--</div>-->
                     </div> <!-- /col-md-4 -->
                     <div class="col-md-4">
                         <div class="panel panel-primary">
@@ -93,33 +97,58 @@
 
                         <div class="list-group" id="chooseDates">
                             <a id="dateTitle" class="list-group-item list-group-item-info"></a>
-                            <a id="fromDate" class="list-group-item">From date:&emsp;<input type="text" id="startDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
-                            <a id="toDate" class="list-group-item">&emsp;To date:&emsp;<input type="text" id="endDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
+                            <a id="fromDate" class="list-group-item">Date:&emsp;<input type="text" id="startDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
                         </div>
                         <p></p>
-                        <!--<div class="list-group scrollable-list" id="findlist"> <a id="findTitle" class="list-group-item list-group-item-info">Choose sensor(s)</a> </div>-->
+                        <!--<div class="list-group scrollable-list" id="findlist"> <a id="findTitle" class="list-group-item list-group-item-info">Choose route(s)</a> </div>-->
                         <div class="list-group scrollable-list" id="findlist">
-                            <a id="findTitle" class="list-group-item list-group-item-info">Choose sensor(s)</a>
+                            <a id="findTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
                             <div>
                                 <button id="showSelected" type="button" class="btn btn-info  pull-right">Show Selection</button>
                             </div>
+
                         </div>
 
 
                     </div>
                     <div class="col-md-4">
                         <div class="panel panel-primary">
-                            <div class="panel-heading" id="chartName">Chart</div>
-                            <div class="panel-body">
 
-                                <div class="dbChart">
-                                    <div data-role="content" class="amChart" id="dbChart"></div>
-                                </div>
+                            <div class="panel-heading" id="chartName">TCC Route</div>
+                            <div id="demo" class="panel-body gpx" data-map-target="demo-map" data-elev-target="demo-elev">
+                                <!--<div id="demo" class="panel2 gpx" data-map-target="demo-map" data-elev-target="demo-elev">-->
+                                    <header>
+                                        <h3>Trurocycling.org routes</h3>
+                                        <span class="start"></span>
+                                    </header>
+
+                                    <article>
+                                        <div class="map" id="demo-map"></div>
+                                    </article>
+
+                                    <article>
+                                        <div class="elev" id="demo-elev"></div>
+                                    </article>
+
+                                    <footer>
+                                        <ul class="info">
+                                            <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
+                                            <li>
+                                                Elevation:&nbsp;+<span class="elevation-gain"></span>&nbsp;m,
+                                                -<span class="elevation-loss"></span>&nbsp;m
+                                                (net:&nbsp;<span class="elevation-net"></span>&nbsp;m)
+                                                <span class="elevation-none"></span>
+                                            </li>
+                                        </ul>
+                                    </footer>
+                                <!--</div>-->
                             </div>
                         </div>
-                    </div>
                     <div class="col-md-4">
                         <div class="panel panel-primary">
+                            <div>
+                                <button id="uploadRoute" type="button" class="btn btn-info  pull-right">Upload new route</button>
+                            </div>
                             <div class="panel-heading" id="tableName">Load tabular data</div>
                             <!--      <button id="loadTable" type="button" class="btn btn-primary ">Load tabular data</button>-->
                             <div class="panel-body">
@@ -141,68 +170,56 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-3">
-                        <div class="list-group scrollable-list" id="setuplist">Set up sensor</div>
+                        <div class="list-group scrollable-list" id="setuplist">Upload a route</div>
 
                     </div>
                     <div class="col-md-9">
                         <div class="panel panel-primary">
-                            <div class="panel-heading" id="sensorTitle">Set up Sensor</div>
+                            <div class="panel-heading" id="routeTitle">Upload a route</div>
 
                             <div class="panel-body">
                                 <form id="form-setup">
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="sensor-name" class="control-label side-label">Name:</label>
-                                                <input type="text" class="form-control  side-input detectChange" id="sensor-name">
+                                                <label for="route-dest" class="control-label side-label">Destination:</label>
+                                                <input type="text" class="form-control  side-input detectChange" id="route-dest">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="sensor-desc" class="control-label side-label">Description:</label>
-                                                <input type="text" class="form-control side-input detectChange" id="sensor-desc">
+                                                <label for="route-descrip" class="control-label side-label">Description (optional):</label>
+                                                <input type="text" class="form-control side-input detectChange" id="route-descrip">
                                             </div>
                                         </div>
-
-                                        <!--<div class="col-md-3" style="float:right;">-->
-                                        <div class="col-md-3 col-md-offset-1">
+                                        <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="periodMenu" class="control-label side-label">Logging Period:</label>
+                                                <label for="route-date" class="control-label side-label">Date:</label>
+                                                <input type="text" class="form-control side-input detectChange" id="route-date">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="route-gpx" class="control-label side-label">URL of GPX:</label>
+                                                <input type="text" class="form-control side-input detectChange" id="route-gpx">
+                                            </div>
+                                        </div>
+                                        <!--<div class="col-md-3" style="float:right;">-->
+                                        <!--<div class="col-md-3 col-md-offset-1">
+                                            <div class="form-group">
+                                                <label for="periodMenu" class="control-label side-label">Starting from:</label>
                                                 <div class="dropdown">
                                                     <button class="btn btn-default dropdown-toggle  side-input " type="button" id="periodMenu" data-toggle="dropdown" aria-expanded="true">
-                                                        Recording Period  <span class="caret"></span>
+                                                        Start at:  <span class="caret"></span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" id="periodlist" />
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div>-->
                                     </div>
 
                                 </form>
-                                <div style="text-align:center">
-                                    Low and High Alarms....
-                                    <input id="sliderAlarm" type="text" name="example_name" value="" />
-                                    <div class="row">
-                                        <div class="col-md-3" style="float:left;">
-                                            <!--                            <input id="minAlarm" type="text" value="2" name="minAlarm">-->
-                                            <div class="btn-group" role="group" aria-label="...">
-                                                <button id="btnLow-" type="button" class="btn btn-info">-</button>
-                                                <button type="button" class="btn btn-default disabled">Lo</button>
-                                                <button id="btnLowPlus" type="button" class="btn btn-info">+</button>
-                                            </div>
-                                        </div>
 
-                                        <div class="col-md-3" style="float:right;">
-                                            <!--                           <input id="maxAlarm" type="text" value="8" name="maxAlarm">-->
-                                            <div class="btn-group" role="group" aria-label="...">
-                                                <button id="btnHi-" type="button" class="btn btn-info">-</button>
-                                                <button type="button" class="btn btn-default disabled">Hi</button>
-                                                <button id="btnHiPlus" type="button" class="btn btn-info">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
 
                             </div> <!-- /panel-body-->
                             <div class="panel-footer">
@@ -249,7 +266,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <!--<button type="button" class="btn btn-info" id="saveChanges">Save changes</button>
+                    <!--<button type="button" class="btn btn-info" id="saveRoute">Save changes</button>
                     <button type="button" class="btn btn-primary" id="setupDone" data-dismiss="modal">Done</button>-->
 
                 </div>
@@ -267,16 +284,22 @@
     <!--<<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script><-->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <!--<script src="js/bootstrap.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
+
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="js/ie10-viewport-bug-workaround.js"></script>
     <script src="js/bootbox.min.js"></script>
     <script src="js/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
     <script src="js/serial.js"></script>
     <!--<script src="js/jquery.bootstrap-touchspin.min.js"></script>-->
     <script src="js/timesdates.js"></script>
     <script src="js/popups.js"></script>
     <script src="js/login.js"></script>
     <script src="js/index.js"></script>
+
+    <script src="js/gpx.js"></script>
 
     <script src="js/jquery.dataTables.min.js"></script>
     <script src="js/myTable.js"></script>
@@ -289,6 +312,7 @@
     <script src="js/setup.js"></script>
     <script src="js/tagconnect.js"></script>
     <!--<script src="js/SensorTag.js"></script>-->
+
 </body>
 </html>
 

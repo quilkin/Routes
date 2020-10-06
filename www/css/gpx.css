@@ -1,0 +1,134 @@
+﻿
+body {
+    width: 950px;
+    margin: 0 auto;
+}
+
+.gpx {
+    border: 2px #aaa solid;
+    border-radius: 5px;
+    box-shadow: 0 0 3px 3px #ccc;
+    width: 600px;
+    margin: 1em auto;
+}
+
+    .gpx header {
+        padding: 0.5em;
+    }
+
+    .gpx h3 {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+    }
+
+    .gpx .start {
+        font-size: smaller;
+        color: #444;
+    }
+
+    .gpx .map {
+        position: relative;
+        z-index: 1;
+        border: 1px #888 solid;
+        border-left: none;
+        border-right: none;
+        width: 600px;
+        height: 500px;
+        margin: 0;
+    }
+
+    .gpx .elev {
+        border: 1px #888 solid;
+        border-left: none;
+        border-right: none;
+        width: 600px;
+        height: 100px;
+        margin: 0;
+    }
+
+    .gpx footer {
+        background: #f0f0f0;
+        padding: 0.5em;
+    }
+
+    .gpx ul.info {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-size: smaller;
+    }
+
+        .gpx ul.info li {
+            color: #666;
+            padding: 2px;
+            display: inline;
+        }
+
+            .gpx ul.info li span {
+                color: black;
+            }
+
+
+.show {
+    display: block;
+}
+
+.panel1 {
+    min-width: 200px;
+    width: 250px;
+    float: left;
+    margin-top: 15px;
+}
+
+.panel2 {
+    min-width: 600px;
+    width: 650px;
+    float: right;
+}
+
+#routes {
+    border: 2px #aaa solid;
+    border-radius: 5px;
+    box-shadow: 0 0 3px 3px #ccc;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: smaller;
+    border-collapse: collapse;
+    width: 90%;
+}
+
+    #routes td, #routes th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    #routes tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    #routes tr:hover {
+        background-color: #ddd;
+    }
+
+#routesHeader th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-right: 24px;
+    padding-left: 24px;
+    text-align: left;
+    font-style: italic;
+    background-color: #fcc50f;
+}
+
+#routesTitle th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-right: 24px;
+    padding-left: 24px;
+    text-align: left;
+    font-family: Arial;
+    font-weight: bold;
+    background-color: #fcc50f;
+}
+
+

@@ -53,8 +53,9 @@
         $("#tableName").click(bleData.DisplayValues);
 
         //$("#dateTitle").click(bleData.ChooseDates);
-        $('#findTitle').click(bleSensors.CreateSensorList);
-        $('#showSelected').click(bleData.showData);
+        $('#findTitle').click(TCCroutes.CreateRouteList);
+        $('#showSelected').click(bleData.showRoute);
+        $('#uploadRoute').click(bleSetup.initialise);
         $('#statusConnect').click(function () { $('#scanlist').show(); });
         // hide these elements until they are needed
         $("#progress-bar").hide();
@@ -62,14 +63,8 @@
         $('#statusConnect').hide();
         $('#fromDate').hide();
         $('#toDate').hide();
-       // $('#register').hide();
-        //$('#code').hide();
         $('#loading').hide();
-        //tagConnect.testarray();
-        //$('#testbutton').on('click', function () {
-        //    var text = this.id;
-        //    text = text + 'OK';
-        //})
+
 
         var today = new Date(),
             yesterday;
@@ -80,7 +75,7 @@
         bleData.setDateChooser('Change');
         
         $(".detectChange").change(function () {
-            $("#saveChanges").prop("disabled", false);
+            $("#saveRoute").prop("disabled", false);
         });
 
         $(document).ajaxStart(function() {

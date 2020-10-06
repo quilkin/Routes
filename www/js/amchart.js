@@ -53,7 +53,7 @@ function createAMChart(chartData, div, vals) {
         "valueLineBalloonEnabled": true,
         "categoryBalloonDateFormat": "MM-DD JJ:NN"
         //"categoryBalloonFunction": function () {
-        //    return bleSensors.DisplayedSensors()[dataline - 2].Name;
+        //    return TCCroutes.displayedRoutes()[dataline - 2].Name;
         //}
     };
 
@@ -64,7 +64,7 @@ function createAMChart(chartData, div, vals) {
 
     });
     //graphName = function () {
-    //    return bleSensors.DisplayedSensors()[dataline - 2].Name;
+    //    return TCCroutes.displayedRoutes()[dataline - 2].Name;
     //};
     //chart.height = bleApp.tableHeight;
  
@@ -120,7 +120,7 @@ function createAMChart(chartData, div, vals) {
        // graphs[dataline].bulletSize = 5;
         graphs[dataline].hideBulletsCount = 30;
         graphs[dataline].lineThickness = 2;
-        graphs[dataline].title = bleSensors.DisplayedSensors()[dataline - 2].Name;
+        graphs[dataline].title = TCCroutes.displayedRoutes()[dataline - 2].Name;
         graphs[dataline].useLineColorForBulletBorder = true;
         graphs[dataline].valueField = prop;
         chart.addGraph(graphs[dataline]);

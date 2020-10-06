@@ -122,6 +122,7 @@
     <Content Include="Service1.svc" />
     <Content Include="www\css\bootstrap-theme.css.map" />
     <Content Include="www\css\bootstrap.css.map" />
+    <Content Include="www\css\gpx.css" />
     <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="www\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="www\fonts\glyphicons-halflings-regular.woff" />
@@ -144,6 +145,7 @@
     <Content Include="www\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="www\icon.png" />
     <Content Include="www\images\page-loader.gif" />
+    <Content Include="www\js\gpx.js" />
     <Content Include="www\splash.PNG" />
     <Content Include="www\index.html" />
     <Content Include="www\js\amchart.js" />

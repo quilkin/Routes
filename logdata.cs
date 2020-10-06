@@ -146,46 +146,6 @@ namespace Routes
     }
 
     [DataContract]
-    public class Sensor
-    {
-
-        [DataMember]
-        public int ID { get; set; }
-        [DataMember]
-        public string Serial { get; set; }
-        [DataMember]
-        public string Name { get; set; }
-        [DataMember]
-        public string Description { get; set; }
-        [DataMember]
-        public int Owner { get; set; }
-        [DataMember]
-        public int Period { get; set; }
-        [DataMember]
-        public int AlarmLow { get; set; }
-        [DataMember]
-        public int AlarmHigh { get; set; }
-
-        public Sensor()
-        {
-            ID = 0;
-            Serial = string.Empty;
-            Owner = 0;
-        }
-        public Sensor(int id,string serial, string name, string description,int alarmlow,int alarmhigh,int period, int owner)
-        {
-            ID = id;
-            Serial = serial;
-            Name = name;
-            Description = description;
-            AlarmLow = alarmlow;
-            AlarmHigh = alarmhigh;
-            Period = period;
-            Owner = owner;
-        }
-     }
-
-    [DataContract]
     public class Route
     {
         [DataMember(Name = "route")]
@@ -193,19 +153,34 @@ namespace Routes
         [DataMember(Name = "dest")]
         public string Dest { get; set; }
         [DataMember(Name = "distance")]
+        public string Descrip { get; set; }
+        [DataMember(Name = "description")]
         public int Distance { get; set; }
         [DataMember(Name = "climbing")]
         public int Climbing { get; set; }
         [DataMember(Name = "owner")]
         public int Owner { get; set; }
+        [DataMember(Name = "id")]
+        public int ID{ get; set; }
+        [DataMember(Name= "date")]
+        public DateTime Date { get; set; }
+        [DataMember(Name = "time")]
+        public DateTime Time { get; set; }
+        [DataMember(Name = "place")]
+        public string Place { get; set; }
 
-        public Route(string gpx, string dest, int d, int climb, int ow)
+        public Route(string gpx, string dest, string descrip,int d, int climb, int ow,string place, DateTime date, DateTime time, int id)
         {
             GPX = gpx;
             Dest = dest;
+            Descrip = descrip;
             Distance = d;
             Climbing =  climb;
             Owner = ow;
+            Date = date;
+            Time = time;
+            Place = place;
+            ID = id;
         }
 
     }

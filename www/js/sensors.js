@@ -1,90 +1,80 @@
 
-var bleSensors = (function () {
+var TCCroutes = (function () {
     "use strict";
 
-    var bleSensors = {},
+    var TCCroutes = {},
     
-    // list of sensors downloaded from database
-    sensors = [],
-    // list of sensors currently displayed in chart etc
-    displayedSensors = [],
-    // list of sensors that have been found on BT
-    foundSensors = [],
-    // the sensor being set up or communicated with, and/or the latest one to be downloaded from web
-    currentSensor=null;
+    // list of routes downloaded from database
+    routes = [],
+    // list of routes currently displayed in chart etc
+    displayedRoutes = [],
+
+    // the latest one to be downloaded from web
+    currentRoute=null;
 
     // local functions
-    function getWebSensors(userID) {
-        bleData.myJson("GetSensorNames", "POST", userID, function (response) { sensors = response; }, false, null);
-        if (sensors.length === 0) {
-            popup.Alert("No data found!");
-            return;
-        }
-        $.each(sensors, function (index, sensor) {
-            sensor.ShortSerial = bleSensors.shortSerial(sensor.Serial);
-        });
-        return sensors;
+    function getWebRoutes(userID) {
+        bleData.myJson("GetRouteSummaries", "POST", userID, function (response) {
+            routes = response;
+            if (routes.length === 0) {
+                popup.Alert("No data found!");
+                return null;
+            }
+            return routes;
+        }, false, null);
+
+        return routes;
     }
 
-    // conversion between full & short serial numbers.
-    // Different for iOS and Android !!!!!
-    bleSensors.shortSerial = function (serial) {
-        if (bleApp.getPlatform() === 'iOS') {
-            return serial.replace(/-/g, '').trim(); // without the hyphens, so it can be used as a button ID
-        }
-        return serial.replace(/:/g, '').trim(); // without the colons, so it can be used as a button ID
-    };
-    // Different for iOS and Android !!!!!
-    bleSensors.fullSerial = function (ss) {
-        if (bleApp.getPlatform() === 'iOS') {
-            // add the hyphens to the short version, so it can be used to connect to
-            return ss.substr(0, 8) + "-" + ss.substr(8, 4) + "-" + ss.substr(12, 4) + "-" + ss.substr(16, 4) + "-" + ss.substr(20, 12) ;
-        }
-        // add the colons to the short version, so it can be used to connect to
-        return ss.substr(0, 2) + ":" + ss.substr(2, 2) + ":" + ss.substr(4, 2) + ":" + ss.substr(6, 2) + ":" + ss.substr(8, 2) + ":" + ss.substr(10, 2);
-    };
+    //route data members
 
-    bleSensors.Sensor = function (serial, name, rssi, ID, period, description, alarmlo, alarmhi, owner) {
-        this.Serial = serial;       // full serial number e.g. "12:34:56:78:9A:BC"
-        this.ShortSerial = bleSensors.shortSerial(serial);
-        this.Name = name;
-        this.RSSI = rssi;
-        this.Period = period;
-        this.Description = description;
-        this.AlarmLow = alarmlo;
-        this.AlarmHigh = alarmhi;
-        this.ID = ID;
+//[DataMember(Name = "route")]          public string GPX { get; set; }
+//[DataMember(Name = "dest")]           public string Dest { get; set; }
+//[DataMember(Name = "distance")]       public int Distance { get; set; }      
+//[DataMember(Name = "description")]    public string Descrip { get; set; }
+//[DataMember(Name = "climbing")]       public int Climbing { get; set; }
+//[DataMember(Name = "owner")]          public int Owner { get; set; }
+//[DataMember(Name = "id")]             public int ID{ get; set; }
+//[DataMember(Name = "date")]           public DateTime Date { get; set; }
+//[DataMember(Name = "time")]           public DateTime Time { get; set; }
+//[DataMember(Name = "place")]          public string Place { get; set; }
+
+//  public Route(string gpx, string dest, string descrip, int d, int climb, int ow, string place, DateTime date, DateTime time)
+
+    TCCroutes.Route = function (gpx,dest,descrip,dist,climb, owner,place,date,time,id) {
+        this.GPX = gpx;       // full text of file
+        this.Dest = dest;
+        this.Climb = climb;
+        this.Dist= dist;
+        this.Date = date;
+        this.Time = time;
+        this.Place = place;
+        this.Description = descrip;
+        this.ID = id;
         this.Owner = owner;
-        // negative time indicates not connected
-        this.ConnectionTime = -1;
-        // flag used to avoid downloading more than neccessary
-        this.downloaded = false;
-        // index in DisplayedSensors
-        //this.index = -1;
-        // recent values stored temporarily before being uploaded to database
-        this.NewValues = [];
+
     };
 
-    bleSensors.addFoundSensor = function (obj) {
-        var found = $.grep(foundSensors, function (e, i) {
-            return e.Serial === obj.address;
-        });
-        if (found.length > 0) {
-            return null;
-         //   currentSensor = found[0];
-        }
+    //TCCroutes.addFoundSensor = function (obj) {
+    //    var found = $.grep(foundroutes, function (e, i) {
+    //        return e.Serial === obj.address;
+    //    });
+    //    if (found.length > 0) {
+    //        return null;
+    //     //   currentRoute = found[0];
+    //    }
 
-        currentSensor = new bleSensors.Sensor(obj.address, obj.name, obj.rssi);
-        foundSensors.push(currentSensor);
+    //    currentRoute = new TCCroutes.Route(obj.address, obj.name, obj.rssi);
+    //    foundroutes.push(currentRoute);
 
-        //else {
-        //    found.NewValues = sensor.NewValues;
-        //}
-        return currentSensor;
-    };
-    bleSensors.findSensor = function (serial) {
-        var found = $.grep(foundSensors, function (e, i) {
-            return e.Serial === serial;
+    //    //else {
+    //    //    found.NewValues = route.NewValues;
+    //    //}
+    //    return currentRoute;
+    //};
+    TCCroutes.findRoute = function (id) {
+        var found = $.grep(foundRoutes, function (e, i) {
+            return e.id === id;
         });
         if (found.length > 0) {
             return found[0];
@@ -93,51 +83,49 @@ var bleSensors = (function () {
         return null;
 
     };
-    bleSensors.CurrentSensor = function () {
-        return currentSensor;
+    TCCroutes.currentRoute = function () {
+        return currentRoute;
     };
-    bleSensors.SetSensor = function (sensor) {
-        currentSensor = sensor;
+    TCCroutes.SetRoute = function (route) {
+        currentRoute = route;
     };
-    bleSensors.DisplayedSensors = function () {
-        return displayedSensors;
+    TCCroutes.displayedRoutes = function () {
+        return displayedRoutes;
     };
-    bleSensors.FoundSensors = function () {
-        return foundSensors;
+    TCCroutes.FoundRoutes = function () {
+        return foundRoutes;
     };
-    bleSensors.ClearFoundSensors = function () {
-        while (foundSensors.length > 0) { foundSensors.pop(); }
+    TCCroutes.ClearFoundRoutes = function () {
+        while (foundRoutes.length > 0) { foundRoutes.pop(); }
     }
-    bleSensors.DisplayedSensorNames = function () {
+    TCCroutes.DisplayedRouteNames = function () {
         var index, nameStr='';
-        for (index = 0; index < displayedSensors.length; index++) {
-            nameStr += (displayedSensors[index].Name);
+        for (index = 0; index < displayedRoutes.length; index++) {
+            nameStr += (displayedRoutes[index].Dest);
             nameStr += ', ';
         }
         nameStr = nameStr.slice(0, -2);
         return nameStr;
     };
-    bleSensors.DisplayedSensorIDs = function () {
-        var index, ids=[];
-        for (index = 0; index < displayedSensors.length; index++)
-        {
-            ids.push(displayedSensors[index].ID);
-        }
-        return ids;
-    };
-    bleSensors.isDisplayed = function (sensor) {
-        var index = $.inArray(sensor, displayedSensors);
+    //TCCroutes.DisplayedSensorIDs = function () {
+    //    var index, ids=[];
+    //    for (index = 0; index < displayedRoutes.length; index++)
+    //    {
+    //        ids.push(displayedRoutes[index].ID);
+    //    }
+    //    return ids;
+    //};
+    TCCroutes.isDisplayed = function (route) {
+        var index = $.inArray(route, displayedRoutes);
         if (index < 0) { return false; }
         return true;
     };
-    bleSensors.DisplaySensor = function (sensor, yes) {
-        var index, howmany = displayedSensors.length;
-        for (index =0; index<howmany; index++){
-            if (displayedSensors[index].ShortSerial === sensor.ShortSerial)
+    TCCroutes.DisplayRoute = function (route, yes) {
+        var index, howmany = displayedRoutes.length;
+        for (index = 0; index < howmany; index++){
+            if (displayedRoutes[index].ID === route.ID)
                 break;
         }
-
-        //var index = $.inArray(sensor,displayedSensors);
         if (index < howmany) {
             // it was found
             if (yes) {
@@ -145,129 +133,88 @@ var bleSensors = (function () {
             }
             else {
                 // remove it
-                displayedSensors.splice(index, 1);
-     //           sensor.index = -1;
+                displayedRoutes.splice(index, 1);
+     //           route.index = -1;
             }
         }
         else {
         // not already in list
             if (yes) {
-                displayedSensors.push(sensor);
-   //             sensor.index = $.inArray(sensor, displayedSensors);
+                displayedRoutes.push(route);
+   //             route.index = $.inArray(route, displayedRoutes);
             }
             else {
-  //              sensor.index = -1;
+  //              route.index = -1;
             }
         }
         // must re-arrange into ID order so that SQL query wiil return corresponding data
-        displayedSensors.sort(function (a, b) { return a.ID - b.ID });
-        if (yes) { currentSensor = sensor; }
+        displayedRoutes.sort(function (a, b) { return a.ID - b.ID });
+        if (yes) { currentRoute = route; }
     };
 
-    bleSensors.CreateSensorList = function () {
+    TCCroutes.CreateRouteList = function () {
         var id = login.ID();
         if (id === undefined || id === 0) {
             $('#loginModal').modal();
             return;
         }
-        if (sensors === undefined || sensors.length === 0) {
-            getWebSensors(id);
+        if (routes === undefined || routes.length === 0) {
+            getWebRoutes(id);
         }
         $('#findlist').empty();  // this will also remove any handlers
         $('#setuplist').empty();
-        $.each(sensors, function (index, sensor) {
+        $.each(routes, function (index, route) {
 
-            var htmlstr = '<a id="sen' + index + '" class="list-group-item">' + sensor.Name +
+            var htmlstr = '<a id="sen' + index + '" class="list-group-item">' + route.dest +
                 '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Deselect">Select</button>' +
                 '</a>';
             $('#findlist').append(htmlstr);
-            if (bleSensors.isDisplayed(sensor)) {
-                // for re-showing list when sensors have previously been displayed (list will be emptied for small screens)
+            if (TCCroutes.isDisplayed(route)) {
+                // for re-showing list when routes have previously been displayed (list will be emptied for small screens)
                 $('#get' + index).button('complete');
             }
             $('#get' +index).click(function () {
-                if (bleSensors.isDisplayed(sensor)) {
+                if (TCCroutes.isDisplayed(route)) {
                     $(this).button('reset');
-                    bleSensors.DisplaySensor(sensor, false);
+                    TCCroutes.DisplayRoute(route, false);
                 }
                 else {
                     $(this).button('complete');
-                    bleSensors.DisplaySensor(sensor,true);
+                    TCCroutes.DisplayRoute(route,true);
                 }
-                //bleData.showData();
+                bleData.showRoute();
             });
-            htmlstr = '<a id="sen' + index + '" class="list-group-item">' + sensor.Name +
+            htmlstr = '<a id="sen' + index + '" class="list-group-item">' + route.dest +
                 '<button id="set' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" >Set up</button>' +
                 '</a>';
             $('#setuplist').append(htmlstr);
             $('#set' + index).click(function () {
-                bleSensors.SetSensor(sensor);
+                TCCroutes.SetRoute(route);
                 bleSetup.initialise();
-                $('#sensorTitle').text("Set up Sensor: serial no. " + sensor.Serial);
-                // if it's a short screen, collapse the sensor list and date chooser to make it easier to see the graph
+                $('#routeTitle').text("Set up Route: destination: " + route.Dest);
+                // if it's a short screen, collapse the route list and date chooser to make it easier to see the graph
                 // if ($('#btnMenu').is(":visible")) {
                 // *** To Do: this won't work correctly for landscape/portrait changes
                 if (bleApp.tableHeight < 300) {
                     $('#setuplist').empty();
-                    htmlstr = '<a id="setupTitle" class="list-group-item list-group-item-info">Choose sensor</a>';
+                    htmlstr = '<a id="setupTitle" class="list-group-item list-group-item-info">Choose route</a>';
                     $('#setuplist').append(htmlstr);
-                    $('#setupTitle').click(bleSensors.CreateSensorList);
+                    $('#setupTitle').click(TCCroutes.CreateRouteList);
                 }
                 if (bleApp.tableHeight < 250) {
-                    // save more space by making the setup title bar clickable, instead of the sensor list title
+                    // save more space by making the setup title bar clickable, instead of the route list title
                     $('#setupTitle').hide();
-                    $('#sensorTitle').click(bleSensors.CreateSensorList);
+                    $('#routeTitle').click(TCCroutes.CreateRouteList);
                 }
             });
             index++;
         });
         $('#findlist').append('<div><button id="showSelected" type="button" class="btn btn-info  pull-right">Show Selection</button></div>');
-        $('#showSelected').click(bleData.showData);
-        //bleSensors.findSensor("B4994C6417C0");
+        $('#showSelected').click(bleData.showRoute);
+
     };
 
-    //bleSensors.checkRegistrations = function () {
-    //    if (foundSensors.length > 0 && login.loggedIn) {
-    //        var unregistered = [];
-    //         //   devices = tagConnect.devices();
-    //        foundSensors.forEach(function (device) {
-    //            //var check;
-    //            //// find any which aren't in the existing list for this user, and which have a default name
-    //            //check = $.grep(sensors, function (e) {
-    //            //    return (device.Serial.trim() === e.Serial.trim());
-    //            //});
-                
-    //            //if (check.length === 0) {
-    //            //    unregistered.push(device);
-    //            //}
-    //            // find any which have a default name
-    //            // To Do: change this to check owner of device (needs owner ID to be stored in device along with other setup info)
-    //            //if (device.Name.indexOf('BleLog') === 0)
-    //            {
-    //                unregistered.push(device);
-    //            }
-    //        });
-    //        if (unregistered.length > 0) {
-    //            $('#register').show();
-    //            $('#register').click(function () {
-    //                unregistered.forEach(function (device)
-    //                {
-    //                    popup.Confirm("Setup now?", device.Serial + " is not yet registered",
-    //                        function () {
-    //                            var newsensor = new bleSensors.Sensor(device.Serial, device.Name, device.rssi,0, 600, "", 0, 100, device.ID);
-    //                            bleSensors.SetSensor(newsensor);
-    //                            $(".navbar-nav a[href=#panel-setup]").tab('show');
-    //                            setup.initialise();
-    //                        }, null, -10);
-    //                });
-    //            });
-    //        }
-    //    }
-    //    else {
-    //        $('#register').hide();
-    //    }
-    //};
 
 
-    return bleSensors;
+    return TCCroutes;
 }());

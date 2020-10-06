@@ -4,7 +4,7 @@
 // http://processors.wiki.ti.com/index.php/File:BLE_SensorTag_GATT_Server.pdf
 
 
-/*global bleTime,bleSensors,bluetoothle*/
+/*global bleTime,TCCroutes,bluetoothle*/
 
 var tagConnect = (function ($) {
     "use strict";
@@ -79,7 +79,7 @@ var tagConnect = (function ($) {
     }
 
     function findDevice(address) {
-        return bleSensors.findSensor(address);
+        return TCCroutes.findSensor(address);
     }
 
     function startScanSuccess(obj) {
@@ -88,7 +88,7 @@ var tagConnect = (function ($) {
         if (obj.status === "scanResult") {
             bleTime.log("Found device");
 
-            if (bleSensors.addFoundSensor(obj) !== null) {
+            if (TCCroutes.addFoundSensor(obj) !== null) {
                 var serial = obj.address,
                     name = obj.name,
                     rssi, len, htmlstr,
@@ -106,8 +106,8 @@ var tagConnect = (function ($) {
                     advertBytes = bluetoothle.encodedStringToBytes(obj.advertisement);
                 }
 
-                len = bleSensors.FoundSensors().length;
-                buttonID = bleSensors.shortSerial(serial);
+                len = TCCroutes.FoundSensors().length;
+                buttonID = TCCroutes.shortSerial(serial);
                 registerButton = '';
                 connectButton = '<button id="get' + len + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right">Connect</button>';
 
@@ -129,8 +129,8 @@ var tagConnect = (function ($) {
                     $('#reg' + len).click(function () {
                         popup.Confirm("Setup now?", serial + " (" + name + ") is not yet registered",
                               function () {
-                                  var id, newsensor = new bleSensors.Sensor(serial, name, rssi, 0, 600, "", 0, 100, device.ID);
-                                  bleSensors.SetSensor(newsensor);
+                                  var id, newsensor = new TCCroutes.Route(serial, name, rssi, 0, 600, "", 0, 100, device.ID);
+                                  TCCroutes.SetSensor(newsensor);
                                   id = login.ID();
                                   if (id === undefined || id === 0) {
                                       $('#loginModal').modal();
@@ -594,15 +594,15 @@ var tagConnect = (function ($) {
                 updateProgress(100);
                 //tagConnect.disconnect(obj.address);
 
-                var sensor = bleSensors.findSensor(obj.address);
+                var sensor = TCCroutes.findSensor(obj.address);
                 if (sensor !== null) {
-                    //var sensor = bleSensors.findSensor(obj.address);
+                    //var sensor = TCCroutes.findSensor(obj.address);
                     //if (sensor === null) {
-                    //    sensor = new bleSensors.Sensor(obj.address, obj.name);
+                    //    sensor = new TCCroutes.Route(obj.address, obj.name);
                     //}
                     bleData.ApplyTimestamps(sensor);
                     bleData.DisplayNewChart(sensor);
-                    bleSensors.DisplaySensor(sensor, true);
+                    TCCroutes.DisplaySensor(sensor, true);
                     $('#statusConnect').hide();
                     $("#progress-bar").hide();
 
@@ -629,7 +629,7 @@ var tagConnect = (function ($) {
                     else {
                         $('#' + item).html(htmlstr);
                         $('#' + item).unbind();
-                        var serial = bleSensors.fullSerial(item);
+                        var serial = TCCroutes.fullSerial(item);
                         $('#get' + item).on('click', function () {
                             tagConnect.setTask(TEMPSTORE_READ_ALL);
                             tagConnect.subscribeTempStore(obj.address);
@@ -639,7 +639,7 @@ var tagConnect = (function ($) {
                     //$('#up' + item).on('click', function () { bleData.Upload(item) });
                     $('#scanlist').show();
                     $("#upload-all").show();
-                    //myConfirm("Sensor read successful; upload data to web?", bleData.Upload(), null);
+                    //myConfirm("Route read successful; upload data to web?", bleData.Upload(), null);
                 }
             }
             var dev = findDevice(obj.address);
@@ -724,8 +724,8 @@ var tagConnect = (function ($) {
     }
     function closeAll() {
         tagConnect.disconnectAll();
-        while (bleSensors.FoundSensors().length > 0) {
-            bleSensors.FoundSensors().pop();
+        while (TCCroutes.FoundSensors().length > 0) {
+            TCCroutes.FoundSensors().pop();
         }
         while (services.length > 0) {
             services.pop();
@@ -745,7 +745,7 @@ var tagConnect = (function ($) {
     tagConnect.scan = function () {
 
         bleData.ClearData('');
-        bleSensors.ClearFoundSensors();
+        TCCroutes.ClearFoundSensors();
         if (scanning) {
             stopScan();
         }
@@ -816,8 +816,8 @@ var tagConnect = (function ($) {
     }
 
     tagConnect.updateConnections = function (seconds) {
-        for (var index in bleSensors.FoundSensors()) {
-            var device = bleSensors.FoundSensors()[index];
+        for (var index in TCCroutes.FoundSensors()) {
+            var device = TCCroutes.FoundSensors()[index];
             device.ConnectionTime += seconds;
             // check if still connected; if not this will reset ConnectionTime
             tagConnect.isConnected(device.Serial);
@@ -843,50 +843,11 @@ var tagConnect = (function ($) {
 
     tagConnect.disconnectAll = function () {
         // devices.forEach(function (device) {
-        bleSensors.FoundSensors().forEach(function (device) {
+        TCCroutes.FoundSensors().forEach(function (device) {
             tagConnect.disconnect(device.Serial);
         });
     };
 
-
-    //tagConnect.reconnect = function (address) {
-    //    tagConnect.clearID();
-    //    var paramsObj = { address: address };
-    //    console.log("Reconnect : " + JSON.stringify(paramsObj));
-    //    bluetoothle.reconnect(tagConnect.reconnectSuccess, tagConnect.reconnectError, paramsObj);
-    //    return false;
-    //}
-
-    //tagConnect.reconnectSuccess = function (obj) {
-    //    console.log("Reconnect Success : " + JSON.stringify(obj));
-    //    if (obj.status == "connected") {
-    //        console.log("ReConnected");
-    //        currentConnection = obj.address;
-    //        switch (currentTask) {
-    //            case tagConnect.TEMPSTORE_READ_ALL:
-    //                tagConnect.subscribeTempStore(currentConnection);
-    //                break;
-    //        }
-    //    }
-    //    else if (obj.status == "connecting") {
-    //        console.log("ReConnecting");
-
-    //    }
-    //    else {
-    //        console.log("Unexpected Reconnect Status");
-    //    }
-    //}
-
-    //tagConnect.reconnectError = function (obj) {
-    //    console.log("Reconnect Error : " + JSON.stringify(obj));
-    //    if (obj.error.indexOf("isNotDisconnected") == 0) {
-    //        switch (currentTask) {
-    //            case tagConnect.TEMPSTORE_READ_ALL:
-    //                tagConnect.subscribeTempStore(currentConnection);
-    //                break;
-    //        }
-    //    }
-    //}
 
         return tagConnect
 })(jQuery)

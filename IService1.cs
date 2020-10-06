@@ -13,15 +13,21 @@ namespace Routes
      [ServiceContract]
     public interface IRoutes
     {
-        //[OperationContract]
-        //[WebInvoke(Method = "POST", UriTemplate = "/GetLogdata", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        //[ServiceKnownType(typeof(List<Logdata>))]
-        //IEnumerable<Logdata> GetLogdata(DataRequest query);
-         
-        //[OperationContract]
-        //[WebInvoke(Method = "POST", UriTemplate = "/GetSensorNames", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        //[ServiceKnownType(typeof(List<Sensor>))]
-        //IEnumerable<Sensor> GetSensorNames(int userID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/GetRouteSummaries", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [ServiceKnownType(typeof(List<Route>))]
+        IEnumerable<Route> GetRouteSummaries();
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/GetRoutesForDate", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [ServiceKnownType(typeof(List<Route>))]
+        IEnumerable<Route> GetRoutesForDate(DateTime date);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/GetGPXforRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [ServiceKnownType(typeof(List<Route>))]
+        string GetGPXforRoute(int routeID);
 
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/Login", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -30,14 +36,10 @@ namespace Routes
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/Signup", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string Signup(Login login);
-              
-        //[OperationContract]
-        //[WebInvoke(Method = "POST", UriTemplate = "/SaveLogdata", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        //UploadResult SaveLogdata(IEnumerable<Logdata> logdata);
 
-        //[OperationContract]
-        //[WebInvoke(Method = "POST", UriTemplate = "/SaveSensor", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        //string SaveSensor(Sensor sensor);
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/SaveRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string SaveRoute(Route route);
 
 
     }

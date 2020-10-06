@@ -36,7 +36,7 @@ var login = (function () {
     // Logged in successfully, maybe create a list of sensors that can be displayed
     ///
     function loggedInOK() {
-        bleSensors.CreateSensorList();
+        TCCroutes.CreateRouteList();
         $('#loginModal').modal('hide');
         // switch to web data tab
         //$(".navbar-nav a[href=#webdata]").tab('show');

@@ -76,12 +76,12 @@ namespace Routes
     public class Routes : IRoutes, IDisposable
     {
 
-        //SqlConnection gpxConnection;
+  
         DBConnection gpxConnection = DBConnection.Instance();
 
-        //DataTable dataLogs;
+        DataTable dataRoutes;
         //List<Logdata> logdata;
-        //List<Sensor> sensors;
+        List<Route> routes;
         //List<Location> locations;
         DataTable dataLogins;
         //int currentID;
@@ -272,7 +272,7 @@ namespace Routes
 
         public string SaveRoute(Route route)
         {
-            LogEntry log = new LogEntry(GetIP(), "SaveRoute", route.Owner + " " + route.Dest);
+            LogEntry log = new LogEntry(GetIP(), "SaveRoute", route.ID + " " + route.Dest);
 
             int successRows = 0;
             string result = "";
@@ -285,25 +285,25 @@ namespace Routes
                     string query = string.Format("SELECT dest FROM routes where routes.dest = '{0}'", route.Dest);
                     bool exists = true;
                     string now = TimeString(DateTime.Now);
-                    using (MySqlDataAdapter sensorAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
-                        dataLogins = new DataTable();
-                        sensorAdapter.Fill(dataLogins);
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
 
-                        if (dataLogins.Rows.Count == 0)
+                        if (dataRoutes.Rows.Count == 0)
                         {
                             exists = false;
                         }
                     }
                     if (exists)
                     {
-                        result = "This route destination already exists. Please choose another name";
+                        result = "This route destination already exists. Please choose another name: add '-a' or '-b'?";
                     }
 
                     else
                     {
-                        query = string.Format("insert into routes (dest,distance,climbing,route,owner) values ('{0}','{1}','{2}','{3}','{4}')",
-                            route.Dest, route.Distance, route.Climbing, route.GPX, route.Owner);
+                        query = string.Format("insert into routes (dest,distance,descrip,climbing,route,owner,place, date, time) values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}')",
+                            route.Dest, route.Distance, route.Descrip, route.Climbing, route.GPX, route.Owner,route.Place, route.Date, route.Time);
 
 
 
@@ -312,9 +312,9 @@ namespace Routes
                             successRows = command.ExecuteNonQuery();
                         }
                         if (successRows == 1)
-                            result = string.Format("Route {0} saved OK", route.Dest);
+                            result = string.Format("Route '{0}' saved OK", route.Dest);
                         else
-                            result = string.Format("Database error: route {0} not saved", route.Dest);
+                            result = string.Format("Database error: route '{0}' not saved", route.Dest);
                     }
 
                 }
@@ -335,380 +335,165 @@ namespace Routes
 
         }
 
-        //public IEnumerable<Sensor> GetSensorNames(int userID)
-        //{
+        public IEnumerable<Route> GetRouteSummaries()
+        {
+            // get details of all routes (but not yet the GPX data)
+            LogEntry log = new LogEntry(GetIP(), "GetRouteSummaries", "");
 
-        //    LogEntry log = new LogEntry(getIP(), "GetSensorNames", userID.ToString());
+            routes = new List<Route>();
 
-        //    sensors = new List<Sensor>();
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    string query = string.Format("SELECT id,dest,description,distance,climbing,date,owner FROM routes ");
 
-        //    if (gpxConnection == null)
-        //    {
-        //        try
-        //        {
-        //            gpxConnection = new SqlConnection(connection);
-        //            gpxConnection.Open();
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Trace.WriteLine(ex.Message);
-        //            return null;
-        //        }
-        //    }
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
+                        int length = dataRoutes.Rows.Count;
+                        for (int row = 0; row < length; row++)
+                        {
+                            string dest = "", descrip="";
+                            DateTime date = DateTime.MinValue;
+                            DateTime time = DateTime.MinValue;
+                            int id, owner=0, climbing = 0, distance = 0;
+                            try
+                            {
+                                DataRow dr = dataRoutes.Rows[row];
+                                id = (int)dr["id"];
+                                try { dest = (string)dr["dest"]; } catch { }
+                                try { descrip = (string)dr["description"]; } catch { }
+                                try { climbing= (int)dr["climbing"]; } catch { }
+                                try { distance = (int)dr["distance"]; } catch { }
+                                try { date = (DateTime)dr["date"]; } catch { }
+                                try { owner = (int)dr["owner"]; } catch { }
 
-        //    // get sensors associated to that user
-        //    string query = string.Format("SELECT * FROM sensors where sensors.owner = {0}", userID);
+                                routes.Add(new Route(null, dest, descrip, distance, climbing, owner, "", date, time,id));
+                            }
+                            catch (Exception ex)
+                            {
+                                Trace.WriteLine(ex.Message);
+                                log.Error = ex.Message;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    Trace.WriteLine(ex2.Message);
+                    log.Error = ex2.Message;
+                }
+            }
+            log.Result = routes.Count.ToString() + " routes altogether";
+            log.Save(gpxConnection);
+            gpxConnection.Close();
+            return routes;
+        }
 
-        //    using (SqlDataAdapter riderAdapter = new SqlDataAdapter(query, gpxConnection))
-        //    {
-        //        dataLogs = new DataTable();
-        //        riderAdapter.Fill(dataLogs);
-        //        // ToDo: not efficient to convert table to  List<> in order to provide the data
-        //        int length = dataLogs.Rows.Count;
-        //        for (int row = 0; row < length; row++)
-        //        {
-        //            string name = "", serial = "", descrip = "";
-        //            int id, period = 60, alarmlow = 0, alarmhigh = 0;
-        //            try
-        //            {
-        //                DataRow dr = dataLogs.Rows[row];
-        //                id = (int)dr["id"];
-        //                try { name = (string)dr["name"]; } catch { }
-        //                try { serial = (string)dr["serial"]; } catch { }
-        //                try { descrip = (string)dr["descrip"]; } catch { }
-        //                try { alarmlow = (int)dr["alarmlow"]; } catch { }
-        //                try { alarmhigh = (int)dr["alarmhigh"]; } catch { }
-        //                try { period = (int)dr["period"]; } catch { }
+        public IEnumerable<Route> GetRoutesForDate(DateTime date)
+        {
+            // get details of routes available for a given date (but not yet the GPX data)
+            LogEntry log = new LogEntry(GetIP(), "GetRouteSummaries", date.ToShortDateString());
 
-        //                sensors.Add(new Sensor(id, serial, name, descrip, alarmlow, alarmhigh, period, userID));
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Trace.WriteLine(ex.Message);
-        //                log.Error = ex.Message;
-        //            }
-        //        }
-        //    }
-        //    log.Result = sensors.Count.ToString() + " sensors";
-        //    log.Save(gpxConnection);
-        //    gpxConnection.Close();
-        //    return sensors;
-        //}
+            routes = new List<Route>();
 
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+        
+                    //string query = string.Format("SELECT * FROM routes where routes.owner = {0}", userID);
+                    string query = string.Format("SELECT dest,description,distance,climbing,owner FROM routes where routes.starttime");
 
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
+                        int length = dataRoutes.Rows.Count;
+                        for (int row = 0; row < length; row++)
+                        {
+                            string dest = "", descrip = "";
+                            DateTime time = DateTime.MinValue;
+                            int id, owner = 0, climbing = 0, distance = 0;
+                            try
+                            {
+                                DataRow dr = dataRoutes.Rows[row];
+                                id = (int)dr["id"];
+                                try { dest = (string)dr["dest"]; } catch { }
+                                try { descrip = (string)dr["descrip"]; } catch { }
+                                try { climbing = (int)dr["climbing"]; } catch { }
+                                try { distance = (int)dr["distance"]; } catch { }
+                                try { time = (DateTime)dr["time"]; } catch { }
+                                try { owner = (int)dr["owner"]; } catch { }
 
-        ///// <summary>
-        ///// Get all saved data for set of  given devices between specified times.
-        ///// Times are passed as 'smalldatetime' i.e. number of minutes since 01.01.1970
-        ///// </summary>
-        ///// <param name="id">device serial number</param>
-        ///// <param name="from">start of data reqd</param>
-        ///// <param name="to">end of data reqd</param>
-        ///// <returns></returns>
-        //public IEnumerable<Logdata> GetLogdata(DataRequest req)
-        //{
-        //    LogEntry log = new LogEntry(getIP(), "GetLogdata", req.ToString());
+                                routes.Add(new Route(null, dest, descrip, distance, climbing, owner, "", date,time,id));
+                            }
+                            catch (Exception ex)
+                            {
+                                Trace.WriteLine(ex.Message);
+                                log.Error = ex.Message;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    Trace.WriteLine(ex2.Message);
+                    log.Error = ex2.Message;
+                }
+            }
+            log.Result = routes.Count.ToString() + " routes for " + date.ToShortDateString();
+            log.Save(gpxConnection);
+            gpxConnection.Close();
+            return routes;
+        }
+        public string GetGPXforRoute(int routeID)
+        {
+            LogEntry log = new LogEntry(GetIP(), "GetGPXforRoute ", routeID.ToString());
 
+            string data = "";
+            if (gpxConnection.IsConnect())
+            {
 
-        //    logdata = new List<Logdata>();
-        //    bool closeneeded = false;
-        //    //int thisID = 0;
+                try
+                {
+                    string query = string.Format("SELECT route FROM routes where id={0}",routeID);
 
-        //    if (gpxConnection == null)
-        //    {
-        //        try
-        //        {
-        //            gpxConnection = new SqlConnection(connection);
-        //            gpxConnection.Open();
-        //            closeneeded = true;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Trace.WriteLine(ex.Message);
-
-        //        }
-        //    }
-
-        //    string idList = string.Empty;
-        //    foreach (int id in req.IDlist)
-        //    {
-        //        idList += id.ToString();
-        //        idList += ',';
-        //    }
-        //    //char[] comma = { };
-        //    idList = idList.TrimEnd(',');
-
-
-        //    string query = string.Format("SELECT logdata.id, logdata.time, logdata.value FROM logdata  WHERE logdata.id in ( {0} ) and logdata.time >= '{1}' and logdata.time <= '{2}' ORDER BY logdata.time,logdata.id",
-        //        idList, req.From, req.To);
-        //    using (SqlDataAdapter riderAdapter = new SqlDataAdapter(query, gpxConnection))
-        //    {
-        //        dataLogs = new DataTable();
-        //        riderAdapter.Fill(dataLogs);
-        //        // ToDo: not efficient to convert table to  List<> in order to provide the data
-        //        int length = dataLogs.Rows.Count;
-        //        ArrayList IDs = new ArrayList();
-        //        List<float> vals = new List<float>();
-        //        // initalise vals with 'missing data'
-        //        foreach (int i in req.IDlist)
-        //            vals.Add(-273);
-        //        int time = 0, oldTime = 0;
-        //        DataRow dr;
-
-        //        // Need to assemble data into values with the same timestamps.
-        //        // If data is missing for some IDs at a certain time, need to insert 'missing data' values
-
-        //        // First, need to run through list to find all the IDs it may contain - some IDs may not be present in the first few records,
-        //        //    and we need to have the finished list in ID order.
-        //        for (int row = 0; row < length; row++)
-        //        {
-        //            try
-        //            {
-        //                dr = dataLogs.Rows[row];
-        //                int id = (int)dr["id"];
-
-        //                int idIndex = IDs.IndexOf(id);
-        //                if (idIndex < 0)
-        //                {
-        //                    // haven't seen one of these before
-        //                    IDs.Add(id);
-        //                }
-
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Trace.WriteLine(ex.Message);
-        //                log.Error = ex.Message;
-        //            }
-        //        }
-        //        if (IDs.Count < req.IDlist.Count)
-        //        {
-        //            // one sensor asked for has no data at all
-        //            foreach (int id in req.IDlist)
-        //            {
-        //                if (IDs.Contains(id) == false)
-        //                {
-        //                    IDs.Add(id);
-        //                }
-        //            }
-        //        }
-        //        IDs.Sort();
-        //        // now actually sort the data
-        //        for (int row = 0; row < length; row++)
-        //        {
-        //            try
-        //            {
-        //                dr = dataLogs.Rows[row];
-        //                time = (int)dr["time"];
-        //                int id = (int)dr["id"];
-        //                //if (oldTime == 0) oldTime = time;
-
-        //                int idIndex = IDs.IndexOf(id);
-        //                float val = (float)dr["value"];
-        //                vals[idIndex] = val;
-        //                if (time != oldTime)
-        //                {
-        //                    // this will be a new record
-        //                    logdata.Add(new Logdata(time, vals));
-        //                    //vals.Clear();
-        //                    vals = new List<float>();
-        //                    // initalise new vals with 'missing data'
-        //                    foreach (int i in req.IDlist)
-        //                        vals.Add(-273);
-        //                    oldTime = time;
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Trace.WriteLine(ex.Message);
-        //                log.Error = ex.Message;
-        //            }
-        //        }
-        //    }
-        //    log.Result = "logdata size: " + logdata.Count;
-        //    log.Save(gpxConnection);
-
-        //    if (closeneeded)
-        //        gpxConnection.Close();
-        //    return logdata;
-        //}
-
-        ///// <summary>
-        ///// Save a chunk of data (for a single device)
-        ///// </summary>
-        ///// <param name="newdata"></param>
-        ///// <returns></returns>
-        //public UploadResult SaveLogdata(IEnumerable<Logdata> newdata)
-        //{
-        //    LogEntry log = new LogEntry(getIP(), "SaveLogdata", newdata.Count().ToString() + " records");
-        //    log.Error = "Starting SaveLogdata";
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
+                        int length = dataRoutes.Rows.Count;
+                        for (int row = 0; row < length; row++)
+                        {
+                            
+                            try
+                            {
+                                DataRow dr = dataRoutes.Rows[row];
+                                try { data= (string)dr["route"]; } catch { }
+                             }
+                            catch (Exception ex)
+                            {
+                                Trace.WriteLine(ex.Message);
+                                log.Error = ex.Message;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    Trace.WriteLine(ex2.Message);
+                    log.Error = ex2.Message;
+                }
+            }
+            log.Result = "got gpx data for " + routeID;
+            log.Save(gpxConnection);
+            gpxConnection.Close();
+            return data;
+        }
 
 
-        //    // find start and end times of new data
-        //    int firstnewdata = int.MaxValue;
-        //    int lastnewdata = int.MinValue;
-        //    string serial = string.Empty;
-        //    int thisID = 0;
-
-        //    try
-        //    {
-        //        gpxConnection = new SqlConnection(connection);
-        //        gpxConnection.Open();
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Trace.WriteLine(ex.Message);
-
-        //    }
-        //    log.Save(gpxConnection);
-        //    try
-        //    {
-        //        foreach (Logdata data in newdata)
-        //        {
-        //            if (data.T > lastnewdata)
-        //                lastnewdata = data.T;
-        //            if (data.T < firstnewdata)
-        //                firstnewdata = data.T;
-        //            if (serial == string.Empty) serial = data.S;
-        //            else if (data.S != null && data.S.Length > 0 && serial != data.S)
-        //            {
-        //                string err = "Cannot save data, contains values from more than one device";
-        //                Trace.WriteLine(err);
-        //                log.Error = err;
-        //                log.Save(gpxConnection);
-        //                gpxConnection.Close();
-        //                return new UploadResult(0, 0);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Trace.WriteLine(ex.Message);
-        //        log.Error = ex.Message;
-        //        log.Save(gpxConnection);
-        //        gpxConnection.Close();
-        //        return new UploadResult(0, 0);
-        //    }
-        //    if (serial.Length > 20)
-        //        serial = serial.Substring(0, 18);
-        //    log.Error = "SaveLogdata, serial = " + serial;
-        //    log.Save(gpxConnection);
-
-        //    // find sensor ID from serial number
-        //    string query = string.Format("SELECT sensors.id FROM sensors  WHERE sensors.serial = '{0}' ", serial);
-        //    using (SqlDataAdapter idAdapter = new SqlDataAdapter(query, gpxConnection))
-        //    {
-        //        dataLogs = new DataTable();
-        //        idAdapter.Fill(dataLogs);
-        //        // ToDo: not efficient to convert table to  List<> in order to provide the data
-        //        if (dataLogs.Rows.Count > 0)
-        //        {
-
-        //            try
-        //            {
-        //                DataRow dr = dataLogs.Rows[0];
-        //                thisID = (int)dr["id"];
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Trace.WriteLine(ex.Message);
-        //                log.Error = ex.Message;
-        //                log.Save(gpxConnection);
-        //                gpxConnection.Close();
-        //                return new UploadResult(0, 0);
-        //            }
-        //        }
-        //        log.Error = "SaveLogdata, rows = " + dataLogs.Rows.Count;
-        //        log.Save(gpxConnection);
-        //    }
-
-
-
-        //    List<int> ids = new List<int>();
-        //    int firstolddata = int.MaxValue;
-        //    int lastolddata = int.MinValue;
-
-        //    if (thisID > 0)
-        //    {
-        //        ids.Add(thisID);
-        //        // now get any existing data between these times. Just one ID to put into the array of requests
-        //        if (GetLogdata(new DataRequest(ids, firstnewdata, lastnewdata)) != null)
-        //        {
-        //            foreach (Logdata data in logdata)
-        //            {
-        //                if (data.T >= lastolddata)
-        //                    lastolddata = data.T;
-        //                if (data.T <= firstolddata)
-        //                    firstolddata = data.T;
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // ID not found, must be a new sensor
-        //        try
-        //        {
-        //            query = string.Format("insert into sensors (serial,name,owner,timeadded) values ('{0}','{1}','{2}','{3}')", serial, "no name", 0, TimeString(DateTime.Now));
-        //            using (System.Data.SqlClient.SqlCommand command = new SqlCommand(query, gpxConnection))
-        //            {
-        //                command.ExecuteNonQuery();
-
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Trace.WriteLine(ex.Message);
-        //            log.Error = ex.Message;
-        //            log.Save(gpxConnection);
-        //            gpxConnection.Close();
-        //            return new UploadResult(0, 0);
-        //        }
-
-        //    }
-
-        //    log.Error = "SaveLogdata 3";
-        //    log.Save(gpxConnection);
-
-        //    int saved = 0, notsaved = 0;
-        //    UploadResult result = null;
-        //    try
-        //    {
-        //        foreach (Logdata data in newdata)
-        //        {
-        //            if (data.T >= firstolddata && data.T <= lastolddata)
-        //            {
-        //                // data already stored for this time (unless gaps have somehow been introduced??)
-        //                ++notsaved;
-        //                continue;
-        //            }
-
-        //            query = string.Format("insert into logdata (id, time, value) values ('{0}','{1}','{2}')\n\r",
-        //                thisID, data.T, data.V[0]);
-
-        //            using (System.Data.SqlClient.SqlCommand command = new SqlCommand(query, gpxConnection))
-        //            {
-        //                command.ExecuteNonQuery();
-        //                ++saved;
-        //            }
-        //        }
-        //        result = new UploadResult(saved, notsaved);
-        //        log.Result = new JavaScriptSerializer().Serialize(result);
-        //        log.Save(gpxConnection);
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        Trace.WriteLine(ex.Message);
-        //        log.Error = ex.Message;
-        //        log.Save(gpxConnection);
-        //        return new UploadResult(0, 0);
-        //    }
-        //    finally
-        //    {
-        //        gpxConnection.Close();
-        //    }
-        //    return result;
-        //}
     }
 }
