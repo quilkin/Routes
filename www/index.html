@@ -10,8 +10,10 @@
 
     <title>TCC rides signup</title>
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <!--<link href="css/bootstrap.min.css" rel="stylesheet">-->
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">-->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     <link href="css/gpx.css" rel="stylesheet">
     <link href="css/datepicker3.css" rel="stylesheet">
@@ -38,10 +40,9 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right" role="tablist">
-                    <li class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><span class="glyphicon glyphicon-transfer"></span> Connect</a></li>
-                    <li><a href="#webdata" id="webdata-tab" role="tab" data-toggle="tab" aria-controls="webdata"><span class="glyphicon glyphicon-cloud"></span> Web data</a></li>
-                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup"><span class="glyphicon glyphicon-wrench"></span>Set Up</a></li>
-                    <!--<li><a href="#signin" id="signin-tab" role="tab" data-toggle="tab" aria-controls="signin"><span class="glyphicon glyphicon-user"></span> Sign In</a></li>-->
+                    <li class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><span class="glyphicon glyphicon-transfer"></span>This Week's rides</a></li>
+                    <li><a href="#webdata" id="webdata-tab" role="tab" data-toggle="tab" aria-controls="webdata"><span class="glyphicon glyphicon-cloud"></span>View all routes</a></li>
+                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup"><span class="glyphicon glyphicon-wrench"></span>Set Up new route</a></li>
                 </ul>
             </div>
         </div>
@@ -52,44 +53,51 @@
         <div role="tabpanel" class="tab-pane fade in active" id="home" aria-labelledby="home-tab">
 
             <div class="container">
-
                 <div class="row">
-
                     <div class="col-md-4">
-                        <div class="list-group scrollable-list" id="scanlist"> <a id="scanTitle" class="list-group-item list-group-item-info">Search for devices</a> </div>
-                        <p></p>
-                        <!--<div>
-                            <button id="register" type="button" class="btn btn-info btn-block"><span class="glyphicon glyphicon-pencil"></span>Register sensors</button>
-                        </div>-->
-                        <div class="progress" id="progress-bar">
-                            <div class="progress-bar" role="progressbar" id="progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">0%</div>
-                        </div>
-                        <div id="upload-all">
-                            <button id="upload-button" type="button" class="btn btn-info btn-block" data-loading-text="Uploading..."><span class="glyphicon glyphicon-cloud"></span> Upload data</button>
-                        </div>
-                        <!--<button id="testUpload" type="button" class="btn btn-info ">Test Upload</button>-->
 
-                        <div> <p id="statusConnect" />  </div>
-                    </div> <!-- /col-md-4 -->
-                    <p></p>
-                    <div class="col-md-4">
-                        <!--<div class="panel panel-primary">-->
-
-                            <div class="panel-heading" id="newChartName">chart</div>
-                            <div class="panel-body">
-                                <div class="newChart">  <div data-role="content" class="amChart" id="newChart"></div>  </div>
-                            </div>
-                        <!--</div>-->
-                    </div> <!-- /col-md-4 -->
+                        <!--<div class="list-group" id="chooseDates">
+                            <a id="dateTitle" class="list-group-item list-group-item-info"></a>
+                            <a id="fromDate" class="list-group-item">Date:&emsp;<input type="text" id="startDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
+                        </div>
+                        <p></p>-->
+                        <div class="list-group scrollable-list" id="findlist">
+                            <a id="findTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="panel panel-primary">
-                            <div class="panel-heading" id="newTableName">Data table</div>
-                            <div class="panel-body"> <p id="newTable"></p>  </div>
+                            <div id="demo" class="panel-body gpx" data-map-target="demo-map" data-elev-target="demo-elev">
+                                <header>
+                                    <h3>Trurocycling.org routes</h3>
+                                    <span class="start"></span>
+                                </header>
+
+                                <article>
+                                    <div class="map" id="demo-map"></div>
+                                </article>
+
+                                <article>
+                                    <div class="elev" id="demo-elev"></div>
+                                </article>
+
+                                <footer>
+                                    <ul class="info">
+                                        <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
+                                        <li>
+                                            Elevation:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
+                                            down: <span class="elevation-loss"></span>&nbsp;m
+                                            (net:&nbsp;<span class="elevation-net"></span>&nbsp;m)
+                                            <span class="elevation-none"></span>
+                                        </li>
+                                    </ul>
+                                </footer>
+                            </div>
                         </div>
-                    </div> <!-- /col-md-4 -->
-                </div> <!-- /row -->
+                    </div>
+                </div>  <!-- /row -->
             </div> <!-- /container -->
-        </div> <!-- /tab-pane -->
+        </div>
         <div role="tabpanel" class="tab-pane fade" id="webdata" aria-labelledby="webdata-tab">
             <div class="container">
                 <div class="row">
@@ -100,68 +108,41 @@
                             <a id="fromDate" class="list-group-item">Date:&emsp;<input type="text" id="startDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
                         </div>
                         <p></p>
-                        <!--<div class="list-group scrollable-list" id="findlist"> <a id="findTitle" class="list-group-item list-group-item-info">Choose route(s)</a> </div>-->
                         <div class="list-group scrollable-list" id="findlist">
                             <a id="findTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
-                            <div>
-                                <button id="showSelected" type="button" class="btn btn-info  pull-right">Show Selection</button>
-                            </div>
-
                         </div>
-
-
                     </div>
                     <div class="col-md-4">
                         <div class="panel panel-primary">
-
-                            <div class="panel-heading" id="chartName">TCC Route</div>
                             <div id="demo" class="panel-body gpx" data-map-target="demo-map" data-elev-target="demo-elev">
-                                <!--<div id="demo" class="panel2 gpx" data-map-target="demo-map" data-elev-target="demo-elev">-->
-                                    <header>
-                                        <h3>Trurocycling.org routes</h3>
-                                        <span class="start"></span>
-                                    </header>
+                                <header>
+                                    <h3>Trurocycling.org routes</h3>
+                                    <span class="start"></span>
+                                </header>
 
-                                    <article>
-                                        <div class="map" id="demo-map"></div>
-                                    </article>
+                                <article>
+                                    <div class="map" id="demo-map"></div>
+                                </article>
 
-                                    <article>
-                                        <div class="elev" id="demo-elev"></div>
-                                    </article>
+                                <article>
+                                    <div class="elev" id="demo-elev"></div>
+                                </article>
 
-                                    <footer>
-                                        <ul class="info">
-                                            <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
-                                            <li>
-                                                Elevation:&nbsp;+<span class="elevation-gain"></span>&nbsp;m,
-                                                -<span class="elevation-loss"></span>&nbsp;m
-                                                (net:&nbsp;<span class="elevation-net"></span>&nbsp;m)
-                                                <span class="elevation-none"></span>
-                                            </li>
-                                        </ul>
-                                    </footer>
-                                <!--</div>-->
-                            </div>
-                        </div>
-                    <div class="col-md-4">
-                        <div class="panel panel-primary">
-                            <div>
-                                <button id="uploadRoute" type="button" class="btn btn-info  pull-right">Upload new route</button>
-                            </div>
-                            <div class="panel-heading" id="tableName">Load tabular data</div>
-                            <!--      <button id="loadTable" type="button" class="btn btn-primary ">Load tabular data</button>-->
-                            <div class="panel-body">
-                                <p id="dataTable"></p>
+                                <footer>
+                                    <ul class="info">
+                                        <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
+                                        <li>
+                                            Elevation:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
+                                            down: <span class="elevation-loss"></span>&nbsp;m
+                                            (net:&nbsp;<span class="elevation-net"></span>&nbsp;m)
+                                            <span class="elevation-none"></span>
+                                        </li>
+                                    </ul>
+                                </footer>
                             </div>
                         </div>
                     </div>
                 </div>  <!-- /row -->
-
-                <hr>
-                <footer>
-                    <p>&copy; Quilkin 2015</p>
-                </footer>
             </div> <!-- /container -->
         </div> <!-- /tab-pane -->
 
@@ -169,10 +150,6 @@
         <div role="tabpanel" class="tab-pane fade" id="panel-setup" aria-labelledby="setup-tab">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="list-group scrollable-list" id="setuplist">Upload a route</div>
-
-                    </div>
                     <div class="col-md-9">
                         <div class="panel panel-primary">
                             <div class="panel-heading" id="routeTitle">Upload a route</div>
@@ -282,8 +259,9 @@
     <script src="js/jquery-1.11.1.min.js"></script>
     <!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>-->
     <!--<<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script><-->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-    <!--<script src="js/bootstrap.js"></script>-->
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>-->
+    <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>-->
+    <script src="js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

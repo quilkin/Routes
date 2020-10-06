@@ -164,8 +164,13 @@ var TCCroutes = (function () {
         $('#findlist').empty();  // this will also remove any handlers
         $('#setuplist').empty();
         $.each(routes, function (index, route) {
-
-            var htmlstr = '<a id="sen' + index + '" class="list-group-item">' + route.dest +
+            var title = route.dest;
+            if (route.dist !== undefined) {
+                title = title + '(' + route.dist + 'km)';
+            }
+            while (title.length < 20) title = title + ' ';
+            title = title + '.';
+            var htmlstr = '<a id="sen' + index + '" class="list-group-item">' + title +
                 '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Deselect">Select</button>' +
                 '</a>';
             $('#findlist').append(htmlstr);
@@ -182,31 +187,32 @@ var TCCroutes = (function () {
                     $(this).button('complete');
                     TCCroutes.DisplayRoute(route,true);
                 }
+
                 bleData.showRoute();
             });
-            htmlstr = '<a id="sen' + index + '" class="list-group-item">' + route.dest +
-                '<button id="set' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" >Set up</button>' +
-                '</a>';
-            $('#setuplist').append(htmlstr);
-            $('#set' + index).click(function () {
-                TCCroutes.SetRoute(route);
-                bleSetup.initialise();
-                $('#routeTitle').text("Set up Route: destination: " + route.Dest);
-                // if it's a short screen, collapse the route list and date chooser to make it easier to see the graph
-                // if ($('#btnMenu').is(":visible")) {
-                // *** To Do: this won't work correctly for landscape/portrait changes
-                if (bleApp.tableHeight < 300) {
-                    $('#setuplist').empty();
-                    htmlstr = '<a id="setupTitle" class="list-group-item list-group-item-info">Choose route</a>';
-                    $('#setuplist').append(htmlstr);
-                    $('#setupTitle').click(TCCroutes.CreateRouteList);
-                }
-                if (bleApp.tableHeight < 250) {
-                    // save more space by making the setup title bar clickable, instead of the route list title
-                    $('#setupTitle').hide();
-                    $('#routeTitle').click(TCCroutes.CreateRouteList);
-                }
-            });
+            //htmlstr = '<a id="sen' + index + '" class="list-group-item">' + route.dest +
+            //    '<button id="set' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" >Set up</button>' +
+            //    '</a>';
+            //$('#setuplist').append(htmlstr);
+            //$('#set' + index).click(function () {
+            //    TCCroutes.SetRoute(route);
+            //    bleSetup.initialise();
+            //    $('#routeTitle').text("Set up Route: destination: " + route.Dest);
+            //    // if it's a short screen, collapse the route list and date chooser to make it easier to see the graph
+            //    // if ($('#btnMenu').is(":visible")) {
+            //    // *** To Do: this won't work correctly for landscape/portrait changes
+            //    if (bleApp.tableHeight < 300) {
+            //        $('#setuplist').empty();
+            //        htmlstr = '<a id="setupTitle" class="list-group-item list-group-item-info">Choose route</a>';
+            //        $('#setuplist').append(htmlstr);
+            //        $('#setupTitle').click(TCCroutes.CreateRouteList);
+            //    }
+            //    if (bleApp.tableHeight < 250) {
+            //        // save more space by making the setup title bar clickable, instead of the route list title
+            //        $('#setupTitle').hide();
+            //        $('#routeTitle').click(TCCroutes.CreateRouteList);
+            //    }
+            //});
             index++;
         });
         $('#findlist').append('<div><button id="showSelected" type="button" class="btn btn-info  pull-right">Show Selection</button></div>');

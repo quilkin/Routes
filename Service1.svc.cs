@@ -297,7 +297,7 @@ namespace Routes
                     }
                     if (exists)
                     {
-                        result = "This route destination already exists. Please choose another name: add '-a' or '-b'?";
+                        result = "This route destination already exists. Please choose another name: add -a or -b ?";
                     }
 
                     else

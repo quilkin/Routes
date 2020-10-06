@@ -110,14 +110,13 @@ var bleApp = (function () {
     "use strict";
     var bleApp = {},
     ismobile,
-    platform,
     interval = 60;  // seconds
 
     function updateTime() {
         var d = new Date();
         if ((d.getSeconds()) < interval) {
             var timetext = d.toDateString() + ' ' + bleTime.timeString(d);
-            $("#realtime").html('BLE Log <span style="color:black; font-size:small">' + timetext + ' ' + platform + '</span>');
+            $("#realtime").html('TCC Ride Planner <span style="color:black; font-size:small">' + timetext + '</span>');
         }
         if (ismobile) {
             // every few seconds, update connected status of devices

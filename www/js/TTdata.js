@@ -316,14 +316,15 @@ var bleData = (function ($) {
             new L.GPX(gpxdata, {
                 async: true,
                 marker_options: {
-                    startIconUrl: 'https://github.com/mpetazzoni/leaflet-gpx/raw/master/pin-icon-start.png',
-                    endIconUrl: 'https://github.com/mpetazzoni/leaflet-gpx/raw/master/pin-icon-end.png',
-                    shadowUrl: 'https://github.com/mpetazzoni/leaflet-gpx/raw/master/pin-shadow.png',
+                    startIconUrl: '',
+                    endIconUrl: '',
+                    shadowUrl: '',
                 },
             }).on('loaded', function (e) {
                 var gpx = e.target;
                 var elev_data;
-                map.fitBounds(gpx.getBounds());
+                var bounds = gpx.getBounds();
+                map.fitBounds(bounds);
                 //     control.addOverlay(gpx, gpx.get_name());
 
                 _t('h3').textContent = gpx.get_name() + "  ";
@@ -337,19 +338,7 @@ var bleData = (function ($) {
                 a.href = gpxdata;
                 _t('h3').appendChild(a);
 
-
-                /*
-                 * Note: the code below relies on the fact that the demo GPX file is
-                 * an actual GPS track with timing and heartrate information.
-                 */
-
-
-                //_c('start').textContent = gpx.get_start_time().toDateString() + ', '
-                //  + gpx.get_start_time().toLocaleTimeString();
                 _c('distance').textContent = (gpx.get_distance() / 1000).toFixed(1);
-                //_c('duration').textContent = gpx.get_duration_string(gpx.get_moving_time());
-                //_c('pace').textContent = gpx.get_duration_string(gpx.get_moving_pace_imp(), true);
-                //_c('avghr').textContent = gpx.get_average_hr();
                 _c('elevation-gain').textContent = gpx.get_elevation_gain().toFixed(0);
                 _c('elevation-loss').textContent = gpx.get_elevation_loss().toFixed(0);
                 _c('elevation-net').textContent = (gpx.get_elevation_gain() - gpx.get_elevation_loss()).toFixed(0);
@@ -369,7 +358,7 @@ var bleData = (function ($) {
                 }
                 else {
                     bleData.clearChart();
-                    _c('elevation-none').textContent = " : No elevation data in this file";
+                    _c('elevation-none').textContent = " : No elevation data in this route";
 
                 }
 
