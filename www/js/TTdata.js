@@ -156,8 +156,10 @@ var bleData = (function ($) {
         return "http://localhost/routes/Service1.svc/";
 
     },
-    webRequestFailed = function(handle, status, error) {
-        popup.Alert("Error with web request: " + error);
+        webRequestFailed = function (handle, status, error) {
+            var responseText = handle.responseText;
+            //   popup.Alert("Error with web request: " + error);
+            popup.Alert("Error with web request: " + responseText);
         if ($jsonBtn !== null) {
             $jsonBtn.button('reset');
         }
@@ -341,7 +343,7 @@ var bleData = (function ($) {
                 _c('distance').textContent = (gpx.get_distance() / 1000).toFixed(1);
                 _c('elevation-gain').textContent = gpx.get_elevation_gain().toFixed(0);
                 _c('elevation-loss').textContent = gpx.get_elevation_loss().toFixed(0);
-                _c('elevation-net').textContent = (gpx.get_elevation_gain() - gpx.get_elevation_loss()).toFixed(0);
+                //_c('elevation-net').textContent = (gpx.get_elevation_gain() - gpx.get_elevation_loss()).toFixed(0);
 
                 //drawProfile1("demo-elev", elev_data);
                 if (gpx.get_elevation_gain() > 0 && gpx.get_elevation_loss() > 0) {

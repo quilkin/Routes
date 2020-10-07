@@ -26,29 +26,24 @@ var bleSetup = (function ($) {
         //minVal = -30,
         //maxVal = 90,
         registering = false,
-        
-        
-        save = function () {
-            $("#saveRoute").prop("disabled", true);
-            var route = TCCroutes.currentRoute();
-            route.Description = $("#route-descrip").val();
-            route.Name = $("#route-dest").val();
 
-        },
-        done = function () {
-            save();
-            popup.Confirm("Save new route", "Are you sure?", function () {
-                bleData.myJson("Saveroute", "POST", TCCroutes.currentRoute(), function (response) {
-                    popup.Alert(response);
-                }, true, null);
-            },
-            null, -10);
-
-            if (registering) {
-                // switch back to conenction tab
-                $(".navbar-nav a[href=#home]").tab('show');
+        validURL = function (string) {
+            try {
+                new URL(string);
+            } catch (_) {
+                return false;
             }
+
+            return true;
         };
+
+    //save = function (route) {        
+    //    popup.Confirm("Save new route", "Are you sure?", function () {
+    //        bleData.myJson("SaveRoute", "POST", route, function (response) {
+    //            popup.Alert(response);
+    //        }, true, null);
+    //    }, null, -10);
+    //};
 
     $("#btnLow-").on('click', function () {
         if (minAlarm > minVal) {
@@ -78,15 +73,35 @@ var bleSetup = (function ($) {
         }
         else {    /* beep? */ }
     });
-    $("#setupDone").on('click',done);
-    $("#cancelChanges").on('click', function () {
-        if (registering) {
-            // switch back to connection tab
-            $(".navbar-nav a[href=#home]").tab('show');
+    $("#setupDone").on('click', function () {
+        $("#saveRoute").prop("disabled", true);
+        
+        var descrip  = $("#route-descrip").val();
+        var dest = $("#route-dest").val();
+        var gpx = $("#route-gpx").val();
+        if (validURL(gpx)) {
+            var route = new TCCroutes.Route(gpx, dest, descrip, 0, 0, 0, 0, 0, 0, "Truro");
+            popup.Confirm("Save new route", "Are you sure?", function () {
+                bleData.myJson("SaveRoute", "POST", route, function (response) {
+                    popup.Alert(response);
+                    TCCroutes.Add(route);
+                    TCCroutes.CreateRouteList();
+                }, true, null);
+            }, null, -10);
         }
         else {
-            // TO DO: change back to original values
+            popup.Alert("Invalid URL, sorry!");
         }
+
+    });
+    $("#cancelChanges").on('click', function () {
+       // if (registering) {
+            // switch back to connection tab
+            $(".navbar-nav a[href=#home]").tab('show');
+      //  }
+      //  else {
+            // TO DO: change back to original values
+      //  }
     });
 
     bleSetup.initialise = function (reg) {

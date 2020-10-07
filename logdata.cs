@@ -46,104 +46,106 @@ namespace Routes
     public class Logdata
     {
 
-        public static DateTime JSTimeToNetTime(long time)
+        public static DateTime JSDateToDateTime(int date)
         {
+            // date as days since 01/01/1970
+            long millisecs = date * 1000 * 24 * 3600;
             DateTime t = new DateTime(1970, 1, 1);
-            return t.AddMilliseconds(time);
+            return t.AddMilliseconds(millisecs);
         }
-        /// <summary>
-        /// keeping member names small to keep json stringifications smaller
-        /// </summary>
-        [DataMember]
-        public string S { get; set; }
-        [DataMember]
-        public int T { get; set; }
-        [DataMember]
-        public List<float> V { get; set; }
+        ///// <summary>
+        ///// keeping member names small to keep json stringifications smaller
+        ///// </summary>
+        //[DataMember]
+        //public string S { get; set; }
+        //[DataMember]
+        //public int T { get; set; }
+        //[DataMember]
+        //public List<float> V { get; set; }
 
-        public int ID { get; set; }
+        //public int ID { get; set; }
 
-        public Logdata()
-        {
-            S = string.Empty;
-            T = 0;
-            V = new List<float>();
-        }
-        public Logdata(string id, DateTime dt, List<float> vals)
-        {
-            S = id;
-            T = (int)TimeSpan.FromTicks(dt.Ticks).TotalMinutes;
-            V = vals;
-        }
-        public Logdata(int id, DateTime dt, List<float> vals)
-        {
-            ID = id;
-            T = (int)TimeSpan.FromTicks(dt.Ticks).TotalMinutes;
-            V = vals;
-        }
-        public Logdata(string id, int totalmins, List<float> vals)
-        {
-            S = id;
-            T = totalmins;
-            V= vals;
-        }
-        public Logdata(int totalmins, List<float> vals)
-        {
-            T = totalmins;
-            V = vals;
-        }
-        public Logdata(int id, int totalmins, List<float> vals)
-        {
-            ID = id;
-            T = totalmins;
-            V = vals;
-        }
+        //public Logdata()
+        //{
+        //    S = string.Empty;
+        //    T = 0;
+        //    V = new List<float>();
+        //}
+        //public Logdata(string id, DateTime dt, List<float> vals)
+        //{
+        //    S = id;
+        //    T = (int)TimeSpan.FromTicks(dt.Ticks).TotalMinutes;
+        //    V = vals;
+        //}
+        //public Logdata(int id, DateTime dt, List<float> vals)
+        //{
+        //    ID = id;
+        //    T = (int)TimeSpan.FromTicks(dt.Ticks).TotalMinutes;
+        //    V = vals;
+        //}
+        //public Logdata(string id, int totalmins, List<float> vals)
+        //{
+        //    S = id;
+        //    T = totalmins;
+        //    V= vals;
+        //}
+        //public Logdata(int totalmins, List<float> vals)
+        //{
+        //    T = totalmins;
+        //    V = vals;
+        //}
+        //public Logdata(int id, int totalmins, List<float> vals)
+        //{
+        //    ID = id;
+        //    T = totalmins;
+        //    V = vals;
+        //}
 
     }
 
-    [DataContract]
-    public class DataRequest
-    {
-        [DataMember]
-        public List<int> IDlist { get; set; }
-        [DataMember]
-        public int From{ get; set; }
-        [DataMember]
-        public int To { get; set; }
+    //[DataContract]
+    //public class DataRequest
+    //{
+    //    [DataMember]
+    //    public List<int> IDlist { get; set; }
+    //    [DataMember]
+    //    public int From{ get; set; }
+    //    [DataMember]
+    //    public int To { get; set; }
 
-        public DataRequest()
-        {
-            IDlist = new List<int>(); 
-            From = 0;
-            To =  0;
-        }
-        public DataRequest(List<int> idlist, int from, int to)
-        {
-            IDlist = idlist;
-            From = from;
-            To = to;
-        }
-    }
+    //    public DataRequest()
+    //    {
+    //        IDlist = new List<int>(); 
+    //        From = 0;
+    //        To =  0;
+    //    }
+    //    public DataRequest(List<int> idlist, int from, int to)
+    //    {
+    //        IDlist = idlist;
+    //        From = from;
+    //        To = to;
+    //    }
+    //}
 
-    [DataContract]
-    public class UploadResult
-    {
-        [DataMember]
-        public int Overlaps { get; set; }
-        [DataMember]
-        public int Saved { get; set; }
+    //[DataContract]
+    //public class UploadResult
+    //{
+    //    [DataMember]
+    //    public int Overlaps { get; set; }
+    //    [DataMember]
+    //    public int Saved { get; set; }
 
-        public UploadResult()
-        {
-            Overlaps = 0;
-            Saved = 0;
-        }
-        public UploadResult(int sv, int ov)
-        {
-            Overlaps = ov;
-            Saved = sv;
-        }
-    }
+    //    public UploadResult()
+    //    {
+    //        Overlaps = 0;
+    //        Saved = 0;
+    //    }
+    //    public UploadResult(int sv, int ov)
+    //    {
+    //        Overlaps = ov;
+    //        Saved = sv;
+    //    }
+    //}
 
     [DataContract]
     public class Route
@@ -153,23 +155,24 @@ namespace Routes
         [DataMember(Name = "dest")]
         public string Dest { get; set; }
         [DataMember(Name = "distance")]
-        public string Descrip { get; set; }
-        [DataMember(Name = "description")]
         public int Distance { get; set; }
+        [DataMember(Name = "description")]
+        public string Descrip { get; set; }
+      
         [DataMember(Name = "climbing")]
         public int Climbing { get; set; }
         [DataMember(Name = "owner")]
         public int Owner { get; set; }
         [DataMember(Name = "id")]
         public int ID{ get; set; }
-        [DataMember(Name= "date")]
-        public DateTime Date { get; set; }
-        [DataMember(Name = "time")]
-        public DateTime Time { get; set; }
-        [DataMember(Name = "place")]
-        public string Place { get; set; }
+        //[DataMember(Name= "date")]
+        //public int Date { get; set; }
+        //[DataMember(Name = "time")]
+        //public int Time { get; set; }
+        //[DataMember(Name = "place")]
+        //public string Place { get; set; }
 
-        public Route(string gpx, string dest, string descrip,int d, int climb, int ow,string place, DateTime date, DateTime time, int id)
+        public Route(string gpx, string dest, string descrip,int d, int climb, int ow, int id)
         {
             GPX = gpx;
             Dest = dest;
@@ -177,9 +180,42 @@ namespace Routes
             Distance = d;
             Climbing =  climb;
             Owner = ow;
+            //Date = date;
+            //Time = time;
+            //Place = place;
+            ID = id;
+        }
+
+    }
+
+    [DataContract]
+    public class Ride
+    {
+        [DataMember(Name = "dest")]
+        public string Dest { get; set; }
+
+        [DataMember(Name = "leader")]
+        public int Leader { get; set; }
+
+        [DataMember(Name = "rideID")]
+        public int ID { get; set; }
+
+        [DataMember(Name = "date")]
+        public int Date { get; set; }
+
+        [DataMember(Name = "time")]
+        public int Time { get; set; }
+
+        [DataMember(Name = "meetingAt")]
+        public string MeetAt { get; set; }
+
+        public Ride(string dest, int lead, int id, int date, int time, string meet)
+        {
+             Dest = dest;
+            Leader = lead;
             Date = date;
             Time = time;
-            Place = place;
+            MeetAt = meet;
             ID = id;
         }
 

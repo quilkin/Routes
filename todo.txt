@@ -1,0 +1,16 @@
+﻿upload route: 
+	needs to save owner
+	need to show route and ask user to validate it
+	ask user if it should be made into a  ride
+this week's rides:
+	form for joining a ride
+general route list:
+	allow user to choose one for a ride (if < 6 riders*)
+	display ride leader and participants
+download a route:
+	new button
+	create download
+login:
+	option to avoid password and email
+setup:
+	settings table e.g. *max riders per ride

@@ -11,6 +11,7 @@ using MySql.Data.MySqlClient;
 using System.Diagnostics;
 using System.Configuration;
 using System.Web.Script.Serialization;
+using System.Xml;
 
 namespace Routes
 {
@@ -82,6 +83,7 @@ namespace Routes
         DataTable dataRoutes;
         //List<Logdata> logdata;
         List<Route> routes;
+        List<Ride> rides;
         //List<Location> locations;
         DataTable dataLogins;
         //int currentID;
@@ -213,7 +215,7 @@ namespace Routes
                 }
                 else if (login.Code == login.CalcCode())
                 {
-                    query = string.Format("insert into logins (name, pw, email) values ('{0}','{1}','{2}',)\n\r",
+                    query = string.Format("insert into logins (name, pw, email) values ('{0}','{1}','{2}')",
                         login.Name, login.PW, login.Email);
                     try
                     {
@@ -282,7 +284,7 @@ namespace Routes
                 {
                     // check route of same name isn't already there***************
 
-                    string query = string.Format("SELECT dest FROM routes where routes.dest = '{0}'", route.Dest);
+                    string query = string.Format("SELECT dest FROM routes where dest = '{0}'", route.Dest);
                     bool exists = true;
                     string now = TimeString(DateTime.Now);
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
@@ -302,19 +304,36 @@ namespace Routes
 
                     else
                     {
-                        query = string.Format("insert into routes (dest,distance,descrip,climbing,route,owner,place, date, time) values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}')",
-                            route.Dest, route.Distance, route.Descrip, route.Climbing, route.GPX, route.Owner,route.Place, route.Date, route.Time);
-
-
-
-                        using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                        // fetch the text from the URL
+                        string fullText;
+                        try
                         {
-                            successRows = command.ExecuteNonQuery();
+                            using (System.Net.WebClient client = new System.Net.WebClient())
+                            {
+                                fullText = client.DownloadString(route.GPX);
+
+                                XmlDocument xmldoc = new XmlDocument();
+                                // will catch if not valid XML
+                                xmldoc.LoadXml(fullText);
+
+
+                                query = string.Format("insert into routes (dest,distance,description,climbing,route,owner,) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
+                                    route.Dest, route.Distance, route.Descrip, route.Climbing, fullText, route.Owner);
+
+                                using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                                {
+                                    successRows = command.ExecuteNonQuery();
+                                }
+                                if (successRows == 1)
+                                    result = string.Format("Route \"{0}\" saved OK", route.Dest);
+                                else
+                                    result = string.Format("Database error: route \"{0}\" not saved", route.Dest);
+                            }
                         }
-                        if (successRows == 1)
-                            result = string.Format("Route '{0}' saved OK", route.Dest);
-                        else
-                            result = string.Format("Database error: route '{0}' not saved", route.Dest);
+                        catch (Exception ex2)
+                        {
+                            result = string.Format("error with GPX file: {0}", ex2.Message);
+                        }
                     }
 
                 }
@@ -346,7 +365,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT id,dest,description,distance,climbing,date,owner FROM routes ");
+                    string query = string.Format("SELECT id,dest,description,distance,climbing,owner FROM routes ");
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -356,8 +375,6 @@ namespace Routes
                         for (int row = 0; row < length; row++)
                         {
                             string dest = "", descrip="";
-                            DateTime date = DateTime.MinValue;
-                            DateTime time = DateTime.MinValue;
                             int id, owner=0, climbing = 0, distance = 0;
                             try
                             {
@@ -367,10 +384,9 @@ namespace Routes
                                 try { descrip = (string)dr["description"]; } catch { }
                                 try { climbing= (int)dr["climbing"]; } catch { }
                                 try { distance = (int)dr["distance"]; } catch { }
-                                try { date = (DateTime)dr["date"]; } catch { }
                                 try { owner = (int)dr["owner"]; } catch { }
 
-                                routes.Add(new Route(null, dest, descrip, distance, climbing, owner, "", date, time,id));
+                                routes.Add(new Route(null, dest, descrip, distance, climbing, owner, id));
                             }
                             catch (Exception ex)
                             {
@@ -392,20 +408,19 @@ namespace Routes
             return routes;
         }
 
-        public IEnumerable<Route> GetRoutesForDate(DateTime date)
+        public IEnumerable<Ride> GetRidesForDate(int date)
         {
             // get details of routes available for a given date (but not yet the GPX data)
-            LogEntry log = new LogEntry(GetIP(), "GetRouteSummaries", date.ToShortDateString());
+            // date represented by days since 01/01/1970
+            LogEntry log = new LogEntry(GetIP(), "GetRidesForDate", Logdata.JSDateToDateTime(date).ToShortDateString());
 
-            routes = new List<Route>();
+            rides = new List<Ride>();
 
             if (gpxConnection.IsConnect())
             {
                 try
                 {
-        
-                    //string query = string.Format("SELECT * FROM routes where routes.owner = {0}", userID);
-                    string query = string.Format("SELECT dest,description,distance,climbing,owner FROM routes where routes.starttime");
+                    string query = string.Format("SELECT rideID,dest,date,time,meetingAt,leader FROM rides where date= {0}",date);
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -414,21 +429,20 @@ namespace Routes
                         int length = dataRoutes.Rows.Count;
                         for (int row = 0; row < length; row++)
                         {
-                            string dest = "", descrip = "";
-                            DateTime time = DateTime.MinValue;
-                            int id, owner = 0, climbing = 0, distance = 0;
+                            string dest = "", meet = "";
+                            int time = 0;
+                            int id, leader = 0;
                             try
                             {
                                 DataRow dr = dataRoutes.Rows[row];
-                                id = (int)dr["id"];
+                                id = (int)dr["rideID"];
                                 try { dest = (string)dr["dest"]; } catch { }
-                                try { descrip = (string)dr["descrip"]; } catch { }
-                                try { climbing = (int)dr["climbing"]; } catch { }
-                                try { distance = (int)dr["distance"]; } catch { }
-                                try { time = (DateTime)dr["time"]; } catch { }
-                                try { owner = (int)dr["owner"]; } catch { }
+                                try { meet = (string)dr["meetingAt"]; } catch { }
+                                try { date = (int)dr["date"]; } catch { }
+                                try { time = (int)dr["time"]; } catch { }
+                                try { leader = (int)dr["leader"]; } catch { }
 
-                                routes.Add(new Route(null, dest, descrip, distance, climbing, owner, "", date,time,id));
+                                rides.Add(new Ride(dest, leader, id, date, time, meet));
                             }
                             catch (Exception ex)
                             {
@@ -444,10 +458,10 @@ namespace Routes
                     log.Error = ex2.Message;
                 }
             }
-            log.Result = routes.Count.ToString() + " routes for " + date.ToShortDateString();
+            log.Result = rides.Count.ToString() + " rides for " + Logdata.JSDateToDateTime(date).ToShortDateString();
             log.Save(gpxConnection);
             gpxConnection.Close();
-            return routes;
+            return rides;
         }
         public string GetGPXforRoute(int routeID)
         {

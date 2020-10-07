@@ -27,31 +27,30 @@ var TCCroutes = (function () {
     }
 
     //route data members
-
-//[DataMember(Name = "route")]          public string GPX { get; set; }
-//[DataMember(Name = "dest")]           public string Dest { get; set; }
-//[DataMember(Name = "distance")]       public int Distance { get; set; }      
-//[DataMember(Name = "description")]    public string Descrip { get; set; }
-//[DataMember(Name = "climbing")]       public int Climbing { get; set; }
-//[DataMember(Name = "owner")]          public int Owner { get; set; }
-//[DataMember(Name = "id")]             public int ID{ get; set; }
-//[DataMember(Name = "date")]           public DateTime Date { get; set; }
-//[DataMember(Name = "time")]           public DateTime Time { get; set; }
-//[DataMember(Name = "place")]          public string Place { get; set; }
+//    [DataMember(Name = "route")]//            public string GPX { get; set; }
+//[DataMember(Name = "dest")]//                 public string Dest { get; set; }
+//[DataMember(Name = "distance")]//             public string Descrip { get; set; }
+//[DataMember(Name = "description")]//          public int Distance { get; set; }
+//[DataMember(Name = "climbing")]//             public int Climbing { get; set; }
+//[DataMember(Name = "owner")]//                public int Owner { get; set; }
+//[DataMember(Name = "id")]//                   public int ID{ get; set; }
+//[DataMember(Name = "date")]//                 public DateTime Date { get; set; }
+//[DataMember(Name = "time")]//                 public DateTime Time { get; set; }
+//[DataMember(Name = "place")]//                public string Place { get; set; }
 
 //  public Route(string gpx, string dest, string descrip, int d, int climb, int ow, string place, DateTime date, DateTime time)
 
-    TCCroutes.Route = function (gpx,dest,descrip,dist,climb, owner,place,date,time,id) {
-        this.GPX = gpx;       // full text of file
-        this.Dest = dest;
-        this.Climb = climb;
-        this.Dist= dist;
-        this.Date = date;
-        this.Time = time;
-        this.Place = place;
-        this.Description = descrip;
-        this.ID = id;
-        this.Owner = owner;
+    TCCroutes.Route = function (gpx,dest,descrip,dist,climb, owner,id,date,time,place) {
+        this.route = gpx;       // URL of gpx file
+        this.dest = dest;
+        this.climbing = climb;
+        this.distance= dist;
+        this.date = date;
+        this.time = time;
+        this.place = place;
+        this.description = descrip;
+        this.id = id;
+        this.owner = owner;
 
     };
 
@@ -83,6 +82,9 @@ var TCCroutes = (function () {
         return null;
 
     };
+    TCCroutes.Add = function (route) {
+        routes.push(route);
+    }
     TCCroutes.currentRoute = function () {
         return currentRoute;
     };
@@ -171,7 +173,7 @@ var TCCroutes = (function () {
             while (title.length < 20) title = title + ' ';
             title = title + '.';
             var htmlstr = '<a id="sen' + index + '" class="list-group-item">' + title +
-                '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Deselect">Select</button>' +
+                '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Select">Select</button>' +
                 '</a>';
             $('#findlist').append(htmlstr);
             if (TCCroutes.isDisplayed(route)) {
@@ -215,8 +217,8 @@ var TCCroutes = (function () {
             //});
             index++;
         });
-        $('#findlist').append('<div><button id="showSelected" type="button" class="btn btn-info  pull-right">Show Selection</button></div>');
-        $('#showSelected').click(bleData.showRoute);
+        //$('#findlist').append('<div><button id="showSelected" type="button" class="btn btn-info  pull-right">Show Selection</button></div>');
+        //$('#showSelected').click(bleData.showRoute);
 
     };
 
