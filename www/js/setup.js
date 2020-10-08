@@ -26,6 +26,7 @@ var bleSetup = (function ($) {
         //minVal = -30,
         //maxVal = 90,
         registering = false,
+        rideDate,
 
         validURL = function (string) {
             try {
@@ -44,35 +45,23 @@ var bleSetup = (function ($) {
     //        }, true, null);
     //    }, null, -10);
     //};
+    $('#uploadRoute').show();
+    $("#setupDone").show();
+    $('#leadRide').hide();
+    $('#convertToRide').hide();
+    $("#leadRide").on('click', function () {
+        $('#convertToRide').show();
+        $('#uploadRoute').hide();
+        $("#rideDate1").datepicker({ todayBtn: true, autoclose: true, format: "dd M yyyy" });
+        $("#rideDate1").datepicker('setDate', rideDate);
 
-    $("#btnLow-").on('click', function () {
-        if (minAlarm > minVal) {
-            --minAlarm;
-            update();
-        }
-        else {    /* beep? */ }
+        $("#rideDate1").change(function () {
+            rideDate = new Date($("#rideDate1").val());
+        });
+        var startPlace = $("#rideMeeting").val();
+        bleData.CreateRide(rideDate, startPlace);
     });
-    $("#btnLowPlus").on('click', function () {
-        if (minAlarm < maxAlarm) {
-            ++minAlarm;
-            update();
-        }
-        else {    /* beep? */ }
-    });
-    $("#btnHi-").on('click', function () {
-        if (maxAlarm > minAlarm) {
-            --maxAlarm;
-            update();
-        }
-        else {    /* beep? */ }
-    });
-    $("#btnHiPlus").on('click', function () {
-        if (maxAlarm < maxVal) {
-            ++maxAlarm;
-            update();
-        }
-        else {    /* beep? */ }
-    });
+
     $("#setupDone").on('click', function () {
         $("#saveRoute").prop("disabled", true);
         
@@ -87,14 +76,16 @@ var bleSetup = (function ($) {
                 // if successful, response should be just a new ID
                 if (response.length < 5) {
                     route.id = response;
-
-                    popup.Alert("Route saved OK, id = " + route.id);
+                    $("#setupDone").hide();
+                    //popup.Alert("Route saved OK, id = " + route.id);
                     TCCroutes.SetRoute(route);
 
                     TCCroutes.Add(route);
                     bleData.getGPX();
                     bleData.showRoute();
                     TCCroutes.CreateRouteList();
+                    $('#leadRide').show();
+                   
                                         // to do:  need to ask user to verify this route
                 }
                 else {
@@ -137,7 +128,8 @@ var bleSetup = (function ($) {
         //minAlarm = route.AlarmLow / 10;
         //maxAlarm = route.AlarmHigh / 10;
         $("#saveRoute").prop("disabled", true);
-
+        $('#leadRide').hide();
+        $('#convertToRide').hide();
 
         update();
     };

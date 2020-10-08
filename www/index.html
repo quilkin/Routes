@@ -50,7 +50,7 @@
 
     <div id="myTabContent" class="tab-content">
 
-        <div role="tabpanel" class="tab-pane fade in active" id="home" aria-labelledby="home-tab">
+        <div role="tabpanel" class="tab-pane fade in active" id="webdata" aria-labelledby="webdata-tab">
 
             <div class="container">
                 <div class="row">
@@ -77,11 +77,11 @@
                                     <div class="map" id="demo-map"></div>
                                 </article>
 
-                                <!--<article>
+                                <article>
                                     <div class="elev" id="demo-elev"></div>
-                                </article>-->
+                                </article>
 
-                                <!--<footer>
+                                <footer>
                                     <ul class="info">
                                         <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
                                         <li>
@@ -91,21 +91,21 @@
                                             <span class="elevation-none"></span>
                                         </li>
                                     </ul>
-                                </footer>-->
+                                </footer>
                             </div>
                         </div>
                     </div>
                 </div>  <!-- /row -->
             </div> <!-- /container -->
         </div>
-        <div role="tabpanel" class="tab-pane fade" id="webdata" aria-labelledby="webdata-tab">
+        <div role="tabpanel" class="tab-pane fade" id="home" aria-labelledby="home-tab">
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
 
                         <div class="list-group" id="chooseDates">
-                            <a id="dateTitle" class="list-group-item list-group-item-info"></a>
-                            <a id="fromDate" class="list-group-item">Date:&emsp;<input type="text" id="startDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
+                            <a id="dateTitle" class="list-group-item list-group-item-info">Choose date</a>
+                            <a id="fromDate" class="list-group-item">Date:&emsp;<input type="text" id="rideDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
                         </div>
                         <p></p>
                         <div class="list-group scrollable-list" id="ridelist">
@@ -114,18 +114,18 @@
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
-                            <div id="demo" class="panel-body gpx" data-map-target="demo-map" data-elev-target="demo-elev">
+                            <div id="home" class="panel-body gpx" data-map-target="home-map" data-elev-target="home-elev">
                                 <header>
                                     <h3>Trurocycling.org routes</h3>
                                     <span class="start"></span>
                                 </header>
 
                                 <article>
-                                    <div class="map" id="demo-map"></div>
+                                    <div class="map" id="home-map"></div>
                                 </article>
 
                                 <article>
-                                    <div class="elev" id="demo-elev"></div>
+                                    <div class="elev" id="home-elev"></div>
                                 </article>
 
                                 <footer>
@@ -151,7 +151,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="panel panel-primary">
+                        <div class="panel panel-primary" id="uploadRoute">
                             <div class="panel-heading" id="routeTitle">Upload a route</div>
 
                             <div class="panel-body">
@@ -171,30 +171,42 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="route-date" class="control-label side-label">Date for ride:</label>
-                                                <input type="text" class="form-control side-input detectChange" id="route-date">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
                                                 <label for="route-url" class="control-label side-label">URL (link) to GPX file:</label>
                                                 <input type="text" class="form-control side-input detectChange" id="route-url">
                                             </div>
                                         </div>
-                                        <!--<div class="col-md-3" style="float:right;">-->
-                                        <!--<div class="col-md-3 col-md-offset-1">
-                            <div class="form-group">
-                                <label for="periodMenu" class="control-label side-label">Starting from:</label>
-                                <div class="dropdown">
-                                    <button class="btn btn-default dropdown-toggle  side-input " type="button" id="periodMenu" data-toggle="dropdown" aria-expanded="true">
-                                        Start at:  <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" id="periodlist" />
-                                </div>
-                            </div>
-                        </div>-->
                                     </div>
+                                </form>
 
+
+                            </div> <!-- /panel-body-->
+                            <div class="panel-footer">
+                                <button type="button" class="btn btn-primary" id="cancelChanges" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-info pull-right " id="leadRide" data-dismiss="modal">Lead a ride based on this route</button>
+                                <button type="button" class="btn btn-info pull-right " id="setupDone" data-dismiss="modal">Done</button>
+                            </div>
+                        </div> <!-- /panel-->
+                        <div class="panel panel-primary" id="convertToRide">
+                            <div class="panel-heading" >Lead a ride on this route</div>
+
+                            <div class="panel-body">
+                                <form id="form-createRide">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ride-meeting" class="control-label side-label">Meeting at:</label>
+                                                <input type="text" class="form-control side-input detectChange" id="ride-meeting">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ride-date1" class="control-label side-label">Date for ride:</label>
+                                                <a id="myRideDate" class="list-group-item">Date:&emsp;<input type="text" id="rideDate1" readonly><span class="glyphicon glyphicon-calendar"></span></a>
+
+                                                <!--<input type="text" class="form-control side-input detectChange" id="ride-date">-->
+                                            </div>
+                                        </div>
+                                    </div>
                                 </form>
 
 
@@ -207,7 +219,7 @@
                     </div> <!-- /col-->
                     <div class="col-md-6">
                         <div class="panel panel-primary">
-                            <div id="demo" class="panel-body gpx" data-map-target="demo-map" data-elev-target="demo-elev">
+                            <div id="setup" class="panel-body gpx" data-map-target="setup-map" data-elev-target="setup-elev">
                                 <header>
                                     <h3>Upload a new route</h3>
                                     <span class="start"></span>
@@ -217,7 +229,7 @@
                                     <div class="map" id="setup-map"></div>
                                 </article>
 
-                                <article>
+                                <!--<article>
                                     <div class="elev" id="setup-elev"></div>
                                 </article>
 
@@ -227,11 +239,11 @@
                                         <li>
                                             Elevation:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
                                             down: <span class="elevation-loss"></span>&nbsp;m
-                                            <!--(net:&nbsp;<span class="elevation-net"></span>&nbsp;m)-->
+                                           
                                             <span class="elevation-none"></span>
                                         </li>
                                     </ul>
-                                </footer>
+                                </footer>-->
                             </div>
                         </div>
                     </div>

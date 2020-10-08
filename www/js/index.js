@@ -71,7 +71,7 @@
         // round down to beginning of day
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         yesterday = bleTime.addDays(today, -1);
-        bleData.setDates(yesterday,today);
+        bleData.setDate(today);
         bleData.setDateChooser('Change');
         
         $(".detectChange").change(function () {

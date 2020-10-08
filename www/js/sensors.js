@@ -97,42 +97,42 @@ var TCCroutes = (function () {
         return nameStr;
     };
 
-    TCCroutes.isDisplayed = function (route) {
-        var index = $.inArray(route, displayedRoutes);
-        if (index < 0) { return false; }
-        return true;
-    };
-    TCCroutes.DisplayRoute = function (route, yes) {
-        var index, howmany = displayedRoutes.length;
-        for (index = 0; index < howmany; index++){
-            if (displayedRoutes[index].ID === route.ID)
-                break;
-        }
-        if (index < howmany) {
-            // it was found
-            if (yes) {
-    //            already there, do nothing
-            }
-            else {
-                // remove it
-                displayedRoutes.splice(index, 1);
-     //           route.index = -1;
-            }
-        }
-        else {
-        // not already in list
-            if (yes) {
-                displayedRoutes.push(route);
-   //             route.index = $.inArray(route, displayedRoutes);
-            }
-            else {
-  //              route.index = -1;
-            }
-        }
-        // must re-arrange into ID order so that SQL query wiil return corresponding data
-        displayedRoutes.sort(function (a, b) { return a.ID - b.ID; });
-        if (yes) { currentRoute = route; }
-    };
+  //  TCCroutes.isDisplayed = function (route) {
+  //      var index = $.inArray(route, displayedRoutes);
+  //      if (index < 0) { return false; }
+  //      return true;
+  //  };
+  //  TCCroutes.DisplayRoute = function (route, yes) {
+  //      var index, howmany = displayedRoutes.length;
+  //      for (index = 0; index < howmany; index++){
+  //          if (displayedRoutes[index].ID === route.ID)
+  //              break;
+  //      }
+  //      if (index < howmany) {
+  //          // it was found
+  //          if (yes) {
+  //  //            already there, do nothing
+  //          }
+  //          else {
+  //              // remove it
+  //              displayedRoutes.splice(index, 1);
+  //   //           route.index = -1;
+  //          }
+  //      }
+  //      else {
+  //      // not already in list
+  //          if (yes) {
+  //              displayedRoutes.push(route);
+  // //             route.index = $.inArray(route, displayedRoutes);
+  //          }
+  //          else {
+  ////              route.index = -1;
+  //          }
+  //      }
+  //      // must re-arrange into ID order so that SQL query wiil return corresponding data
+  //      displayedRoutes.sort(function (a, b) { return a.ID - b.ID; });
+  //      if (yes) { currentRoute = route; }
+  //  };
 
     TCCroutes.CreateRouteList = function () {
         var id = login.ID();
@@ -156,20 +156,23 @@ var TCCroutes = (function () {
                 '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Select">Select</button>' +
                 '</a>';
             $('#routelist').append(htmlstr);
-            if (TCCroutes.isDisplayed(route)) {
-                // for re-showing list when routes have previously been displayed (list will be emptied for small screens)
-                $('#get' + index).button('complete');
-            }
-            $('#get' +index).click(function () {
-                if (TCCroutes.isDisplayed(route)) {
-                    $(this).button('reset');
-                    TCCroutes.DisplayRoute(route, false);
-                }
-                else {
-                    $(this).button('complete');
-                    TCCroutes.DisplayRoute(route,true);
-                }
+            //if (TCCroutes.isDisplayed(route)) {
+            //    // for re-showing list when routes have previously been displayed (list will be emptied for small screens)
+            //    $('#get' + index).button('complete');
+            //}
+            $('#get' + index).click(function () {
+                currentRoute = route;
+                //if (TCCroutes.isDisplayed(route)) {
+                //    $(this).button('reset');
+                //    TCCroutes.DisplayRoute(route, false);
+                //}
+                //else {
+                //    $(this).button('complete');
+                //    TCCroutes.DisplayRoute(route,true);
+                //}
+                // get ready to load new map
 
+                TCCroutes.SetGPX(null);
                 bleData.showRoute();
             });
 
