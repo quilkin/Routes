@@ -310,22 +310,28 @@ namespace Routes
                         {
                             using (System.Net.WebClient client = new System.Net.WebClient())
                             {
-                                fullText = client.DownloadString(route.GPX);
+                                fullText = client.DownloadString(route.URL);
 
                                 XmlDocument xmldoc = new XmlDocument();
                                 // will catch if not valid XML
                                 xmldoc.LoadXml(fullText);
 
 
-                                query = string.Format("insert into routes (dest,distance,description,climbing,route,owner,) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
+                                query = string.Format("insert into routes (dest,distance,description,climbing,route,owner) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
                                     route.Dest, route.Distance, route.Descrip, route.Climbing, fullText, route.Owner);
+                                query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
+                                object routeID = null;
 
                                 using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                                 {
                                     successRows = command.ExecuteNonQuery();
+                                    routeID = command.ExecuteScalar();
                                 }
                                 if (successRows == 1)
-                                    result = string.Format("Route \"{0}\" saved OK", route.Dest);
+                                {
+                                    // return id of new route
+                                    result = routeID.ToString();
+                                }
                                 else
                                     result = string.Format("Database error: route \"{0}\" not saved", route.Dest);
                             }

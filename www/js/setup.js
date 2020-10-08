@@ -78,14 +78,29 @@ var bleSetup = (function ($) {
         
         var descrip  = $("#route-descrip").val();
         var dest = $("#route-dest").val();
-        var gpx = $("#route-gpx").val();
-        if (validURL(gpx)) {
-            var route = new TCCroutes.Route(gpx, dest, descrip, 0, 0, 0, 0, 0, 0, "Truro");
+        var url = $("#route-url").val();
+        var owner = login.ID();
+        if (validURL(url)) {
+            var route = new TCCroutes.Route(url, dest, descrip, 0,0, owner,0);
             popup.Confirm("Save new route", "Are you sure?", function () {
                 bleData.myJson("SaveRoute", "POST", route, function (response) {
-                    popup.Alert(response);
+                // if successful, response should be just a new ID
+                if (response.length < 5) {
+                    route.id = response;
+
+                    popup.Alert("Route saved OK, id = " + route.id);
+                    TCCroutes.SetRoute(route);
+
                     TCCroutes.Add(route);
+                    bleData.getGPX();
+                    bleData.showRoute();
                     TCCroutes.CreateRouteList();
+                                        // to do:  need to ask user to verify this route
+                }
+                else {
+                    popup.Alert(response);
+                }
+
                 }, true, null);
             }, null, -10);
         }
@@ -94,6 +109,7 @@ var bleSetup = (function ($) {
         }
 
     });
+    
     $("#cancelChanges").on('click', function () {
        // if (registering) {
             // switch back to connection tab
@@ -113,7 +129,7 @@ var bleSetup = (function ($) {
         registering = reg;
         var perioditem,route =  TCCroutes.currentRoute();
         if (route === undefined || route === null) {
-            route = new TCCroutes.Route("no gpx", "destination?", "description?", 0, 0, 0, "starting at?", null, null);
+            route = new TCCroutes.Route("no gpx", "destination?", "description?", 0, 0, 0);
         }
         $("#route-dest").val(route.Dest);
         $("#route-descrip").val(route.Description);
@@ -122,35 +138,7 @@ var bleSetup = (function ($) {
         //maxAlarm = route.AlarmHigh / 10;
         $("#saveRoute").prop("disabled", true);
 
-        //$('#periodlist').empty();
-        //$.each(periods, function (index, p) {
-        //    //for (p=0; p < periods.length; p++)
-        //    perioditem = '<li id="p' + p[1] + '" role="presentation"><a role="menuitem" tabindex="-1" >' + p[0] + '</a></li>';
 
-        //    $('#periodlist').append(perioditem);
-        //    $('#p' + p[1]).on('click', function () {
-        //        $("#saveRoute").prop("disabled", false);
-        //        //var route = TCCroutes.currentRoute();
-        //        route.Period = p[1];
-        //        periodButton(route);
-        //    });
-        //});
-        //$("#sliderAlarm").ionRangeSlider({
-        //    min: minVal,
-        //    max: maxVal,
-        //    from: minAlarm,
-        //    to: maxAlarm,
-        //    type: 'double',
-        //    postfix: "°C",
-        //    grid: true,
-        //    grid_num: 10,
-        //    onFinish: function (data) {
-        //        minAlarm = data.from;
-        //        maxAlarm = data.to;
-        //        $("#saveRoute").prop("disabled", false);
-        //    }
-        //});
-        //alarmSlider = $("#sliderAlarm").data("ionRangeSlider");
         update();
     };
 

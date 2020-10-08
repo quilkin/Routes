@@ -150,8 +150,8 @@ namespace Routes
     [DataContract]
     public class Route
     {
-        [DataMember(Name = "route")]
-        public string GPX { get; set; }
+        [DataMember(Name = "url")]
+        public string URL{ get; set; }
         [DataMember(Name = "dest")]
         public string Dest { get; set; }
         [DataMember(Name = "distance")]
@@ -172,9 +172,9 @@ namespace Routes
         //[DataMember(Name = "place")]
         //public string Place { get; set; }
 
-        public Route(string gpx, string dest, string descrip,int d, int climb, int ow, int id)
+        public Route(string url, string dest, string descrip,int d, int climb, int ow, int id)
         {
-            GPX = gpx;
+            URL = url;
             Dest = dest;
             Descrip = descrip;
             Distance = d;

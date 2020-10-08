@@ -39,7 +39,7 @@
                 <a class="navbar-brand" style="color:blue" id="realtime">TCC rides<span style="color:black; font-size:small"></span></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right" role="tablist">
+                <ul class="nav navbar-nav navbar-right" role="tablist" id="mytabs">
                     <li class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><span class="glyphicon glyphicon-calendar"></span>This Week's rides</a></li>
                     <li><a href="#webdata" id="webdata-tab" role="tab" data-toggle="tab" aria-controls="webdata"><span class="glyphicon glyphicon-globe"></span>View all routes</a></li>
                     <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup"><span class="glyphicon glyphicon-wrench"></span>Set Up new route</a></li>
@@ -61,8 +61,8 @@
                             <a id="fromDate" class="list-group-item">Date:&emsp;<input type="text" id="startDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
                         </div>
                         <p></p>-->
-                        <div class="list-group scrollable-list" id="findlist">
-                            <a id="findTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
+                        <div class="list-group scrollable-list" id="routelist">
+                            <a id="routeTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -77,21 +77,21 @@
                                     <div class="map" id="demo-map"></div>
                                 </article>
 
-                                <article>
+                                <!--<article>
                                     <div class="elev" id="demo-elev"></div>
-                                </article>
+                                </article>-->
 
-                                <footer>
+                                <!--<footer>
                                     <ul class="info">
                                         <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
                                         <li>
                                             Climbs:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
                                             down: <span class="elevation-loss"></span>&nbsp;m
-                                            <!--(net:&nbsp;<span class="elevation-net"></span>&nbsp;m)-->
+                                            
                                             <span class="elevation-none"></span>
                                         </li>
                                     </ul>
-                                </footer>
+                                </footer>-->
                             </div>
                         </div>
                     </div>
@@ -108,8 +108,8 @@
                             <a id="fromDate" class="list-group-item">Date:&emsp;<input type="text" id="startDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
                         </div>
                         <p></p>
-                        <div class="list-group scrollable-list" id="findlist">
-                            <a id="findTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
+                        <div class="list-group scrollable-list" id="ridelist">
+                            <a id="rideTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -177,8 +177,8 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="route-gpx" class="control-label side-label">URL (link) to GPX file:</label>
-                                                <input type="text" class="form-control side-input detectChange" id="route-gpx">
+                                                <label for="route-url" class="control-label side-label">URL (link) to GPX file:</label>
+                                                <input type="text" class="form-control side-input detectChange" id="route-url">
                                             </div>
                                         </div>
                                         <!--<div class="col-md-3" style="float:right;">-->
@@ -214,11 +214,11 @@
                                 </header>
 
                                 <article>
-                                    <div class="map" id="demo-map"></div>
+                                    <div class="map" id="setup-map"></div>
                                 </article>
 
                                 <article>
-                                    <div class="elev" id="demo-elev"></div>
+                                    <div class="elev" id="setup-elev"></div>
                                 </article>
 
                                 <footer>
@@ -227,7 +227,7 @@
                                         <li>
                                             Elevation:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
                                             down: <span class="elevation-loss"></span>&nbsp;m
-                                            (net:&nbsp;<span class="elevation-net"></span>&nbsp;m)
+                                            <!--(net:&nbsp;<span class="elevation-net"></span>&nbsp;m)-->
                                             <span class="elevation-none"></span>
                                         </li>
                                     </ul>
@@ -284,20 +284,16 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <!--<script src="cordova.js"></script>--
-    <!--<script src="js/jquery-2.1.3.min.js"></script>-->
-    <script src="js/jquery-1.11.1.min.js"></script>
-    <!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>-->
-    <!--<<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script><-->
-    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>-->
-    <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>-->
-    <script src="js/bootstrap.min.js"></script>
+    <!--<script src="cordova.js"></script>-->
+
+    <script src="js-lib/jquery-1.11.1.min.js"></script>
+    <script src="js-lib/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="js/ie10-viewport-bug-workaround.js"></script>
-    <script src="js/bootbox.min.js"></script>
-    <script src="js/amcharts.js"></script>
+    <script src="js-lib/ie10-viewport-bug-workaround.js"></script>
+    <script src="js-lib/bootbox.min.js"></script>
+    <script src="js-lib/amcharts.js"></script>
     <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
     <script src="js/serial.js"></script>
@@ -307,18 +303,18 @@
     <script src="js/login.js"></script>
     <script src="js/index.js"></script>
 
-    <script src="js/gpx.js"></script>
+    <script src="js-lib/gpx.js"></script>
 
-    <script src="js/jquery.dataTables.min.js"></script>
+    <script src="js-lib/jquery.dataTables.min.js"></script>
     <script src="js/myTable.js"></script>
     <script src="js/sensors.js"></script>
     <script src="js/TTdata.js"></script>
-    <script src="js/bootstrap-datepicker.js"></script>
-    <script src="js/amchart.js"></script>
-    <script src="js/ion.rangeSlider.js"></script>
+    <script src="js-lib/bootstrap-datepicker.js"></script>
+    <!--<script src="js/amchart.js"></script>-->
+    <script src="js-lib/ion.rangeSlider.js"></script>
 
     <script src="js/setup.js"></script>
-    <script src="js/tagconnect.js"></script>
+    <!--<script src="js/tagconnect.js"></script>-->
     <!--<script src="js/SensorTag.js"></script>-->
 
 </body>

@@ -46,17 +46,17 @@
         //    window.setTimeout(function () { bleData.Upload($btn); }, 100);
         //});
 
-        $("#scanTitle").click(tagConnect.scan);
+        //$("#scanTitle").click(tagConnect.scan);
         //$("#getall-button").click(bleTag.ReadAll);
         //$("#upload-button").click(function () { bleData.Upload(0); });
         //$("#testUpload").click(function () { bleData.testUpload(0); });
         $("#tableName").click(bleData.DisplayValues);
 
         //$("#dateTitle").click(bleData.ChooseDates);
-        $('#findTitle').click(TCCroutes.CreateRouteList);
-        $('#showSelected').click(bleData.showRoute);
-        $('#uploadRoute').click(bleSetup.initialise);
-        $('#statusConnect').click(function () { $('#scanlist').show(); });
+        //$('#findTitle').click(TCCroutes.CreateRouteList);
+        //$('#showSelected').click(bleData.showRoute);
+        //$('#uploadRoute').click(bleSetup.initialise);
+        //$('#statusConnect').click(function () { $('#scanlist').show(); });
         // hide these elements until they are needed
         $("#progress-bar").hide();
         $("#upload-all").hide();
@@ -87,6 +87,13 @@
            // $('.loader').hide();
             $('.loader').remove();
         });
+        // need to know which tab is in use so we know where to place map etc
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            //show selected tab / active
+            var tab = $(e.target).attr('id');
+            bleData.setCurrentTab(tab);
+            console.log(tab);
+        });
 
         if (bleApp.isMobile()===false)
         {
@@ -96,6 +103,7 @@
             $(".navbar-nav a[href=#webdata]").tab('show');
 
         }
+
     });
 
     $('#scanlist').on('click', function (e) {

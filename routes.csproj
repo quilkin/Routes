@@ -111,6 +111,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="JSLintNet.json" />
+    <Content Include=".eslintignore" />
     <None Include="packages.config" />
     <None Include="_references.js" />
     <None Include="Web.Debug.config">
@@ -145,30 +146,29 @@
     <Content Include="www\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="www\icon.png" />
     <Content Include="www\images\page-loader.gif" />
-    <Content Include="www\js\gpx.js" />
+    <Content Include="www\js-lib\amcharts.js" />
+    <Content Include="www\js-lib\bluetoothle.js" />
+    <Content Include="www\js-lib\bootbox.min.js" />
+    <Content Include="www\js-lib\bootstrap-datepicker.js" />
+    <Content Include="www\js-lib\bootstrap-orig.min.js" />
+    <Content Include="www\js-lib\bootstrap.min.js" />
+    <Content Include="www\js-lib\dataTables.bootstrap.min.js.js" />
+    <Content Include="www\js-lib\dataTables.responsive.min.js" />
+    <Content Include="www\js-lib\ie10-viewport-bug-workaround.js" />
+    <Content Include="www\js-lib\ion.rangeSlider.js" />
+    <Content Include="www\js-lib\jquery-1.11.1.min.js" />
+    <Content Include="www\js-lib\jquery.dataTables.min.js" />
+    <Content Include="www\js-lib\platformOverrides.js" />
+    <Content Include="www\js-lib\gpx.js" />
     <Content Include="www\splash.PNG" />
     <Content Include="www\index.html" />
-    <Content Include="www\js\amchart.js" />
-    <Content Include="www\js\amcharts.js" />
-    <Content Include="www\js\bluetoothle.js" />
-    <Content Include="www\js\bootbox.min.js" />
-    <Content Include="www\js\bootstrap-datepicker.js" />
-    <Content Include="www\js\bootstrap.min.js" />
-    <Content Include="www\js\dataTables.bootstrap.min.js.js" />
-    <Content Include="www\js\dataTables.responsive.min.js" />
-    <Content Include="www\js\ie10-viewport-bug-workaround.js" />
     <Content Include="www\js\index.js" />
-    <Content Include="www\js\ion.rangeSlider.js" />
-    <Content Include="www\js\jquery-1.11.1.min.js" />
-    <Content Include="www\js\jquery.dataTables.min.js" />
     <Content Include="www\js\login.js" />
     <Content Include="www\js\myTable.js" />
-    <Content Include="www\js\platformOverrides.js" />
     <Content Include="www\js\popups.js" />
     <Content Include="www\js\sensors.js" />
     <Content Include="www\js\serial.js" />
     <Content Include="www\js\setup.js" />
-    <Content Include="www\js\tagconnect.js" />
     <Content Include="www\js\timesdates.js" />
     <Content Include="www\js\TTdata.js" />
   </ItemGroup>
