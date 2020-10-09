@@ -360,6 +360,88 @@ namespace Routes
 
         }
 
+        public string SaveRide(Ride ride)
+        {
+            LogEntry log = new LogEntry(GetIP(), "SaveRide", ride.Date + " " + ride.Dest);
+
+            int successRows = 0;
+            string result = "";
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    // check ride with same leader and date isn't already there ***************
+
+                    string query = string.Format("SELECT dest FROM rides where date= '{0}' and leader = {1}", ride.Date, ride.Leader);
+                    bool exists = true;
+                    string now = TimeString(DateTime.Now);
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
+
+                        if (dataRoutes.Rows.Count == 0)
+                        {
+                            exists = false;
+                        }
+                    }
+                    if (exists)
+                    {
+                        result = "There is already a ride with you as leader on the same date. Please choose another date.";
+                    }
+
+                    else
+                    {
+                        try
+                        {
+                            using (System.Net.WebClient client = new System.Net.WebClient())
+                            {
+
+                                query = string.Format("insert into rides (dest,leader,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
+                                    ride.Dest, ride.Leader, ride.Date, ride.Time, ride.MeetAt);
+                                // get new ride ID
+                                query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
+                                object rideID = null;
+
+                                using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                                {
+                                    successRows = command.ExecuteNonQuery();
+                                    rideID = command.ExecuteScalar();
+                                }
+                                if (successRows == 1)
+                                {
+                                    // return id of new route
+                                    result = rideID.ToString();
+                                }
+                                else
+                                    result = string.Format("Database error: ride \"{0}\" not saved", ride.Dest);
+                            }
+                        }
+                        catch (Exception ex2)
+                        {
+                            result = string.Format("error with GPX file: {0}", ex2.Message);
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    result = string.Format("Database error: {0}", ex.Message);
+                }
+
+
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            return result;
+
+        }
+
+
         public IEnumerable<Route> GetRouteSummaries()
         {
             // get details of all routes (but not yet the GPX data)

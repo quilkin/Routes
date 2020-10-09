@@ -10,7 +10,8 @@ var bleTime = (function () {
         },
         dateString = function (time) {
             // toLocaleTimeString() is no good for different platforms
-            return [time.getFullYear(), pad2(time.getMonth() + 1), pad2(time.getDate())].join('-');
+            //return [time.getFullYear(), pad2(time.getMonth() + 1), pad2(time.getDate())].join('-');
+            return time.toDateString();
         },
         timeString = function (time) {
             // toLocaleTimeString() is no good for different platforms
@@ -38,6 +39,18 @@ var bleTime = (function () {
             var value = time.valueOf();
             value += 86400000 * num;
             return new Date(value);
+        },
+        toIntDays: function (time) {
+            // return number of whole days since 01/01/1970
+            var value = time.valueOf();
+            value /= 86400000;
+            return value.toFixed(0);  
+        },
+        fromIntDays: function (intdays) {
+            // return normal date from number of whole days since 01/01/1970
+            var msecs = intdays * 86400000;
+            var date = new Date(msecs);
+            return dateString(date);
         },
         log: function (string) {
             var d, timestr;

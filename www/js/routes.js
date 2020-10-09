@@ -53,15 +53,22 @@ var TCCroutes = (function () {
 
 
     TCCroutes.findRoute = function (id) {
-        var found = $.grep(foundRoutes, function (e, i) {
+        var found = $.grep(routes, function (e, i) {
             return e.id === id;
         });
         if (found.length > 0) {
             return found[0];
         }
-
         return null;
-
+    };
+    TCCroutes.findIDFromDest = function (dest) {
+        var found = $.grep(routes, function (e, i) {
+            return e.dest === dest;
+        });
+        if (found.length > 0) {
+            return found[0];
+        }
+        return null;
     };
     TCCroutes.Add = function (route) {
         routes.push(route);
@@ -97,42 +104,6 @@ var TCCroutes = (function () {
         return nameStr;
     };
 
-  //  TCCroutes.isDisplayed = function (route) {
-  //      var index = $.inArray(route, displayedRoutes);
-  //      if (index < 0) { return false; }
-  //      return true;
-  //  };
-  //  TCCroutes.DisplayRoute = function (route, yes) {
-  //      var index, howmany = displayedRoutes.length;
-  //      for (index = 0; index < howmany; index++){
-  //          if (displayedRoutes[index].ID === route.ID)
-  //              break;
-  //      }
-  //      if (index < howmany) {
-  //          // it was found
-  //          if (yes) {
-  //  //            already there, do nothing
-  //          }
-  //          else {
-  //              // remove it
-  //              displayedRoutes.splice(index, 1);
-  //   //           route.index = -1;
-  //          }
-  //      }
-  //      else {
-  //      // not already in list
-  //          if (yes) {
-  //              displayedRoutes.push(route);
-  // //             route.index = $.inArray(route, displayedRoutes);
-  //          }
-  //          else {
-  ////              route.index = -1;
-  //          }
-  //      }
-  //      // must re-arrange into ID order so that SQL query wiil return corresponding data
-  //      displayedRoutes.sort(function (a, b) { return a.ID - b.ID; });
-  //      if (yes) { currentRoute = route; }
-  //  };
 
     TCCroutes.CreateRouteList = function () {
         var id = login.ID();
@@ -144,36 +115,27 @@ var TCCroutes = (function () {
             getWebRoutes(id);
         }
         $('#routelist').empty();  // this will also remove any handlers
-        $('#setuplist').empty();
+        //$('#setuplist').empty();
         $.each(routes, function (index, route) {
             var title = route.dest;
             if (route.dist !== undefined) {
                 title = title + '(' + route.dist + 'km)';
             }
-            while (title.length < 20) title = title + ' ';
-            title = title + '.';
+
             var htmlstr = '<a id="sen' + index + '" class="list-group-item">' + title +
                 '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Select">Select</button>' +
                 '</a>';
             $('#routelist').append(htmlstr);
-            //if (TCCroutes.isDisplayed(route)) {
-            //    // for re-showing list when routes have previously been displayed (list will be emptied for small screens)
-            //    $('#get' + index).button('complete');
-            //}
+
             $('#get' + index).click(function () {
                 currentRoute = route;
-                //if (TCCroutes.isDisplayed(route)) {
-                //    $(this).button('reset');
-                //    TCCroutes.DisplayRoute(route, false);
-                //}
-                //else {
-                //    $(this).button('complete');
-                //    TCCroutes.DisplayRoute(route,true);
-                //}
+
                 // get ready to load new map
 
                 TCCroutes.SetGPX(null);
                 bleData.showRoute();
+                // allow user to plana  ride from this route
+                $('#planRide').show();
             });
 
             index++;

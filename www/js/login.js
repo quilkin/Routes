@@ -6,12 +6,14 @@ var login = (function () {
     var login = {},
         role,
         id,
+        username,
         //needSensorList = true,
         UserRoles = { None: 0, Viewer: 1, SiteAdmin: 2, FullAdmin: 3 };
 
     login.Role = function () { return role; };
     login.ID = function () { return id; };
     login.loggedIn = function () { return (role > UserRoles.None); };
+    login.User = function () { return username; };
 
     function checkPreAuth() {
         //   comment out temporarily to test sign-up
@@ -36,7 +38,18 @@ var login = (function () {
     // Logged in successfully, maybe create a list of sensors that can be displayed
     ///
     function loggedInOK() {
+        // get list of all routes in db
         TCCroutes.CreateRouteList();
+
+        // get list of rides for next Sunday
+        // find next Sunday's date
+        var today = new Date();
+        today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        while (today.getDay() !== 0) {
+            today = bleTime.addDays(today, 1);
+        }
+        TCCrides.CreateRideList(today);
+
         $('#loginModal').modal('hide');
         // switch to web data tab
         //$(".navbar-nav a[href=#webdata]").tab('show');
@@ -70,6 +83,7 @@ var login = (function () {
                 if (res.id > 0) {
                     role = res.role;
                     id = res.id;
+                    username = res.name;
                     //if (userRole < 2)
                     //    $(".adminonly").prop("disabled", true);
                     //store

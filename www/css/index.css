@@ -44,18 +44,8 @@
      
 }
 
-.side-label {
-    /*text-align: right;
-    clear: both;
-    float:left;
-    color:    rgb(134, 26, 34);
-    left:100px;*/
-}
 
-.side-input {
-    /*max-width: 250px;
-    float:inherit;*/
-}
+
 
 
 @media (min-width: 256px) 

@@ -31,6 +31,7 @@ var bleData = (function ($) {
                 $('#toDate').hide();
                 bleData.setDateChooser('Change');
                 // in case dates have been changed....
+                TCCrides.getWebRides(bleTime.toIntDays(rideDate));
                 bleData.showRoute();
                 return;
             }
@@ -175,8 +176,13 @@ var bleData = (function ($) {
         });
     };
 
-    bleData.getGPX= function () {
-        var routeID = TCCroutes.currentRoute().id;
+    bleData.getGPX = function () {
+        var currentroute = TCCroutes.currentRoute();
+        if (currentroute === null) {
+            popup.Alert("No GPX data found!");
+            return null;
+        }
+        var routeID = currentroute.id;
         var gpxdata = null;
 
         bleData.myJson("GetGPXforRoute", "POST", routeID, function (response) {
@@ -240,15 +246,16 @@ var bleData = (function ($) {
             //     control.addOverlay(gpx, gpx.get_name());
 
             //_t('h3').textContent = gpx.get_name() + "  ";
-            _t('h3').textContent = TCCroutes.currentRoute().dest + "  ";
+            _t('h3').textContent = TCCroutes.currentRoute().dest + ":  ";
 
             if (tab !== 'setup-tab') {
                 // add a download link
                 var a = document.createElement('a');
-                var linkText = document.createTextNode("(get GPX)");
-                a.style.fontStyle = "italic";
+                var linkText = document.createTextNode("Get GPX");
+                //a.style.fontStyle = "italic";
+                a.style.textDecoration = "underline";
                 a.appendChild(linkText);
-                a.title = "download GPX";
+                a.title = "get GPX";
                 a.href = gpxdata;
                 _t('h3').appendChild(a);
            
@@ -281,28 +288,59 @@ var bleData = (function ($) {
         }).addTo(map);
     };
 
-    bleData.CreateRide = function (rideDate, startPlace) {
-        var route = TCCRoutes.currentRoute();
-        var leader = login.ID();
-        var time = "08:15";
-        var dest = route.dest;
+    bleData.leadRide = function () {
+        $('#convertToRide').show();
+        $('#uploadRoute').hide();
+        $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "dd M yyyy" });
+        $("#rideDate1").datepicker('setDate', rideDate);
 
+        $("#rideDate1").change(function () {
+            rideDate = new Date($("#rideDate1").val());
+        });
+        $("#saveRide").on('click', function () {
+            var startPlace = $("#rideMeeting").val();
+            var route = TCCroutes.currentRoute();
+            var leader = login.ID();
+            var time = 8 * 60 + 15;
+            var dest = route.dest;
+            var date = bleTime.toIntDays(rideDate);
+            var ride = new TCCrides.Ride(dest, leader, date, time, startPlace, 0);
+            popup.Confirm("Save this ride", "Are you sure?", function () {
+                bleData.myJson("SaveRide", "POST", ride, function (response) {
+                    // if successful, response should be just a new ID
+                    if (response.length < 5) {
+                        ride.id = response;
+                        $("#saveRide").hide();
+                        TCCroutes.SetRoute(route);
+
+                        TCCrides.Add(ride);
+                        //bleData.getGPX();
+                        //bleData.showRoute();
+                        TCCrides.CreateRideList(date);
+                    }
+                    else {
+                        popup.Alert(response);
+                    }
+
+                }, true, null);
+            }, null, -10);
+        });
     };
 
-    bleData.showData = function () {
-        getWebData(null);
-        // if it's a narrow screen (i.e. mobile phone), collapse the sensor list and date chooser to make it easier to see the graph
-        if ($('#btnMenu').is(":visible")) {
-            $('#routelist').empty();
-            var htmlstr = '<a id="routeTitle" class="list-group-item list-group-item-info">Choose sensor(s)</a>';
-            $('#routelist').append(htmlstr);
-            $('#routeTitle').click(TCCroutes.CreateSensorList);
-            $('#fromDate').hide();
-            $('#toDate').hide();
-            bleData.setDateChooser('Change');
-        }
-    };
-
+    //bleData.showData = function () {
+    //    getWebData(null);
+    //    // if it's a narrow screen (i.e. mobile phone), collapse the sensor list and date chooser to make it easier to see the graph
+    //    if ($('#btnMenu').is(":visible")) {
+    //        $('#routelist').empty();
+    //        var htmlstr = '<a id="routeTitle" class="list-group-item list-group-item-info">Choose sensor(s)</a>';
+    //        $('#routelist').append(htmlstr);
+    //        $('#routeTitle').click(TCCroutes.CreateSensorList);
+    //        $('#fromDate').hide();
+    //        $('#toDate').hide();
+    //        bleData.setDateChooser('Change');
+    //    }
+    //};
+ 
 
     bleData.setDateChooser = function (btntext) {
         $('#dateTitle').html(bleTime.dateString(rideDate) +  '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span>');

@@ -1,18 +1,6 @@
 ﻿
 /*global jQuery,TCCroutes*/
 
-//route data members
-
-//[DataMember(Name = "route")]          public string GPX { get; set; }
-//[DataMember(Name = "dest")]           public string Dest { get; set; }
-//[DataMember(Name = "description")]    public string Descrip { get; set; }
-//[DataMember(Name = "distance")]       public int Distance { get; set; }      
-//[DataMember(Name = "climbing")]       public int Climbing { get; set; }
-//[DataMember(Name = "owner")]          public int Owner { get; set; }
-//[DataMember(Name = "place")]          public string Place { get; set; }
-//[DataMember(Name = "date")]           public DateTime Date { get; set; }
-//[DataMember(Name = "time")]           public DateTime Time { get; set; }
-//[DataMember(Name = "id")]             public int ID{ get; set; }
 
 
 var bleSetup = (function ($) {
@@ -20,11 +8,7 @@ var bleSetup = (function ($) {
     "use strict";
 
     var bleSetup = {},
-        //alarmSlider,
-        //minAlarm = 2,
-        //maxAlarm = 8,
-        //minVal = -30,
-        //maxVal = 90,
+
         registering = false,
         rideDate,
 
@@ -49,18 +33,8 @@ var bleSetup = (function ($) {
     $("#setupDone").show();
     $('#leadRide').hide();
     $('#convertToRide').hide();
-    $("#leadRide").on('click', function () {
-        $('#convertToRide').show();
-        $('#uploadRoute').hide();
-        $("#rideDate1").datepicker({ todayBtn: true, autoclose: true, format: "dd M yyyy" });
-        $("#rideDate1").datepicker('setDate', rideDate);
-
-        $("#rideDate1").change(function () {
-            rideDate = new Date($("#rideDate1").val());
-        });
-        var startPlace = $("#rideMeeting").val();
-        bleData.CreateRide(rideDate, startPlace);
-    });
+    $("#leadRide").on('click', bleData.leadRide());
+        
 
     $("#setupDone").on('click', function () {
         $("#saveRoute").prop("disabled", true);
@@ -110,6 +84,8 @@ var bleSetup = (function ($) {
             // TO DO: change back to original values
       //  }
     });
+
+ 
 
     bleSetup.initialise = function (reg) {
        

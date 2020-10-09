@@ -41,6 +41,9 @@ namespace Routes
         [WebInvoke(Method = "POST", UriTemplate = "/SaveRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string SaveRoute(Route route);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/SaveRide", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string SaveRide(Ride ride);
 
     }
 

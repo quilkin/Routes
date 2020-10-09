@@ -64,13 +64,29 @@
         $('#fromDate').hide();
         $('#toDate').hide();
         $('#loading').hide();
+        $('#planRide').hide();
+        $('#planRide').click(function () {
+            // move to different tab
+            $('.nav-tabs a[href="#setup-tab"]').tab('show');
+            $('#setup-tab').tab('show');
+            bleData.showRoute();
+            bleData.leadRide();
+        });
 
+    //    $('#fromDate').datepicker()
+    //        .on('onRender', function (ev) {
+    //            if (ev.date.valueOf() === 0){
+    //        return 'highlight';
+    //    }
+    //});
 
-        var today = new Date(),
-            yesterday;
-        // round down to beginning of day
+        var today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        yesterday = bleTime.addDays(today, -1);
+        // find next Sunday's date
+        while (today.getDay() !== 0) {
+            today = bleTime.addDays(today,1);
+        }
+        
         bleData.setDate(today);
         bleData.setDateChooser('Change');
         
@@ -122,7 +138,7 @@ var bleApp = (function () {
 
     function updateTime() {
         var d = new Date();
-        if ((d.getSeconds()) < interval) {
+        if (d.getSeconds() < interval) {
             var timetext = d.toDateString() + ' ' + bleTime.timeString(d);
             $("#realtime").html('TCC Ride Planner <span style="color:black; font-size:small">' + timetext + '</span>');
         }

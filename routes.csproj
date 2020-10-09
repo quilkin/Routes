@@ -160,13 +160,14 @@
     <Content Include="www\js-lib\jquery.dataTables.min.js" />
     <Content Include="www\js-lib\platformOverrides.js" />
     <Content Include="www\js-lib\gpx.js" />
+    <Content Include="www\js\rides.js" />
     <Content Include="www\splash.PNG" />
     <Content Include="www\index.html" />
     <Content Include="www\js\index.js" />
     <Content Include="www\js\login.js" />
     <Content Include="www\js\myTable.js" />
     <Content Include="www\js\popups.js" />
-    <Content Include="www\js\sensors.js" />
+    <Content Include="www\js\routes.js" />
     <Content Include="www\js\serial.js" />
     <Content Include="www\js\setup.js" />
     <Content Include="www\js\timesdates.js" />
