@@ -194,8 +194,8 @@ namespace Routes
         [DataMember(Name = "dest")]
         public string Dest { get; set; }
 
-        [DataMember(Name = "leader")]
-        public int Leader { get; set; }
+        [DataMember(Name = "leaderName")]
+        public string LeaderName { get; set; }
 
         [DataMember(Name = "rideID")]
         public int ID { get; set; }
@@ -209,10 +209,10 @@ namespace Routes
         [DataMember(Name = "meetingAt")]
         public string MeetAt { get; set; }
 
-        public Ride(string dest, int lead, int id, int date, int time, string meet)
+        public Ride(string dest, string lead, int id, int date, int time, string meet)
         {
              Dest = dest;
-            Leader = lead;
+            LeaderName = lead;
             Date = date;
             Time = time;
             MeetAt = meet;

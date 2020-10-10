@@ -62,17 +62,20 @@
         $("#upload-all").hide();
         $('#statusConnect').hide();
         $('#fromDate').hide();
-        $('#toDate').hide();
+        //$('#toDate').hide();
         $('#loading').hide();
         $('#planRide').hide();
         $('#planRide').click(function () {
             // move to different tab
-            $('.nav-tabs a[href="#setup-tab"]').tab('show');
+            //$('.nav-tabs a[href="#setup-tab"]').tab('show');
+            bleData.setCurrentTab('setup-tab');
             $('#setup-tab').tab('show');
             bleData.showRoute();
             bleData.leadRide();
         });
-
+        //$('#home-tab').on("show", TCCrides.ShowFirstRide());
+        $('#home-tab').tab('show');
+        bleData.setCurrentTab('home-tab');
     //    $('#fromDate').datepicker()
     //        .on('onRender', function (ev) {
     //            if (ev.date.valueOf() === 0){
@@ -88,7 +91,7 @@
         }
         
         bleData.setDate(today);
-        bleData.setDateChooser('Change');
+        bleData.setDateChooser('Change ride date');
         
         $(".detectChange").change(function () {
             $("#saveRoute").prop("disabled", false);
@@ -115,8 +118,8 @@
         {
             // always need to login, cannot download devices from non-mobile
             $('#loginModal').modal();
-            // switch straight to webdata tab
-            $(".navbar-nav a[href=#webdata]").tab('show');
+            // switch straight to home tab
+            $(".navbar-nav a[href=#home]").tab('show');
 
         }
 
@@ -140,7 +143,12 @@ var bleApp = (function () {
         var d = new Date();
         if (d.getSeconds() < interval) {
             var timetext = d.toDateString() + ' ' + bleTime.timeString(d);
-            $("#realtime").html('TCC Ride Planner <span style="color:black; font-size:small">' + timetext + '</span>');
+            var string = 'TCC Ride Planner <span style="color:black; font-size:small">' + timetext ;
+            var username = login.User();
+            if (username !== undefined) {
+                string = string + ' Logged in as: </span>' + username;
+            }
+            $("#realtime").html(string);
         }
         if (ismobile) {
             // every few seconds, update connected status of devices

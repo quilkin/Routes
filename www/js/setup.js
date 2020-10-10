@@ -33,7 +33,7 @@ var bleSetup = (function ($) {
     $("#setupDone").show();
     $('#leadRide').hide();
     $('#convertToRide').hide();
-    $("#leadRide").on('click', bleData.leadRide());
+    $("#leadRide").on('click', bleData.leadRide);
         
 
     $("#setupDone").on('click', function () {

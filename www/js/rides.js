@@ -5,7 +5,7 @@ var TCCrides = (function () {
 
         //ride data members
 //[DataMember(Name = "dest")]        public string Dest { get; set; }
-//[DataMember(Name = "leader")]        public int Leader { get; set; }
+//[DataMember(Name = "leaderName")]        public string LeaderName { get; set; }
 //[DataMember(Name = "rideID")]        public int ID { get; set; }
 //[DataMember(Name = "date")]        public int Date { get; set; }
 //[DataMember(Name = "time")]        public int Time { get; set; }
@@ -29,7 +29,7 @@ var TCCrides = (function () {
         bleData.myJson("GetRidesForDate", "POST", intdays, function (response) {
             rides = response;
             if (rides.length === 0) {
-                popup.Alert("No rides found for " + bleTime.fromIntDays(date));
+                popup.Alert("No rides found for " + bleTime.dateString(date));
                 return null;
             }
             return rides;
@@ -40,7 +40,7 @@ var TCCrides = (function () {
 
 
     TCCrides.Ride = function (dest, leader, date, time, meeting, id) {
-        this.leader = leader;       // URL of gpx file
+        this.leaderName = leader;      
         this.dest = dest;
         this.date = date;
         //this.distance = dist;
@@ -68,6 +68,9 @@ var TCCrides = (function () {
     TCCrides.currentride = function () {
         return currentride;
     };
+    TCCrides.Clear = function () {
+        while (rides.length > 0) { rides.pop(); }
+    };
     //TCCrides.currentGPX = function () {
     //    return currentGPX;
     //};
@@ -80,12 +83,12 @@ var TCCrides = (function () {
     TCCrides.displayedrides = function () {
         return displayedrides;
     };
-    TCCrides.Foundrides = function () {
-        return foundrides;
-    };
-    TCCrides.ClearFoundrides = function () {
-        while (foundrides.length > 0) { foundrides.pop(); }
-    };
+    //TCCrides.Foundrides = function () {
+    //    return foundrides;
+    //};
+    //TCCrides.ClearFoundrides = function () {
+    //    while (foundrides.length > 0) { foundrides.pop(); }
+    //};
     TCCrides.DisplayedrideNames = function () {
         var index, nameStr = '';
         for (index = 0; index < displayedrides.length; index++) {
@@ -114,9 +117,9 @@ var TCCrides = (function () {
                 title = title + '(' + ride.dist + 'km)';
             }
 
-            var htmlstr = '<a id="sen' + index + '" class="list-group-item">' + title +
-                '<button id="view' + index + '" type="button" class="btn btn-lifted btn-info btn-sm " data-toggle="button" data-complete-text="Select">View</button>' +
-                ' (leader: ' + login.User() + ') ' +
+            var htmlstr = '<a id="sen' + index + '" class="list-group-item">' +
+                '<button id="view' + index + '" type="button" class="btn btn-lifted btn-info btn-sm " data-toggle="button" data-complete-text="Select">View</button> ' +
+                title + ' (leader: ' + ride.leaderName + ') ' +
                 '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Select">Join</button>' +
                 '</a>';
             $('#ridelist').append(htmlstr);
@@ -134,11 +137,22 @@ var TCCrides = (function () {
                 currentride = ride;
             // todo
             });
-
+            if (index === 0) {
+                //$('#home-tab').tab('show');
+                // show route for first ride in list
+                currentride = ride;
+            }
             index++;
         });
+        var ride = TCCrides.currentride();
+        var route = TCCroutes.findIDFromDest(ride.dest);
+        TCCroutes.SetRoute(route);
+        // load new map
+        TCCroutes.SetGPX(null);
+        bleData.showRoute();
+    };
+    TCCrides.ShowFirstRide = function () {
 
     };
-       
     return TCCrides;
 }());

@@ -28,11 +28,14 @@ var bleData = (function ($) {
                 // dates have been chosen, get them and close options
                 rideDate = new Date($("#rideDate").val());
                 $('#fromDate').hide();
-                $('#toDate').hide();
-                bleData.setDateChooser('Change');
+                //$('#toDate').hide();
+                bleData.setDateChooser('Change ride date');
                 // in case dates have been changed....
-                TCCrides.getWebRides(bleTime.toIntDays(rideDate));
-                bleData.showRoute();
+                //TCCrides.getWebRides(bleTime.toIntDays(rideDate));
+                //TCCrides.getWebRides(rideDate);
+                TCCrides.Clear();
+                TCCrides.CreateRideList(rideDate);
+                //bleData.showRoute();
                 return;
             }
 
@@ -47,7 +50,7 @@ var bleData = (function ($) {
             $("#chartName").html(sensor.Name);
             //$("#tableName").html("Preparing table.....");
             $('#fromDate').show();
-            $('#toDate').show();
+            //$('#toDate').show();
 
 
 
@@ -300,7 +303,7 @@ var bleData = (function ($) {
         $("#saveRide").on('click', function () {
             var startPlace = $("#rideMeeting").val();
             var route = TCCroutes.currentRoute();
-            var leader = login.ID();
+            var leader = login.User();
             var time = 8 * 60 + 15;
             var dest = route.dest;
             var date = bleTime.toIntDays(rideDate);
@@ -310,12 +313,10 @@ var bleData = (function ($) {
                     // if successful, response should be just a new ID
                     if (response.length < 5) {
                         ride.id = response;
-                        $("#saveRide").hide();
                         TCCroutes.SetRoute(route);
-
                         TCCrides.Add(ride);
-                        //bleData.getGPX();
-                        //bleData.showRoute();
+                        $('#home-tab').tab('show');
+                        bleData.setCurrentTab('home-tab');
                         TCCrides.CreateRideList(date);
                     }
                     else {

@@ -50,59 +50,10 @@
 
     <div id="myTabContent" class="tab-content">
 
-        <!--tab for listing all routes-->
-
-        <div role="tabpanel" class="tab-pane fade in active" id="webdata" aria-labelledby="webdata-tab">
-
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="list-group scrollable-list" id="routelist">
-                            <a id="routeTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
-                        </div>
-                        <div class="panel-footer">
-                            <button type="button" class="btn btn-primary" id="planRide" data-dismiss="modal">Lead a ride using this route</button>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="panel panel-primary">
-                            <div id="demo" class="panel-body gpx" data-map-target="demo-map" data-elev-target="demo-elev">
-                                <header>
-                                    <h3>Trurocycling.org routes</h3>
-                                    <span class="start"></span>
-                                </header>
-
-                                <article>
-                                    <div class="map" id="demo-map"></div>
-                                </article>
-
-                                <article>
-                                    <div class="elev" id="demo-elev"></div>
-                                </article>
-
-                                <footer>
-                                    <ul class="info">
-                                        <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
-                                        <li>
-                                            Climbs:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
-                                            down: <span class="elevation-loss"></span>&nbsp;m
-
-                                            <span class="elevation-none"></span>
-                                        </li>
-                                    </ul>
-                                </footer>
-                            </div>
-                        </div>
-                    </div>
-                </div>  <!-- /row -->
-            </div> <!-- /container -->
-        </div>
-
-
         <!--tab for listing rides for a chosen date-->
 
 
-        <div role="tabpanel" class="tab-pane fade" id="home" aria-labelledby="home-tab">
+        <div role="tabpanel" class="tab-pane active" id="home" aria-labelledby="home-tab">
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
@@ -149,6 +100,56 @@
                 </div>  <!-- /row -->
             </div> <!-- /container -->
         </div> <!-- /tab-pane -->
+        <!--tab for listing all routes-->
+
+        <div role="tabpanel" class="tab-pane fade" id="webdata" aria-labelledby="webdata-tab">
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="list-group scrollable-list" id="routelist">
+                            <a id="routeTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
+                        </div>
+                        <div class="panel-footer">
+                            <button type="button" class="btn btn-primary" id="planRide" data-dismiss="modal">Lead a ride using this route</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="panel panel-primary">
+                            <div id="demo" class="panel-body gpx" data-map-target="demo-map" data-elev-target="demo-elev">
+                                <header>
+                                    <h3>Trurocycling.org routes</h3>
+                                    <span class="start"></span>
+                                </header>
+
+                                <article>
+                                    <div class="map" id="demo-map"></div>
+                                </article>
+
+                                <article>
+                                    <div class="elev" id="demo-elev"></div>
+                                </article>
+
+                                <footer>
+                                    <ul class="info">
+                                        <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
+                                        <li>
+                                            Climbs:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
+                                            down: <span class="elevation-loss"></span>&nbsp;m
+
+                                            <span class="elevation-none"></span>
+                                        </li>
+                                    </ul>
+                                </footer>
+                            </div>
+                        </div>
+                    </div>
+                </div>  <!-- /row -->
+            </div> <!-- /container -->
+        </div>
+
+
+
         <!--tab for uploading new route-->
 
         <div role="tabpanel" class="tab-pane fade" id="panel-setup" aria-labelledby="setup-tab">
@@ -234,20 +235,20 @@
                                 </article>
 
                                 <!--<article>
-                                    <div class="elev" id="setup-elev"></div>
-                                </article>
+                                <div class="elev" id="setup-elev"></div>
+                            </article>
 
-                                <footer>
-                                    <ul class="info">
-                                        <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
-                                        <li>
-                                            Elevation:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
-                                            down: <span class="elevation-loss"></span>&nbsp;m
+                            <footer>
+                                <ul class="info">
+                                    <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
+                                    <li>
+                                        Elevation:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
+                                        down: <span class="elevation-loss"></span>&nbsp;m
 
-                                            <span class="elevation-none"></span>
-                                        </li>
-                                    </ul>
-                                </footer>-->
+                                        <span class="elevation-none"></span>
+                                    </li>
+                                </ul>
+                            </footer>-->
                             </div>
                         </div>
                     </div>

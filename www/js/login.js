@@ -14,6 +14,7 @@ var login = (function () {
     login.ID = function () { return id; };
     login.loggedIn = function () { return (role > UserRoles.None); };
     login.User = function () { return username; };
+    
 
     function checkPreAuth() {
         //   comment out temporarily to test sign-up
@@ -52,7 +53,7 @@ var login = (function () {
 
         $('#loginModal').modal('hide');
         // switch to web data tab
-        //$(".navbar-nav a[href=#webdata]").tab('show');
+        $(".navbar-nav a[href=#home]").tab('show');
         //if (needSensorList) {
 
         //}
@@ -170,6 +171,9 @@ var login = (function () {
             role = UserRoles.None;
             $("#logIn").text("Log In");
         }
+    };
+    login.GetUserName = function (id) {
+
     };
 
     return login;

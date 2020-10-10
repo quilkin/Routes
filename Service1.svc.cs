@@ -276,7 +276,7 @@ namespace Routes
         {
             LogEntry log = new LogEntry(GetIP(), "SaveRoute", route.ID + " " + route.Dest);
 
-            int successRows = 0;
+            //int successRows = 0;
             string result = "";
             if (gpxConnection.IsConnect())
             {
@@ -324,21 +324,21 @@ namespace Routes
 
                                 using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                                 {
-                                    successRows = command.ExecuteNonQuery();
+                                    //successRows = command.ExecuteNonQuery();
                                     routeID = command.ExecuteScalar();
                                 }
-                                if (successRows == 1)
-                                {
+                                //if (successRows == 1)
+                                //{
                                     // return id of new route
                                     result = routeID.ToString();
-                                }
-                                else
-                                    result = string.Format("Database error: route \"{0}\" not saved", route.Dest);
+                                //}
+                                //else
+                                //    result = string.Format("Database error: route \"{0}\" not saved", route.Dest);
                             }
                         }
                         catch (Exception ex2)
                         {
-                            result = string.Format("error with GPX file: {0}", ex2.Message);
+                            result = string.Format("Database error: route \"{0}\" not saved", route.Dest);
                         }
                     }
 
@@ -364,7 +364,7 @@ namespace Routes
         {
             LogEntry log = new LogEntry(GetIP(), "SaveRide", ride.Date + " " + ride.Dest);
 
-            int successRows = 0;
+            //int successRows = 0;
             string result = "";
             if (gpxConnection.IsConnect())
             {
@@ -372,7 +372,7 @@ namespace Routes
                 {
                     // check ride with same leader and date isn't already there ***************
 
-                    string query = string.Format("SELECT dest FROM rides where date= '{0}' and leader = {1}", ride.Date, ride.Leader);
+                    string query = string.Format("SELECT dest FROM rides where date= '{0}' and leaderName = '{1}'", ride.Date, ride.LeaderName);
                     bool exists = true;
                     string now = TimeString(DateTime.Now);
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
@@ -397,29 +397,26 @@ namespace Routes
                             using (System.Net.WebClient client = new System.Net.WebClient())
                             {
 
-                                query = string.Format("insert into rides (dest,leader,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
-                                    ride.Dest, ride.Leader, ride.Date, ride.Time, ride.MeetAt);
+                                query = string.Format("insert into rides (dest,leaderName,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
+                                    ride.Dest, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt);
                                 // get new ride ID
                                 query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
                                 object rideID = null;
 
                                 using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                                 {
-                                    successRows = command.ExecuteNonQuery();
+                                   // successRows = command.ExecuteNonQuery();
                                     rideID = command.ExecuteScalar();
                                 }
-                                if (successRows == 1)
-                                {
-                                    // return id of new route
-                                    result = rideID.ToString();
-                                }
-                                else
-                                    result = string.Format("Database error: ride \"{0}\" not saved", ride.Dest);
+                                // return id of new route
+                                result = rideID.ToString();
+
+
                             }
                         }
                         catch (Exception ex2)
                         {
-                            result = string.Format("error with GPX file: {0}", ex2.Message);
+                            result = string.Format("Database error: ride \"{0}\" not saved", ride.Dest);
                         }
                     }
 
@@ -508,7 +505,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT rideID,dest,date,time,meetingAt,leader FROM rides where date= {0}",date);
+                    string query = string.Format("SELECT rideID,dest,date,time,meetingAt,leaderName FROM rides where date= {0}",date);
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -517,9 +514,8 @@ namespace Routes
                         int length = dataRoutes.Rows.Count;
                         for (int row = 0; row < length; row++)
                         {
-                            string dest = "", meet = "";
-                            int time = 0;
-                            int id, leader = 0;
+                            string dest = "", meet = "", leader = "";
+                            int time = 0, id;
                             try
                             {
                                 DataRow dr = dataRoutes.Rows[row];
@@ -528,7 +524,7 @@ namespace Routes
                                 try { meet = (string)dr["meetingAt"]; } catch { }
                                 try { date = (int)dr["date"]; } catch { }
                                 try { time = (int)dr["time"]; } catch { }
-                                try { leader = (int)dr["leader"]; } catch { }
+                                try { leader = (string)dr["leadername"]; } catch { }
 
                                 rides.Add(new Ride(dest, leader, id, date, time, meet));
                             }
