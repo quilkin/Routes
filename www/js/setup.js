@@ -59,8 +59,7 @@ var bleSetup = (function ($) {
                     bleData.showRoute();
                     TCCroutes.CreateRouteList();
                     $('#leadRide').show();
-                   
-                                        // to do:  need to ask user to verify this route
+
                 }
                 else {
                     popup.Alert(response);

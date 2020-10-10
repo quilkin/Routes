@@ -1,17 +1,20 @@
 ﻿upload route: 
-	needs to save owner
-	need to show route and ask user to validate it
-	extract and save distanc and climbing
-	ask user if it should be made into a  ride
+	
+
+	extract and save distance and climbing
+
 this week's rides:
-	form for joining a ride
+	inhibit 'join'  button for old weeks
+	form for joining a ride (if < 6 riders*)
+	display distance and participants
 general route list:
-	allow user to choose one for a ride (if < 6 riders*)
-	display ride leader and participants
+	allow user to choose one for a ride 
+
 download a route:
-	new button
+	new button?
 	create download
 login:
 	option to avoid password and email
 setup:
+    make tab titles bolder
 	settings table e.g. *max riders per ride

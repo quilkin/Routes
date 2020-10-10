@@ -244,7 +244,7 @@ namespace Routes
                     EmailConnection email = new EmailConnection();
                     System.Net.Mail.MailAddress from = new System.Net.Mail.MailAddress("admin@quilkin.co.uk");
                     System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage(from, emailAddr);
-                    message.Subject = "BLE log signup";
+                    message.Subject = "TCC rides signup";
                     message.Body = string.Format("Please enter the code {0} into the signup page to complete your registration", login.Code);
 
                     try
@@ -592,6 +592,100 @@ namespace Routes
             return data;
         }
 
+        public string SaveParticipant(Participant pp)
+        {
+            LogEntry log = new LogEntry(GetIP(), "SaveParticipant", pp.Rider + " " + pp.rideID);
+
+            int successRows = 0;
+            string result = "";
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    // check this isn't already there ***************
+
+                    string query = string.Format("SELECT rider FROM Participants where rideID = '{0}' and rider = '{1}'", pp.rideID, pp.Rider );
+                    bool exists = true;
+                    string now = TimeString(DateTime.Now);
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
+
+                        if (dataRoutes.Rows.Count == 0)
+                        {
+                            exists = false;
+                        }
+                    }
+                    if (exists)
+                    {
+                        result = "You are aleady booked onto this ride. Please choose another ride";
+                    }
+                    else
+                    {
+                        // now check that there aren't too many riders
+
+                        // ToDo: this next bit should be done globally, not every time a rider is added
+                        int maxriders = 6;
+                        query = string.Format("SELECT maxriders FROM settings");
+                        using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                        {
+                            dataRoutes = new DataTable();
+                            routeAdapter.Fill(dataRoutes);
+                            DataRow dr = dataRoutes.Rows[0];
+                            maxriders = (int)dr["maxriders"];
+                        }
+                        query = string.Format("SELECT rider FROM Participants where rideID = '{0}' ", pp.rideID);
+                        using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                        {
+                            dataRoutes = new DataTable();
+                            routeAdapter.Fill(dataRoutes);
+
+                            int length = dataRoutes.Rows.Count;
+                            if (length >= maxriders - 1)
+                            {
+                                result = string.Format("Already {0} riders in this ride, including the leader. Sorry! If you turn up, though, there may be a cancellation :)", maxriders);
+                            }
+                            else
+                            {
+                                string riders = "*";
+                                for (int row = 0; row < length; row++)
+                                {
+                                    DataRow dr = dataRoutes.Rows[row];
+                                    riders = riders + (string)dr["rider"] + " ";
+                                }
+                                using (System.Net.WebClient client = new System.Net.WebClient())
+                                {
+
+                                    query = string.Format("insert into Participants (rider, rideID) values ('{0}','{1}')", pp.Rider, pp.rideID);
+
+                                    using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                                    {
+                                        successRows = command.ExecuteNonQuery();
+
+                                    }
+                                    result = riders;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result = string.Format("Database error: {0}", ex.Message);
+                }
+
+
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            return result;
+
+        }
 
     }
 }

@@ -71,15 +71,7 @@ var login = (function () {
 
         if (u !== '' && p !== '') {
             creds = { name: u, pw: p, email: "", code: 0 };
-            //var loc = { latitude: 47.640068, longitude: -122.129858 };
-            //bleData.myJson('SaveLocation', "POST", loc, function () { }, true, null);
-            //bleData.myJson('GetLocations', "POST", null, function (locs) {
-            //    var locations = [];
-            //    $.each(locs, function (index, loc) {
-            //        if (loc.latitude > 0)
-            //            locations += loc;
-            //    })
-            //}, true, null);
+
             bleData.myJson('Login', "POST", creds, function (res) {
                 if (res.id > 0) {
                     role = res.role;
@@ -134,11 +126,22 @@ var login = (function () {
                 if (res.substring(0, 9) === "Thank you")           //"Thank you, you have now registered"
                 {
                     role = UserRoles.Viewer;
-                    //$(".adminonly").prop("disabled", true);
-                    //GetRiderData();
-                    //bleApp.ChangePage("home");
+                    var creds = { name: u, pw: p1, email: "", code: 0 };
+
+                    bleData.myJson('Login', "POST", creds, function (res) {
+                        if (res.id > 0) {
+                            role = res.role;
+                            id = res.id;
+                            username = res.name;
+                            loggedInOK();
+
+                        } else {
+                            popup.Alert("Invalid username or password");
+                        }
+                        
+                    }, true, null);
+
                     loggedInOK();
-                    //window.addEventListener("batterystatus", onBatteryStatus, false);
                 }
             }, true, null);
 

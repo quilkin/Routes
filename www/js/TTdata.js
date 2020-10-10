@@ -60,12 +60,12 @@ var bleData = (function ($) {
 
         urlBase = function () {
             if (bleApp.isMobile()) {
-                return "http://www.quilkin.co.uk/Service1.svc/";
+                return "http://www.quilkin.co.uk/routes.svc/";
                 //return "http://192.168.1.73:54684/Service1.svc/";
             }
-
-            // return "http://www.quilkin.co.uk/Service1.svc/";
-            return "http://localhost/routes/Service1.svc/";
+           //return "/Routes.svc/";
+            //return "https://www.quilkin.co.uk/TCCRides/Routes.svc/";
+           return "http://localhost/routes/Routes.svc/";
 
         },
         webRequestFailed = function (handle, status, error) {
@@ -328,19 +328,23 @@ var bleData = (function ($) {
         });
     };
 
-    //bleData.showData = function () {
-    //    getWebData(null);
-    //    // if it's a narrow screen (i.e. mobile phone), collapse the sensor list and date chooser to make it easier to see the graph
-    //    if ($('#btnMenu').is(":visible")) {
-    //        $('#routelist').empty();
-    //        var htmlstr = '<a id="routeTitle" class="list-group-item list-group-item-info">Choose sensor(s)</a>';
-    //        $('#routelist').append(htmlstr);
-    //        $('#routeTitle').click(TCCroutes.CreateSensorList);
-    //        $('#fromDate').hide();
-    //        $('#toDate').hide();
-    //        bleData.setDateChooser('Change');
-    //    }
-    //};
+    bleData.saveParticipant = function (rideID, rider) {
+        var list = "";
+        popup.Confirm("Join this ride", "Are you sure?", function () {
+            var pp = new TCCrides.Participant(rider, rideID);
+            bleData.myJson("SaveParticipant", "POST", pp, function (response) {
+                if (response[0] === '*') {
+                    // a list of riders entered
+                    list = response.substr(1);
+                    popup.Alert("You have been added to this ride");
+                }
+                else {
+                    popup.Alert(response);
+                }
+            }, true, null);
+        }, null, -10);
+        return list;
+    };
  
 
     bleData.setDateChooser = function (btntext) {

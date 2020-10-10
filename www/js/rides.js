@@ -50,6 +50,10 @@ var TCCrides = (function () {
         this.meetingAt = meeting;
     };
 
+    TCCrides.Participant = function (rider, rideID) {
+        this.rider = rider;
+        this.rideID = rideID;
+    };
 
     TCCrides.findRide = function (id) {
         var found = $.grep(foundRides, function (e, i) {
@@ -135,7 +139,12 @@ var TCCrides = (function () {
 
             $('#join' + index).click(function () {
                 currentride = ride;
-            // todo
+                if (ride.leader === login.User()) {
+                    popup.Alert("You cannot join your own ride!!");
+                }
+                else {
+                    bleData.saveParticipant(ride.rideID, login.User());
+                }
             });
             if (index === 0) {
                 //$('#home-tab').tab('show');
