@@ -601,7 +601,7 @@ namespace Routes
                 {
                     foreach (int rideID in rideIDs)
                     {
-                        string pp = "";
+                        string pp = ",";
                         string query = string.Format("SELECT rider FROM Participants where rideID = '{0}' ", rideID);
                         using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                         {
@@ -612,7 +612,7 @@ namespace Routes
                             for (int row = 0; row < length; row++)
                             {
                                 DataRow dr = dataRoutes.Rows[row];
-                                pp = pp + (string)dr["rider"] + " ";
+                                pp = pp + (string)dr["rider"] + ",";
                             }
 
                         }
@@ -688,6 +688,7 @@ namespace Routes
                             }
                             else
                             {
+                                // todo: this string is now redundant
                                 string riders = "*";
                                 for (int row = 0; row < length; row++)
                                 {
@@ -708,6 +709,70 @@ namespace Routes
                                 }
                             }
                         }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result = string.Format("Database error: {0}", ex.Message);
+                }
+
+
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            return result;
+
+        }
+
+        public string LeaveParticipant(Participant pp)
+        {
+            LogEntry log = new LogEntry(GetIP(), "LeaveParticipant", pp.Rider + " " + pp.rideID);
+
+            int successRows = 0;
+            string result = "";
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    // check this is already there ***************
+
+                    string query = string.Format("SELECT rider FROM Participants where rideID = '{0}' and rider = '{1}'", pp.rideID, pp.Rider);
+                    bool exists = true;
+                    string now = TimeString(DateTime.Now);
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
+
+                        if (dataRoutes.Rows.Count == 0)
+                        {
+                            exists = false;
+                        }
+                    }
+                    if (exists == false)
+                    {
+                        result = "Error: You are not booked onto this ride.";
+                    }
+                    else
+                    {
+
+                                using (System.Net.WebClient client = new System.Net.WebClient())
+                                {
+
+                                    query = string.Format("delete from Participants where rider = '{0}'and rideID = {1}", pp.Rider, pp.rideID);
+
+                                    using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                                    {
+                                        successRows = command.ExecuteNonQuery();
+
+                                    }
+                                    result = "OK";
+                                }
+
                     }
                 }
                 catch (Exception ex)

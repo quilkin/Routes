@@ -137,8 +137,6 @@
     <Content Include="www\css\dataTables.bootstrap.css" />
     <Content Include="www\css\datepicker3.css" />
     <Content Include="www\css\index.css" />
-    <Content Include="www\css\ion.rangeSlider.css" />
-    <Content Include="www\css\ion.rangeSlider.skinHTML5.css" />
     <Content Include="www\css\jquery.bootstrap-touchspin.css" />
     <Content Include="www\css\jquery.bootstrap-touchspin.min.css" />
     <Content Include="www\css\jquery.dataTables.min.css" />

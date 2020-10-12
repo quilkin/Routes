@@ -59,6 +59,9 @@ namespace Routes
         [WebInvoke(Method = "POST", UriTemplate = "/SaveParticipant", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string SaveParticipant(Participant pp);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/LeaveParticipant", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string LeaveParticipant(Participant pp);
     }
 
 }

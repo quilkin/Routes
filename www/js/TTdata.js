@@ -25,17 +25,13 @@ var bleData = (function ($) {
 
         chooseDates = function (sensor) {
             if ($('#fromDate').is(":visible")) {
-                // dates have been chosen, get them and close options
+                // date has been chosen, get it and close options
                 rideDate = new Date($("#rideDate").val());
                 $('#fromDate').hide();
                 //$('#toDate').hide();
                 bleData.setDateChooser('Change ride date');
-                // in case dates have been changed....
-                //TCCrides.getWebRides(bleTime.toIntDays(rideDate));
-                //TCCrides.getWebRides(rideDate);
                 TCCrides.Clear();
                 TCCrides.CreateRideList(rideDate);
-                //bleData.showRoute();
                 return;
             }
 
@@ -245,10 +241,9 @@ var bleData = (function ($) {
             var elev_data;
             var bounds = gpx.getBounds();
             map.fitBounds(bounds);
-            //     control.addOverlay(gpx, gpx.get_name());
 
-            //_t('h3').textContent = gpx.get_name() + "  ";
-            _t('h3').textContent = TCCroutes.currentRoute().dest + ":  ";
+            var name = TCCroutes.currentRoute().dest;
+            _t('h3').textContent = name + ":  ";
 
             if (tab !== 'setup-tab') {
                 // add a download link
@@ -258,7 +253,8 @@ var bleData = (function ($) {
                 a.style.textDecoration = "underline";
                 a.appendChild(linkText);
                 a.title = "get GPX";
-                a.href = gpxdata;
+                a.href = 'data:text/csv;base64,' + btoa(gpxdata);
+                a.download = name + '.gpx';
                 _t('h3').appendChild(a);
            
 
@@ -316,7 +312,9 @@ var bleData = (function ($) {
                         TCCrides.Add(ride);
                         $('#home-tab').tab('show');
                         bleData.setCurrentTab('home-tab');
-                        TCCrides.CreateRideList(date);
+                        bleData.setDate(rideDate);
+                        bleData.setDateChooser('Change ride date');
+                        TCCrides.CreateRideList(rideDate);
                     }
                     else {
                         popup.Alert(response);
@@ -336,6 +334,7 @@ var bleData = (function ($) {
                     // a list of riders entered
                     list = response.substr(1);
                     popup.Alert("You have been added to this ride");
+                    TCCrides.CreateRideList(null);
                 }
                 else {
                     popup.Alert(response);
@@ -344,7 +343,21 @@ var bleData = (function ($) {
         }, null, -10);
         return list;
     };
-
+    bleData.leaveParticipant = function (rideID, rider) {
+        popup.Confirm("Leave this ride", "Are you sure?", function () {
+            var pp = new TCCrides.Participant(rider, rideID);
+            bleData.myJson("LeaveParticipant", "POST", pp, function (response) {
+                if (response === 'OK') {
+                    popup.Alert("You have left this ride");
+                    // recursively create a new list
+                    TCCrides.CreateRideList(null);
+                }
+                else {
+                    popup.Alert(response);
+                }
+            }, true, null);
+        }, null, -10);
+    };
 
 
     bleData.setDateChooser = function (btntext) {

@@ -144,12 +144,21 @@ var bleApp = (function () {
 
     function updateTime() {
         var d = new Date();
+        var timetext, string, username = login.User();
         if (d.getSeconds() < interval) {
-            var timetext = d.toDateString() + ' ' + bleTime.timeString(d);
-            var string = 'TCC Ride Planner <span style="color:black; font-size:small">' + timetext;
-            var username = login.User();
-            if (username !== undefined) {
-                string = string + ' Logged in as: </span>' + username;
+            if ($(window).width() >= 800) {
+                timetext = d.toDateString() + ' ' + bleTime.timeString(d);
+                string = 'TCC Ride Planner <span style="color:black; font-size:small">' + timetext;
+                if (username !== undefined) {
+                    string = string + ' Logged in as: </span>' + username;
+                }
+            }
+            else {
+                timetext = d.toDateString();
+                string = 'TCC Rides <span style="color:black; font-size:small">' + timetext;
+                if (username !== undefined) {
+                    string = string + '  </span> (' + username + ')';
+                }
             }
             $("#realtime").html(string);
         }

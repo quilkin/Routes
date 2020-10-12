@@ -116,6 +116,18 @@ var login = (function () {
         c = $("#code", form).val();
         if (c === undefined || c === '') { c = 0; }
 
+        if (p1 !== p2) {
+            popup.Alert("Passwords do not match");
+            $("#button-register").removeAttr("disabled");
+            return false;
+        }
+        if (u.length > 8 || u.includes(' ')) {
+            popup.Alert("User name must be 8 characters or less, and no spaces");
+            $("#button-register").removeAttr("disabled");
+            return false;
+
+        }
+
         if (u !== '' && p1 === p2 && p1 !== '' && e !== '') {
             creds = { name: u, pw: p1, email: e, code: c };
             bleData.myJson('Signup', "POST", creds, function (res) {

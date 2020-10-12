@@ -15,48 +15,165 @@ var TCCrides = (function () {
 
         // list of rides downloaded from database
         rides = [],
-        // list of rides currently displayed 
-        displayedRides = [],
-
-    //array of lists of participants, each member will be a string of paticipants for that ride
         rideIDs = [],
+        //array of lists of participants, each member will be a string of paticipants for that ride
         participants = [],
+        // state of join/leave button
+        joinButton = [],
+        joinText = 'Join',
+        leaveText = 'Leave',
+        currentDate,
+
         // the latest one to be downloaded from web. Includes URL only, not full gpx
         currentride = null,
+
+        getWebRides = function (date) {
+            var intdays = bleTime.toIntDays(date);
+            bleData.myJson("GetRidesForDate", "POST", intdays, function (response) {
+                rides = response;
+                if (rides.length === 0) {
+                    popup.Alert("No rides found for " + bleTime.dateString(date));
+                    return null;
+                }
+                $.each(rides, function (index) {
+                    rideIDs[index] = rides[index].rideID;
+                });
+                GetParticipants(rideIDs, participants);
+                return rides;
+            }, false, null);
+
+            return rides;
+        },
+
+        GetParticipants = function (rideIDs, participants) {
+
+            bleData.myJson("GetParticipants", "POST", rideIDs, function (response) {
+                $.each(rideIDs, function (index, ride) {
+                    participants[index] = response[index];
+                });
+                //         return participants;
+
+            }, false, null);
+        },
+
+        // may need to split html for each row so that we can update part of it as user adds/removes names
+        htmlstringFirstbit = [],
+        htmlstringSecondbit = [],
+
+        showRideRow = function (index, ride) {
+
+
+            var htmlstr = htmlstringFirstbit[index] + participants[index] + htmlstringSecondbit[index];
+
+            $('#ridelist').append(htmlstr);
+
+            $('#view' + index).click(function () {
+                currentride = ride;
+                var route = TCCroutes.findIDFromDest(ride.dest);
+                TCCroutes.SetRoute(route);
+                // get ready to load new map
+                TCCroutes.SetGPX(null);
+                bleData.showRoute();
+            });
+
+            $('#join' + index).click(function () {
+                currentride = ride;
+                if ($('#join' + index).text() === joinText) {
+                    if (ride.leaderName === login.User()) {
+                        popup.Alert("You cannot join your own ride!!");
+                    }
+                    else {
+                        bleData.saveParticipant(ride.rideID, login.User());
+                        //$('#join' + index).text = 'Leave';
+                        //participants[index] += (login.User() + ',');
+                        //// call recursively to show new participant
+                        //showRideRow(index, ride);
+                    }
+                }
+                else {
+                    bleData.leaveParticipant(ride.rideID, login.User());
+
+                }
+            });
+            if (index === 0) {
+                // show route for first ride in list
+                currentride = ride;
+            }
+
+        },
+
+        showRideList = function (rides) {
+           // data-complete-text="Select"
+
+            $.each(rides, function (index, ride) {
+                var title = ride.dest;
+                if (ride.dist !== undefined) {
+                    title = title + '(' + ride.dist + 'km)';
+                }
+                htmlstringFirstbit[index] = '<a id="sen' + index + '" class="list-group-item">' +
+                    '<button id="view' + index + '" type="button" class="btn btn-lifted btn-info btn-sm " data-toggle="button">' + title  + '</button>' +
+                    '<span style="color:blue; font-weight: bold">  ' + ride.leaderName + '</span>';
+                htmlstringSecondbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button">' +
+                    joinButton[index] + '</button > </a>';
+            });
+
+            $('#ridelist').empty();  // this will also remove any handlers
+            $.each(rides, function (index, ride) {
+                showRideRow(index, ride);
+            });
+
+        },
         // the latest full gpx text
         currentGPX = null;
 
 
-    TCCrides.getWebRides = function (date) {
-        var intdays = bleTime.toIntDays(date);
-        bleData.myJson("GetRidesForDate", "POST", intdays, function (response) {
-            rides = response;
-            if (rides.length === 0) {
-                popup.Alert("No rides found for " + bleTime.dateString(date));
-                return null;
+    TCCrides.CreateRideList = function (date) {
+        var id = login.ID();
+        if (id === undefined || id === 0) {
+            $('#loginModal').modal();
+            return;
+        }
+        if (date === null) {
+            // recursive call from having aadded or removed a rider
+            date = currentDate;
+            while (rides.length > 0) { rides.pop(); }
+        }
+        else {
+            currentDate = date;
+        }
+        while (participants.length > 0) { participants.pop(); }
+
+
+     //   if (rides === undefined || rides.length === 0) {
+            getWebRides(date);
+      //  }
+        // decide wether to show 'Join' or 'leave' for each ride
+        $.each(rides, function (index, ride) {
+           // string to search for in participant list
+            var commaID = ',' + login.User() + ',';
+            if (participants[index].includes(commaID)) {
+                // member is already signed up for this ride
+                joinButton[index] = leaveText;
             }
-            $.each(rides, function (index) {
-                rideIDs[index] = rides[index].rideID;
-            });
-            TCCrides.GetParticipants(rideIDs, participants);
-            return rides;
-        }, false, null);
+            else {
+                joinButton[index] = joinText;
+            }
 
-        return rides;
+        });
+
+        showRideList(rides);
+
+        // to review: maybe can't load a route here because of web callbacks overloading. Previous callbacks now made sync not async - will this be OK?
+        var ride = TCCrides.currentride();
+        var route = TCCroutes.findIDFromDest(ride.dest);
+        TCCroutes.SetRoute(route);
+        // load new map
+        TCCroutes.SetGPX(null);
+        bleData.showRoute();
     };
 
-    TCCrides.GetParticipants = function (rideIDs, participants) {
-
-        bleData.myJson("GetParticipants", "POST", rideIDs, function (response) {
-            $.each(rideIDs, function (index, ride) {
-                participants[index] = response[index];
-            });
-   //         return participants;
-
-        }, false, null);
-    };
     TCCrides.Ride = function (dest, leader, date, time, meeting, id) {
-        this.leaderName = leader;      
+        this.leaderName = leader;
         this.dest = dest;
         this.date = date;
         //this.distance = dist;
@@ -65,7 +182,6 @@ var TCCrides = (function () {
         this.time = time;
         this.meetingAt = meeting;
     };
-
     TCCrides.Participant = function (rider, rideID) {
         this.rider = rider;
         this.rideID = rideID;
@@ -119,73 +235,6 @@ var TCCrides = (function () {
         return nameStr;
     };
 
-
-    TCCrides.CreateRideList = function (date) {
-        var id = login.ID();
-        if (id === undefined || id === 0) {
-            $('#loginModal').modal();
-            return;
-        }
-
-
-        while (participants.length > 0) { participants.pop(); }
-        var rideIndex = 0;
-
-
-        if (rides === undefined || rides.length === 0) {
-            TCCrides.getWebRides(date);
-        }
-        $('#ridelist').empty();  // this will also remove any handlers
-
-        $.each(rides, function (index, ride) {
-            var title = ride.dest;
-            if (ride.dist !== undefined) {
-                title = title + '(' + ride.dist + 'km)';
-            }
-            var pp = participants[index];
-
-            var htmlstr = '<a id="sen' + index + '" class="list-group-item">' +
-                '<button id="view' + index + '" type="button" class="btn btn-lifted btn-info btn-sm " data-toggle="button" data-complete-text="Select">View</button> ' +
-                title + ' <span style="color:blue; font-weight: bold">' + ride.leaderName + '</span> ' + pp + 
-                '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Select">Join</button>' +
-                '</a>';
-            $('#ridelist').append(htmlstr);
-
-            $('#view' + index).click(function () {
-                currentride = ride;
-                var route = TCCroutes.findIDFromDest(ride.dest);
-                TCCroutes.SetRoute(route);
-                // get ready to load new map
-                TCCroutes.SetGPX(null);
-                bleData.showRoute();
-            });
-
-            $('#join' + index).click(function () {
-                currentride = ride;
-                if (ride.leader === login.User()) {
-                    popup.Alert("You cannot join your own ride!!");
-                }
-                else {
-                    bleData.saveParticipant(ride.rideID, login.User());
-                }
-            });
-            if (index === 0) {
-                //$('#home-tab').tab('show');
-                // show route for first ride in list
-                currentride = ride;
-            }
-            index++;
-        });
-
-        // can't load a route here because of web callbacks overloading. Need to wait until user clicks a ride.
-
-        ////var ride = TCCrides.currentride();
-        ////var route = TCCroutes.findIDFromDest(ride.dest);
-        ////TCCroutes.SetRoute(route);
-        ////// load new map
-        ////TCCroutes.SetGPX(null);
-        ////bleData.showRoute();
-    };
     TCCrides.ShowFirstRide = function () {
 
     };
