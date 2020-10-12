@@ -64,7 +64,6 @@ var bleData = (function ($) {
                 //return "http://192.168.1.73:54684/Service1.svc/";
             }
            //return "/Routes.svc/";
-            //return "https://www.quilkin.co.uk/TCCRides/Routes.svc/";
            return "http://localhost/routes/Routes.svc/";
 
         },
@@ -345,7 +344,8 @@ var bleData = (function ($) {
         }, null, -10);
         return list;
     };
- 
+
+
 
     bleData.setDateChooser = function (btntext) {
         $('#dateTitle').html(bleTime.dateString(rideDate) +  '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span>');

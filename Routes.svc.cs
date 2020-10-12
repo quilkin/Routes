@@ -124,6 +124,10 @@ namespace Routes
             return szAddress;
         }
 
+        public string TestService()
+        {
+            return "Service found and working!";
+        }
 
         /// <summary>
         /// Log in to the system
@@ -392,38 +396,29 @@ namespace Routes
 
                     else
                     {
-                        try
+
+                        using (System.Net.WebClient client = new System.Net.WebClient())
                         {
-                            using (System.Net.WebClient client = new System.Net.WebClient())
+
+                            query = string.Format("insert into rides (dest,leaderName,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
+                                ride.Dest, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt);
+                            // get new ride ID
+                            query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
+                            object rideID = null;
+
+                            using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                             {
-
-                                query = string.Format("insert into rides (dest,leaderName,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
-                                    ride.Dest, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt);
-                                // get new ride ID
-                                query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
-                                object rideID = null;
-
-                                using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
-                                {
-                                   // successRows = command.ExecuteNonQuery();
-                                    rideID = command.ExecuteScalar();
-                                }
-                                // return id of new route
-                                result = rideID.ToString();
-
-
+                                // successRows = command.ExecuteNonQuery();
+                                rideID = command.ExecuteScalar();
                             }
-                        }
-                        catch (Exception ex2)
-                        {
-                            result = string.Format("Database error: ride \"{0}\" not saved", ride.Dest);
+                            // return id of new route
+                            result = rideID.ToString();
                         }
                     }
-
                 }
                 catch (Exception ex)
                 {
-                    result = string.Format("Database error: {0}", ex.Message);
+                    result = string.Format("Database error: ride \"{0}\" not saved: {1}", ride.Dest,  ex.Message);
                 }
 
 
@@ -590,6 +585,51 @@ namespace Routes
             log.Save(gpxConnection);
             gpxConnection.Close();
             return data;
+        }
+
+        // need to get list of participants for all shown rides at once, to avoid javascript running forward to next requests
+        public string[] GetParticipants(int[] rideIDs)
+        {
+            LogEntry log = new LogEntry(GetIP(), "GetParticipants for rides: " , rideIDs.Length.ToString() );
+
+
+            string[] participants = new string[rideIDs.Length];
+            int index = 0;
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    foreach (int rideID in rideIDs)
+                    {
+                        string pp = "";
+                        string query = string.Format("SELECT rider FROM Participants where rideID = '{0}' ", rideID);
+                        using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                        {
+                            dataRoutes = new DataTable();
+                            routeAdapter.Fill(dataRoutes);
+                            int length = dataRoutes.Rows.Count;
+
+                            for (int row = 0; row < length; row++)
+                            {
+                                DataRow dr = dataRoutes.Rows[row];
+                                pp = pp + (string)dr["rider"] + " ";
+                            }
+
+                        }
+                        participants[index++] = pp;
+
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    Trace.WriteLine(ex2.Message);
+                    log.Error = ex2.Message;
+                }
+            }
+            log.Result = "got Participants for " + rideIDs.Length + "rides";
+            log.Save(gpxConnection);
+            gpxConnection.Close();
+            return participants;
         }
 
         public string SaveParticipant(Participant pp)

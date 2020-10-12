@@ -122,6 +122,9 @@
             $(".navbar-nav a[href=#home]").tab('show');
 
         }
+        //bleData.myJson('TestService', "POST", null, function (res) {
+        //    popup.Alert(res);
+        //}, true, null);
 
     });
 
@@ -143,7 +146,7 @@ var bleApp = (function () {
         var d = new Date();
         if (d.getSeconds() < interval) {
             var timetext = d.toDateString() + ' ' + bleTime.timeString(d);
-            var string = 'TCC Ride Planner <span style="color:black; font-size:small">' + timetext ;
+            var string = 'TCC Ride Planner <span style="color:black; font-size:small">' + timetext;
             var username = login.User();
             if (username !== undefined) {
                 string = string + ' Logged in as: </span>' + username;

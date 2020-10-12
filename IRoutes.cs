@@ -13,6 +13,10 @@ namespace Routes
      [ServiceContract]
     public interface IRoutes
     {
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/TestService", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [ServiceKnownType(typeof(string))]
+        string TestService();
 
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/GetRouteSummaries", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
@@ -26,8 +30,13 @@ namespace Routes
 
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/GetGPXforRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
-        [ServiceKnownType(typeof(List<Route>))]
+        [ServiceKnownType(typeof(string))]
         string GetGPXforRoute(int routeID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/GetParticipants", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [ServiceKnownType(typeof(string[]))]
+        string[] GetParticipants(int[] rideIDs);
 
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/Login", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]

@@ -157,12 +157,9 @@ namespace Routes
         }
         public void Save(DBConnection conn)
         {
-            //if (this.Error != null)
-            //    this.Error = this.Error.Substring(0, 125);
-            //if (this.Result != null)
-            //    this.Result = this.Result.Substring(0, 125);
+
             string query = string.Format("insert into log (time,ip,func,args,result,error) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
-                Routes.TimeString(DateTime.Now), this.IP, this.Function, this.Args,this.Result,this.Error);
+                Routes.TimeString(DateTime.Now), this.IP, this.Function, this.Args, this.Result, this.Error);
 
             using (MySqlCommand command = new MySqlCommand(query, conn.Connection))
             {

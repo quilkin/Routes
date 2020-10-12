@@ -5,8 +5,9 @@
 
 this week's rides:
 	inhibit 'join'  button for old weeks
-	form for joining a ride (if < 6 riders*)
 	display distance and participants
+	don't allow rider to join >1 ride on same day
+	allow rider to 'unjoin' (leave) a ride
 general route list:
 	allow user to choose one for a ride 
 

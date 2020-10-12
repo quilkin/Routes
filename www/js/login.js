@@ -67,6 +67,8 @@ var login = (function () {
         p = $("#password", form).val();
         remember = $("#remember").is(':checked');
 
+
+
         role = 0;
 
         if (u !== '' && p !== '') {
