@@ -114,12 +114,21 @@
             console.log(tab);
         });
 
-        $("loginclose").on('click', function () {
-            $("myTabContent").hide();
-            $("home").hide();
-            $("webdata").hide();
-            $("panel-setup").hide();
+        $('#loginModal').on('shown.bs.modal', function (e) {
+            $("#form-register").hide();
+            $("#signin-cancel").on('click', function () {
+                $("#myTabContent").hide();
+                $("#home").hide();
+                $("#webdata").hide();
+                $("#panel-setup").hide();
+                $('#loginModal').modal('hide');
+            });
+            $("#signin-register").on('click', function () {
+                $("#form-register").show();
+            });
         });
+
+        
 
 
         // see if any URL params for registration

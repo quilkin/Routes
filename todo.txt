@@ -1,18 +1,18 @@
 ﻿upload route: 
-	
 	length of route name needs limiting
 	extract and save distance and climbing
 plan ride on existing route:
 	doesn't show route correctly
-	ride list date not updated
+	ride list date not updated?
 this week's rides:
 	inhibit 'join'  button for old weeks
-	display distance 
-	don't allow rider to join >1 ride on same day
+	display distance and description
+	don't allow rider to join more than one ride on same day
 
 
 login:
-limit username length etc
+    limit username length etc
+	don't allow >1 registration from each email
 	option to avoid password and email
 setup:
     make tab titles bolder

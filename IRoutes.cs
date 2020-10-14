@@ -66,6 +66,10 @@ namespace Routes
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/Register", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string Register(Login login);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/DeleteRide", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string DeleteRide(int rideID);
     }
 
 }

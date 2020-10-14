@@ -824,5 +824,47 @@ namespace Routes
 
         }
 
+        public string DeleteRide(int rideID)
+        {
+            LogEntry log = new LogEntry(GetIP(), "DeleteRide ", rideID.ToString());
+
+            int successRows = 0;
+            string result = "";
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+
+                        using (System.Net.WebClient client = new System.Net.WebClient())
+                        {
+
+                            string query = string.Format("delete from rides where rideID = {0}", rideID);
+
+                            using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                            {
+                                successRows = command.ExecuteNonQuery();
+
+                            }
+                            result = "OK";
+                        }
+
+
+                }
+                catch (Exception ex)
+                {
+                    result = string.Format("Database error: {0}", ex.Message);
+                }
+
+
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            return result;
+
+        }
     }
 }

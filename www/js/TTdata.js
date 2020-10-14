@@ -59,8 +59,8 @@ var bleData = (function ($) {
                 return "http://www.quilkin.co.uk/routes.svc/";
                 //return "http://192.168.1.73:54684/Service1.svc/";
             }
-           //return "/Routes.svc/";
-           return "http://localhost/routes/Routes.svc/";
+           return "/Routes.svc/";
+           //return "http://localhost/routes/Routes.svc/";
 
         },
         webRequestFailed = function (handle, status, error) {
@@ -301,7 +301,9 @@ var bleData = (function ($) {
 
     bleData.leadRide = function () {
         $('#convertToRide').show();
-        $('#uploadRoute').hide();
+        $('#route-url-label').hide();
+        $('#route-url').hide();
+        $('#routeTitle').html('Destination (with unique name); Description e.g. easy,middle, hard');
         $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "dd M yyyy" });
         $("#rideDate1").datepicker('setDate', rideDate);
 
@@ -362,6 +364,20 @@ var bleData = (function ($) {
             bleData.myJson("LeaveParticipant", "POST", pp, function (response) {
                 if (response === 'OK') {
                     popup.Alert("You have left this ride");
+                    // recursively create a new list
+                    TCCrides.CreateRideList(null);
+                }
+                else {
+                    popup.Alert(response);
+                }
+            }, true, null);
+        }, null, -10);
+    };
+    bleData.deleteRide = function (rideID) {
+        popup.Confirm("Delete this ride", "Are you sure?", function () {
+            bleData.myJson("DeleteRide", "POST", rideID, function (response) {
+                if (response === 'OK') {
+                    popup.Alert("You have deleted this ride");
                     // recursively create a new list
                     TCCrides.CreateRideList(null);
                 }

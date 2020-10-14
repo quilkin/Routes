@@ -52,9 +52,9 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right" role="tablist" id="mytabs">
-                    <li class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><span class="glyphicon glyphicon-calendar"></span>This Week's rides</a></li>
-                    <li><a href="#webdata" id="webdata-tab" role="tab" data-toggle="tab" aria-controls="webdata"><span class="glyphicon glyphicon-globe"></span>View all routes</a></li>
-                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup"><span class="glyphicon glyphicon-wrench"></span>Set Up new route</a></li>
+                    <li class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><span class="glyphicon glyphicon-calendar"></span><span style="color:blue; font-size:medium">This Week's rides</span></a></li>
+                    <li><a href="#webdata" id="webdata-tab" role="tab" data-toggle="tab" aria-controls="webdata"><span class="glyphicon glyphicon-globe"></span><span style="color:blue; font-size:medium">View all routes</span></a></li>
+                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup"><span class="glyphicon glyphicon-wrench"></span><span style="color:blue; font-size:medium">Set Up new route</span></a></li>
                 </ul>
             </div>
         </div>
@@ -176,19 +176,19 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="route-dest" class="control-label side-label">Destination:</label>
+                                                <label for="route-dest" class="control-label side-label" placeholder="Coffee stop?">Destination:</label>
                                                 <input type="text" class="form-control  side-input detectChange" id="route-dest">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="route-descrip" class="control-label side-label">Description (optional):</label>
+                                                <label for="route-descrip" class="control-label side-label" placeholder="Easy? Middle? Hard?" >Description (optional):</label>
                                                 <input type="text" class="form-control side-input detectChange" id="route-descrip">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="route-url" class="control-label side-label">URL (link) to GPX file:</label>
+                                                <label for="route-url" class="control-label side-label" id="route-url-label">URL (link) to GPX file:</label>
                                                 <input type="text" class="form-control side-input detectChange" id="route-url">
                                             </div>
                                         </div>
@@ -246,21 +246,6 @@
                                     <div class="map" id="setup-map"></div>
                                 </article>
 
-                                <!--<article>
-                                <div class="elev" id="setup-elev"></div>
-                            </article>
-
-                            <footer>
-                                <ul class="info">
-                                    <li>Distance:&nbsp;<span class="distance"></span>&nbsp;km</li>
-                                    <li>
-                                        Elevation:&nbsp;up: <span class="elevation-gain"></span>&nbsp;m,
-                                        down: <span class="elevation-loss"></span>&nbsp;m
-
-                                        <span class="elevation-none"></span>
-                                    </li>
-                                </ul>
-                            </footer>-->
                             </div>
                         </div>
                     </div>
@@ -273,7 +258,8 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" id="loginclose" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button class="btn btn-primary pull-right " id="signin-register" type="button" data-loading-text="Checking...">Register</button>
+                    <!--<button type="button" class="close" id="loginclose" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
                     <h4 class="modal-title">Login / Register</h4>
                 </div>
                 <div class="modal-body">
@@ -288,10 +274,13 @@
                                 <input id="remember" type="checkbox" value="remember-me"> Remember me
                             </label>
                         </div>
-                        <button class="btn btn-lg btn-primary btn-block" type="submit" id="button-signin" data-loading-text="Checking...">Sign in</button>
+
+                        <button class="btn btn-primary" id="signin-cancel" type="button" data-loading-text="Checking...">Cancel</button>
+                       
+                        <button class="btn btn-info pull-right "type="submit" id="button-signin" data-loading-text="Checking...">Sign in</button>
                     </form>
                     <form class="form-register" id="form-register">
-                        <h4 class="form-register-heading">...or register</h4>
+                        <!--<h4 class="form-register-heading">...or register</h4>-->
                         <input type="text" id="username1" class="form-control" placeholder="User name" required autofocus>
                         <input type="email" id="email1" class="form-control" placeholder="Email address" required autofocus>
                         <input type="password" id="password1" class="form-control" placeholder="Password" required>

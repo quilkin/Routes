@@ -22,6 +22,7 @@ var TCCrides = (function () {
         joinButton = [],
         joinText = 'Join',
         leaveText = 'Leave',
+        cancelRideText = 'Cancel this ride',
         currentDate,
 
         // the latest one to be downloaded from web. Includes URL only, not full gpx
@@ -78,17 +79,17 @@ var TCCrides = (function () {
 
             $('#join' + index).click(function () {
                 currentride = ride;
-                if ($('#join' + index).text() === joinText) {
+                var buttontext = $('#join' + index).text();
+                if (buttontext === joinText) {
                     if (ride.leaderName === login.User()) {
                         popup.Alert("You cannot join your own ride!!");
                     }
                     else {
                         bleData.saveParticipant(ride.rideID, login.User());
-                        //$('#join' + index).text = 'Leave';
-                        //participants[index] += (login.User() + ',');
-                        //// call recursively to show new participant
-                        //showRideRow(index, ride);
                     }
+                }
+                else if (buttontext === cancelRideText) {
+                    bleData.deleteRide(ride.rideID);
                 }
                 else {
                     bleData.leaveParticipant(ride.rideID, login.User());
@@ -158,6 +159,9 @@ var TCCrides = (function () {
             if (participants[index].includes(commaID)) {
                 // member is already signed up for this ride
                 joinButton[index] = leaveText;
+            }
+            else if (login.User() === ride.leaderName && participants[index].length < 2) {
+                joinButton[index] = cancelRideText;
             }
             else {
                 joinButton[index] = joinText;
