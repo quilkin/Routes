@@ -6,22 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <!--<link rel="icon" href="../../favicon.ico">-->
 
     <title>TCC rides signup</title>
-    <!-- Bootstrap core CSS -->
-    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">-->
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     <link href="css/gpx.css" rel="stylesheet">
     <link href="css/datepicker3.css" rel="stylesheet">
-    <!--<link href="css/ion.rangeSlider.css" rel="stylesheet">
-    <link href="css/ion.rangeSlider.skinHTML5.css" rel="stylesheet">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
-    <!--<link href="css/jquery.bootstrap-touchspin.min.css" rel="stylesheet">-->
+
+
+    <link rel="apple-touch-icon" sizes="57x57" href="icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="manifest" href="icons/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
 
 </head>
 
@@ -261,14 +273,14 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" id="loginclose" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Login / Register</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-signin" id="form-signin">
                         <h3 class="form-signin-heading">Please sign in</h3>
-                        <label for="username" class="sr-only">Username or Email address</label>
-                        <input type="text" id="username" class="form-control" placeholder="Email address" required autofocus>
+                        <label for="username" class="sr-only">Username</label>
+                        <input type="text" id="username" class="form-control" placeholder="Username" required autofocus>
                         <label for="password" class="sr-only">Password</label>
                         <input type="password" id="password" class="form-control" placeholder="Password" required>
                         <div class="checkbox">
@@ -284,7 +296,7 @@
                         <input type="email" id="email1" class="form-control" placeholder="Email address" required autofocus>
                         <input type="password" id="password1" class="form-control" placeholder="Password" required>
                         <input type="password" id="password2" class="form-control" placeholder="Confirm password" required>
-                        <input type="text" id="code" class="form-control" placeholder="Code from return email">
+                        <!--<input type="text" id="code" class="form-control" placeholder="Code from return email">-->
 
                         <button class="btn btn-lg btn-primary btn-block" type="submit" id="button-register" data-loading-text="Registering...">Register</button>
                     </form>

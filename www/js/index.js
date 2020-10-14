@@ -114,17 +114,40 @@
             console.log(tab);
         });
 
-        if (bleApp.isMobile()===false)
-        {
+        $("loginclose").on('click', function () {
+            $("myTabContent").hide();
+            $("home").hide();
+            $("webdata").hide();
+            $("panel-setup").hide();
+        });
+
+
+        // see if any URL params for registration
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const username = urlParams.get('username');
+        const regcode = urlParams.get('regcode');
+        const email1 = urlParams.get('m1');
+        const email2 = urlParams.get('m2');
+
+        const email = email1 + '@' + email2;
+        if (username !== null && regcode !== null) {
+            var success = login.CompleteRegistration(username, regcode, email);
+            if (success === true) {
+                // always need to login, cannot download devices from non-mobile
+                $('#loginModal').modal();
+                // switch straight to home tab
+                $(".navbar-nav a[href=#home]").tab('show');
+            }
+        }
+        else if (bleApp.isMobile() === false) {
             // always need to login, cannot download devices from non-mobile
             $('#loginModal').modal();
             // switch straight to home tab
             $(".navbar-nav a[href=#home]").tab('show');
 
         }
-        //bleData.myJson('TestService', "POST", null, function (res) {
-        //    popup.Alert(res);
-        //}, true, null);
+
 
     });
 

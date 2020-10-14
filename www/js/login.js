@@ -36,21 +36,14 @@ var login = (function () {
     }
 
     ///
-    // Logged in successfully, maybe create a list of sensors that can be displayed
+    // Logged in successfully
     ///
     function loggedInOK() {
-        // get list of all routes in db
-        TCCroutes.CreateRouteList();
-
-        // get list of rides for next Sunday
-        // find next Sunday's date
-        var today = new Date();
-        today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        while (today.getDay() !== 0) {
-            today = bleTime.addDays(today, 1);
-        }
-        TCCrides.CreateRideList(today);
-
+        $("myTabContent").show();
+        $("home").show();
+        $("webdata").show();
+        $("panel-setup").show();
+        bleData.CreateLists();
         $('#loginModal').modal('hide');
         // switch to web data tab
         $(".navbar-nav a[href=#home]").tab('show');
@@ -86,7 +79,11 @@ var login = (function () {
                         window.localStorage.username = u;
                         window.localStorage.password = p;
                     }
-                    loggedInOK();
+                    if (role === 0) {
+                        popup.Alert("You need to reply to your email to complete registration");
+                    }
+                    else
+                        loggedInOK();
 
                 } else {
                     popup.Alert("Invalid username or password");
@@ -137,26 +134,7 @@ var login = (function () {
                     $("#code").show();
                     //$("#lblCode").show();
                 }
-                if (res.substring(0, 9) === "Thank you")           //"Thank you, you have now registered"
-                {
-                    role = UserRoles.Viewer;
-                    var creds = { name: u, pw: p1, email: "", code: 0 };
 
-                    bleData.myJson('Login', "POST", creds, function (res) {
-                        if (res.id > 0) {
-                            role = res.role;
-                            id = res.id;
-                            username = res.name;
-                            loggedInOK();
-
-                        } else {
-                            popup.Alert("Invalid username or password");
-                        }
-                        
-                    }, true, null);
-
-                    loggedInOK();
-                }
             }, true, null);
 
         } else {
@@ -165,6 +143,44 @@ var login = (function () {
         }
         return false;
     }
+
+    login.CompleteRegistration = function (user, regcode,em) {
+        console.log('Registration: ' + user + ' ' + regcode + ' ' + em);
+
+        var creds = { name: user, code: regcode, email: em };
+        var success = false;
+        bleData.myJson('Register', "POST", creds, function (res) {
+            if (res.substring(0, 9) === "Thank you")           //"Thank you, you have now registered"
+            {
+                //role = UserRoles.Viewer;
+                //var creds = { name: u, pw: p1, email: "", code: 0 };
+
+                //bleData.myJson('Login', "POST", creds, function (res) {
+                //    if (res.id > 0) {
+                //        role = res.role;
+                //        id = res.id;
+                //        username = res.name;
+                //        loggedInOK();
+
+                //    } else {
+                //        popup.Alert("Invalid username or password");
+                //    }
+
+                //}, true, null);
+
+                //loggedInOK();
+                success = true;
+                popup.Alert("Thank you, you can now log in");
+ 
+
+            } else {
+                popup.Alert("Invalid username , code or email");
+            }
+
+        }, false, null);
+        return success;
+    };
+
     login.Login = function () {
         
         if (role === undefined || role === UserRoles.None) {

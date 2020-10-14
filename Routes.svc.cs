@@ -171,13 +171,43 @@ namespace Routes
             return null;
         }
 
+        public string Register(Login login)
+        {
+            LogEntry log = new LogEntry(GetIP(), "Register", login.Name + " " + login.Code);
+            string result = "";
+            if (login.Code == login.CalcCode())
+            {
+                string query = string.Format("update logins set role = 1 where name = '{0}'",
+                    login.Name);
+                if (gpxConnection.IsConnect())
+                {
+                    try
+                    {
+                        var cmd = new MySqlCommand(query, gpxConnection.Connection);
+                        cmd.ExecuteNonQuery();
+                        result = "Thank you, you have now registered";
+                    }
+                    catch (Exception ex)
+                    {
+                        result = result = "There is a database error, please try again:" + ex.Message;
+                    }
+                }
+                log.Result = login.Name;
+                log.Save(gpxConnection);
+                gpxConnection.Close();
+                return result;
+            }
+            return "Error with email or code, sorry";
+        }
+           
+
         public string Signup(Login login)
         {
             LogEntry log = new LogEntry(GetIP(), "Signup",  new JavaScriptSerializer().Serialize(login));
 
 
             System.Net.Mail.MailAddress emailAddr;
-            string result = "OK, now please enter code from email and resubmit details";
+            string result = "OK, now please wait for an email and click the link to complete your registration";
             try
             {
                 emailAddr = new System.Net.Mail.MailAddress(login.Email);
@@ -217,26 +247,6 @@ namespace Routes
                         }
                     }
                 }
-                else if (login.Code == login.CalcCode())
-                {
-                    query = string.Format("insert into logins (name, pw, email) values ('{0}','{1}','{2}')",
-                        login.Name, login.PW, login.Email);
-                    try
-                    {
-                        var cmd = new MySqlCommand(query, gpxConnection.Connection) ;
-                        cmd.ExecuteNonQuery();
-                        result = "Thank you, you have now registered";
-                    }
-                    catch
-                    {
-                        result = "There is a database error, please try again";
-                    }
-                }
-                else
-                {
-                    result = "There is an error with the code number, please try again";
-                }
-
 
 
                 if (login.Code == 0)
@@ -244,12 +254,16 @@ namespace Routes
                 {
                     // create a code based on data
                     login.Code = login.CalcCode();
+                    string[] emailparts = emailAddr.Address.Split(new Char[] { '@' });
 
+                    string URLstr = string.Format("https://quilkin.co.uk/tccrides?username={0}&regcode={1}&m1={2}&m2={3}",
+                        login.Name, login.Code, emailparts[0], emailparts[1]);
+                    //string URLstr = string.Format("https://quilkin.co.uk/tccrides?username={0}&regcode={1}", login.Name, login.Code);
                     EmailConnection email = new EmailConnection();
                     System.Net.Mail.MailAddress from = new System.Net.Mail.MailAddress("admin@quilkin.co.uk");
                     System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage(from, emailAddr);
                     message.Subject = "TCC rides signup";
-                    message.Body = string.Format("Please enter the code {0} into the signup page to complete your registration", login.Code);
+                    message.Body = string.Format("Please click {0}  to complete your registration", URLstr);
 
                     try
                     {
@@ -257,12 +271,30 @@ namespace Routes
                         //client.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
                         client.Credentials = new System.Net.NetworkCredential(email.User, email.PW);
                         client.Send(message);
+
+                        // save the login details but with role as zero so login won't yet work
+                        log = new LogEntry(GetIP(), "Register", login.Name + " " + login.Code);
+                        query = string.Format("insert into logins (name, pw, email,role) values ('{0}','{1}','{2}',{3})", login.Name, login.PW, login.Email, 0);
+
+                        try
+                        {
+                            var cmd = new MySqlCommand(query, gpxConnection.Connection);
+                            cmd.ExecuteNonQuery();
+                            result = "Thank you, please wait for an email and click link to complete registration";
+                        }
+                        catch (Exception ex2)
+                        {
+                            result = "There is a database error, please try again:" + ex2.Message;  ;
+                        }
                     }
                     catch (Exception ex)
                     {
                         result = "Sorry, there is an error with the email service: " + ex.Message;
                     }
-                }
+
+
+
+                 }
                 log.Result = result;
                 log.Save(gpxConnection);
 

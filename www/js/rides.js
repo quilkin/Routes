@@ -151,6 +151,10 @@ var TCCrides = (function () {
         $.each(rides, function (index, ride) {
            // string to search for in participant list
             var commaID = ',' + login.User() + ',';
+            if (login.Role() < 1) {
+                joinButton[index].hide();
+            }
+            else
             if (participants[index].includes(commaID)) {
                 // member is already signed up for this ride
                 joinButton[index] = leaveText;

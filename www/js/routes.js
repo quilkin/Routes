@@ -134,8 +134,9 @@ var TCCroutes = (function () {
 
                 TCCroutes.SetGPX(null);
                 bleData.showRoute();
-                // allow user to plana  ride from this route
-                $('#planRide').show();
+                if (login.Role() > 0)
+                // allow user to plan a  ride from this route
+                    $('#planRide').show();
             });
 
             index++;

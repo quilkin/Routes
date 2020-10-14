@@ -38,7 +38,12 @@ var bleSetup = (function ($) {
 
     $("#setupDone").on('click', function () {
         $("#saveRoute").prop("disabled", true);
-        
+
+        if (login.Role < 1) {
+            popup.Alert("You need to register for this");
+            return;
+        }
+        $("#setupDone").hide();
         var descrip  = $("#route-descrip").val();
         var dest = $("#route-dest").val();
         var url = $("#route-url").val();

@@ -115,6 +115,19 @@ var bleData = (function ($) {
     //    while (dispValues.length > 0) { dispValues.pop(); }
     //};
 
+    bleData.CreateLists = function () {
+        // get list of all routes in db
+        TCCroutes.CreateRouteList();
+
+        // get list of rides for next Sunday
+        // find next Sunday's date
+        var today = new Date();
+        today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        while (today.getDay() !== 0) {
+            today = bleTime.addDays(today, 1);
+        }
+        TCCrides.CreateRideList(today);
+    };
     bleData.setDate = function (start) {
         rideDate = start;
     };

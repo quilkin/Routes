@@ -33,7 +33,7 @@ namespace Routes
         }
         public int CalcCode()
         {
-            return (Name.Length + PW.Length) * 417 + Email.Length;
+            return (Name.Length + (int)(Name[0])) * 417 + Email.Length;
         }
     }
 
