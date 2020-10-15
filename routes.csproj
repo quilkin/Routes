@@ -14,7 +14,7 @@
     <RootNamespace>routes</RootNamespace>
     <AssemblyName>routes</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -200,7 +200,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>54684</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/routes</IISUrl>
+          <IISUrl>http://localhost:54684/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
