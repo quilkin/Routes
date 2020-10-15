@@ -41,21 +41,9 @@
 
         // add some handlers
         $("#form-signin").on("show", login.Login());
-        //$("#upload-button").on('click', function () {
-        //    var $btn = $(this).button('loading');
-        //    window.setTimeout(function () { bleData.Upload($btn); }, 100);
-        //});
 
-        //$("#scanTitle").click(tagConnect.scan);
-        //$("#getall-button").click(bleTag.ReadAll);
-        //$("#upload-button").click(function () { bleData.Upload(0); });
-        //$("#testUpload").click(function () { bleData.testUpload(0); });
         $("#tableName").click(bleData.DisplayValues);
 
-        //$("#dateTitle").click(bleData.ChooseDates);
-        //$('#findTitle').click(TCCroutes.CreateRouteList);
-        //$('#showSelected').click(bleData.showRoute);
-        //$('#uploadRoute').click(bleSetup.initialise);
         //$('#statusConnect').click(function () { $('#scanlist').show(); });
         // hide these elements until they are needed
         $("#progress-bar").hide();
@@ -73,15 +61,10 @@
             bleData.showRoute();
             bleData.leadRide();
         });
-        //$('#home-tab').on("show", TCCrides.ShowFirstRide());
+
         $('#home-tab').tab('show');
         bleData.setCurrentTab('home-tab');
-    //    $('#fromDate').datepicker()
-    //        .on('onRender', function (ev) {
-    //            if (ev.date.valueOf() === 0){
-    //        return 'highlight';
-    //    }
-    //});
+
 
         var today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -91,7 +74,7 @@
         }
         
         bleData.setDate(today);
-        bleData.setDateChooser('Change ride date');
+        bleData.setDateChooser('View other dates');
         
         $(".detectChange").change(function () {
             $("#saveRoute").prop("disabled", false);

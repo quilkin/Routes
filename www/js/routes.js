@@ -70,6 +70,7 @@ var TCCroutes = (function () {
         }
         return null;
     };
+
     TCCroutes.Add = function (route) {
         routes.push(route);
     };
@@ -125,12 +126,13 @@ var TCCroutes = (function () {
             if (title[0] ==='*')
                 // don't display 'ghost' routes with no GPX file
                 return;
-            if (route.dist !== undefined) {
-                title = title + '(' + route.dist + 'km)';
+            if (route.distance === undefined || route.distance === 0 ) {
+                route.distance = '? ';
             }
 
             var htmlstr = '<a id="sen' + index + '" class="list-group-item">' + title +
-                '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Select">Select</button>' +
+                '<span style="color:red; font-weight: bold">  ' + route.distance + 'km</span>' +
+                '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Select">Show</button>' +
                 '</a>';
             $('#routelist').append(htmlstr);
 

@@ -108,11 +108,15 @@ var TCCrides = (function () {
 
             $.each(rides, function (index, ride) {
                 var title = ride.dest;
-                if (ride.dist !== undefined) {
-                    title = title + '(' + ride.dist + 'km)';
+                var route = TCCroutes.findIDFromDest(ride.dest);
+                var distance = route.distance;
+                if (distance === undefined) {
+                    distance = "";
                 }
+
                 htmlstringFirstbit[index] = '<a id="sen' + index + '" class="list-group-item">' +
-                    '<button id="view' + index + '" type="button" class="btn btn-lifted btn-info btn-sm " data-toggle="button">' + title  + '</button>' +
+                    '<button id="view' + index + '" type="button" class="btn btn-lifted btn-info btn-sm " data-toggle="button">' + title + '</button>' +
+                    '<span style="color:red; font-weight: bold">  ' + distance + 'km</span>' +
                     '<span style="color:blue; font-weight: bold">  ' + ride.leaderName + '</span>';
                 htmlstringSecondbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button">' +
                     joinButton[index] + '</button > </a>';

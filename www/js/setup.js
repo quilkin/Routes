@@ -10,9 +10,9 @@ var bleSetup = (function ($) {
 
     var bleSetup = {},
 
-    saveRoute = function (route) {
-        if (route.dest.length < 2) {
-            popup.Alert("Destination needed");
+        saveRoute = function (route) {
+            if (route.dest.length < 2 || route.dist === null || route.dist === 0) {
+            popup.Alert("Destination and distance needed");
             return;
         }
         if (route.description.length < 2 && route.url.length < 2) {
@@ -76,8 +76,9 @@ var bleSetup = (function ($) {
         var descrip  = $("#route-descrip").val();
         var dest = $("#route-dest").val();
         var url = $("#route-url").val();
+        var dist = $("#route-distance").val();
         var owner = login.ID();
-        var route = new TCCroutes.Route(url, dest, descrip, 0, 0, owner, 0);
+        var route = new TCCroutes.Route(url, dest, descrip,dist, 0, owner, 0);
         if (url.length < 2) {
             popup.Confirm("Add a ride without uploading a route?", "Are you sure?", saveRoute(route), null, -10);
 

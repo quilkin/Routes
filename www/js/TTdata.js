@@ -29,7 +29,7 @@ var bleData = (function ($) {
                 rideDate = new Date($("#rideDate").val());
                 $('#fromDate').hide();
                 //$('#toDate').hide();
-                bleData.setDateChooser('Change ride date');
+                bleData.setDateChooser('View other dates');
                 TCCrides.Clear();
                 TCCrides.CreateRideList(rideDate);
                 return;
@@ -258,6 +258,18 @@ var bleData = (function ($) {
             var name = TCCroutes.currentRoute().dest;
             _t('h3').textContent = name + ":  ";
 
+            var distance = (gpx.get_distance() / 1000).toFixed(0);
+            var elev_gain = gpx.get_elevation_gain().toFixed(0);
+            var elev_loss = gpx.get_elevation_loss().toFixed(0);
+
+            var route = TCCroutes.currentRoute();
+            if (route.distance === null || route.distance === 0) {
+                route.distance = distance;
+                bleData.myJson("UpdateRoute", "POST", route, function (response) {
+                    var reply = response;
+
+                }, false, null);
+            }
             if (tab !== 'setup-tab') {
                 // add a download link
                 var a = document.createElement('a');
@@ -271,9 +283,9 @@ var bleData = (function ($) {
                 _t('h3').appendChild(a);
            
 
-                _c('distance').textContent = (gpx.get_distance() / 1000).toFixed(1);
-                _c('elevation-gain').textContent = gpx.get_elevation_gain().toFixed(0);
-                _c('elevation-loss').textContent = gpx.get_elevation_loss().toFixed(0);
+                _c('distance').textContent = distance;
+                _c('elevation-gain').textContent = elev_gain;
+                _c('elevation-loss').textContent = elev_loss;
                 //_c('elevation-net').textContent = (gpx.get_elevation_gain() - gpx.get_elevation_loss()).toFixed(0);
 
                 //drawProfile1("demo-elev", elev_data);
@@ -328,7 +340,7 @@ var bleData = (function ($) {
                         $('#home-tab').tab('show');
                         bleData.setCurrentTab('home-tab');
                         bleData.setDate(rideDate);
-                        bleData.setDateChooser('Change ride date');
+                        bleData.setDateChooser('View other dates');
                         TCCrides.CreateRideList(rideDate);
                     }
                     else {
