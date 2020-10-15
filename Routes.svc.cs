@@ -346,11 +346,16 @@ namespace Routes
                         {
                             using (System.Net.WebClient client = new System.Net.WebClient())
                             {
-                                fullText = client.DownloadString(route.URL);
+                                if (route.URL == "none")
+                                {
+                                    fullText = route.URL;
+                                } else { 
+                                    fullText = client.DownloadString(route.URL);
 
-                                XmlDocument xmldoc = new XmlDocument();
-                                // will catch if not valid XML
-                                xmldoc.LoadXml(fullText);
+                                    XmlDocument xmldoc = new XmlDocument();
+                                    // will catch if not valid XML
+                                    xmldoc.LoadXml(fullText);
+                                }
 
 
                                 query = string.Format("insert into routes (dest,distance,description,climbing,route,owner) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
@@ -374,7 +379,7 @@ namespace Routes
                         }
                         catch (Exception ex2)
                         {
-                            result = string.Format("Database error: route \"{0}\" not saved", route.Dest);
+                            result = string.Format("Database error: route \"{0}\" not saved: {1}", route.Dest, ex2.Message);
                         }
                     }
 

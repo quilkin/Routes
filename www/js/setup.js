@@ -3,39 +3,68 @@
 
 
 
+
 var bleSetup = (function ($) {
 
     "use strict";
 
     var bleSetup = {},
 
-        registering = false,
-        rideDate,
+    saveRoute = function (route) {
+        if (route.dest.length < 2) {
+            popup.Alert("Destination needed");
+            return;
+        }
+        if (route.description.length < 2 && route.url.length < 2) {
+            popup.Alert("Description needed");
+            return;
+        }
+        if (route.url.length < 2) {
+            route.url = 'none';
+            // prevent this route showing in routes listing
+            route.dest = '*' + route.dest;
+        }
 
-        validURL = function (string) {
-            try {
-                new URL(string);
-            } catch (_) {
-                return false;
+        bleData.myJson("SaveRoute", "POST", route, function (response) {
+            // if successful, response should be just a new ID
+            if (response.length < 5) {
+                route.id = response;
+                $("#setupDone").hide();
+                //popup.Alert("Route saved OK, id = " + route.id);
+                TCCroutes.SetRoute(route);
+
+                TCCroutes.Add(route);
+                if (route.url !== 'none') {
+                    bleData.getGPX();
+                    bleData.showRoute();
+                    TCCroutes.CreateRouteList();
+                }
+                $('#leadRide').show();
+
+            }
+            else {
+                popup.Alert(response);
             }
 
-            return true;
-        };
+        }, true, null);
+    },
+    validURL = function (string) {
+        try {
+            new URL(string);
+        } catch (_) {
+            return false;
+        }
 
-    //save = function (route) {        
-    //    popup.Confirm("Save new route", "Are you sure?", function () {
-    //        bleData.myJson("SaveRoute", "POST", route, function (response) {
-    //            popup.Alert(response);
-    //        }, true, null);
-    //    }, null, -10);
-    //};
+        return true;
+    };
+
     $('#uploadRoute').show();
     $("#setupDone").show();
     $('#leadRide').hide();
     $('#convertToRide').hide();
+    $("#setupDone").show();
+    //$('#routeTitle').html('Destination (with unique name); Description e.g. easy,middle, hard');
     $("#leadRide").on('click', bleData.leadRide);
-        
-
     $("#setupDone").on('click', function () {
         $("#saveRoute").prop("disabled", true);
 
@@ -48,30 +77,14 @@ var bleSetup = (function ($) {
         var dest = $("#route-dest").val();
         var url = $("#route-url").val();
         var owner = login.ID();
-        if (validURL(url)) {
-            var route = new TCCroutes.Route(url, dest, descrip, 0,0, owner,0);
-            popup.Confirm("Save new route", "Are you sure?", function () {
-                bleData.myJson("SaveRoute", "POST", route, function (response) {
-                // if successful, response should be just a new ID
-                if (response.length < 5) {
-                    route.id = response;
-                    $("#setupDone").hide();
-                    //popup.Alert("Route saved OK, id = " + route.id);
-                    TCCroutes.SetRoute(route);
+        var route = new TCCroutes.Route(url, dest, descrip, 0, 0, owner, 0);
+        if (url.length < 2) {
+            popup.Confirm("Add a ride without uploading a route?", "Are you sure?", saveRoute(route), null, -10);
 
-                    TCCroutes.Add(route);
-                    bleData.getGPX();
-                    bleData.showRoute();
-                    TCCroutes.CreateRouteList();
-                    $('#leadRide').show();
-
-                }
-                else {
-                    popup.Alert(response);
-                }
-
-                }, true, null);
-            }, null, -10);
+        }
+        else if (validURL(url)) {
+            route.url = url;
+            popup.Confirm("Save new route", "Are you sure?", saveRoute(route), null, -10);
         }
         else {
             popup.Alert("Invalid URL, sorry!");
@@ -79,16 +92,16 @@ var bleSetup = (function ($) {
 
     });
     
-    $("#cancelChanges").on('click', function () {
-       // if (registering) {
-            // switch back to connection tab
+    $("#cancelNewRoute").on('click', function () {
+   
             $(".navbar-nav a[href=#home]").tab('show');
-      //  }
-      //  else {
-            // TO DO: change back to original values
-      //  }
-    });
 
+    });
+    $("#cancelLeadRide").on('click', function () {
+
+        $(".navbar-nav a[href=#home]").tab('show');
+
+    });
  
 
     bleSetup.initialise = function (reg) {

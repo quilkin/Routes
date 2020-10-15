@@ -303,7 +303,7 @@ var bleData = (function ($) {
         $('#convertToRide').show();
         $('#route-url-label').hide();
         $('#route-url').hide();
-        $('#routeTitle').html('Destination (with unique name); Description e.g. easy,middle, hard');
+        //$('#routeTitle').html('Destination (with unique name); Description e.g. easy,middle, hard');
         $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "dd M yyyy" });
         $("#rideDate1").datepicker('setDate', rideDate);
 
@@ -311,7 +311,7 @@ var bleData = (function ($) {
             rideDate = new Date($("#rideDate1").val());
         });
         $("#saveRide").on('click', function () {
-            var startPlace = $("#rideMeeting").val();
+            var startPlace = $("#rideMeeting").text();
             var route = TCCroutes.currentRoute();
             var leader = login.User();
             var time = 8 * 60 + 15;

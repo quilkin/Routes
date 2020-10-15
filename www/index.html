@@ -54,7 +54,7 @@
                 <ul class="nav navbar-nav navbar-right" role="tablist" id="mytabs">
                     <li class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><span class="glyphicon glyphicon-calendar"></span><span style="color:blue; font-size:medium">This Week's rides</span></a></li>
                     <li><a href="#webdata" id="webdata-tab" role="tab" data-toggle="tab" aria-controls="webdata"><span class="glyphicon glyphicon-globe"></span><span style="color:blue; font-size:medium">View all routes</span></a></li>
-                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup"><span class="glyphicon glyphicon-wrench"></span><span style="color:blue; font-size:medium">Set Up new route</span></a></li>
+                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup"><span class="glyphicon glyphicon-wrench"></span><span style="color:blue; font-size:medium">Set Up new ride/route</span></a></li>
                 </ul>
             </div>
         </div>
@@ -169,7 +169,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="panel panel-primary" id="uploadRoute">
-                            <div class="panel-heading" id="routeTitle">Upload a route</div>
+                            <div class="panel-heading" id="routeTitle">Destination (with unique name); Description e.g. easy,middle, hard</div>
 
                             <div class="panel-body">
                                 <form id="form-setup">
@@ -198,7 +198,7 @@
 
                             </div> <!-- /panel-body-->
                             <div class="panel-footer">
-                                <button type="button" class="btn btn-primary" id="cancelChanges" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="cancelNewRoute" data-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-info pull-right " id="leadRide" data-dismiss="modal">Lead a ride based on this route</button>
                                 <button type="button" class="btn btn-info pull-right " id="setupDone" data-dismiss="modal">Done</button>
                             </div>
@@ -229,7 +229,7 @@
 
                             </div> <!-- /panel-body-->
                             <div class="panel-footer">
-                                <button type="button" class="btn btn-primary" id="cancelChanges" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="cancelLeadRide" data-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-info pull-right " id="saveRide" data-dismiss="modal">Save</button>
                             </div>
                         </div> <!-- /panel-->

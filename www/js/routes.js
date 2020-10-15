@@ -85,6 +85,9 @@ var TCCroutes = (function () {
     TCCroutes.SetGPX = function (gpx) {
         currentGPX = gpx;
     };
+    //TCCroutes.SetURL = function (u) {
+    //    url = u;
+    //};
     TCCroutes.displayedRoutes = function () {
         return displayedRoutes;
     };
@@ -117,7 +120,11 @@ var TCCroutes = (function () {
         $('#routelist').empty();  // this will also remove any handlers
         //$('#setuplist').empty();
         $.each(routes, function (index, route) {
+
             var title = route.dest;
+            if (title[0] ==='*')
+                // don't display 'ghost' routes with no GPX file
+                return;
             if (route.dist !== undefined) {
                 title = title + '(' + route.dist + 'km)';
             }
