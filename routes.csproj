@@ -112,6 +112,7 @@
     </Content>
     <Content Include="JSLintNet.json" />
     <Content Include=".eslintignore" />
+    <Content Include=".gitignore" />
     <None Include="packages.config" />
     <None Include="_references.js" />
     <None Include="Web.Debug.config">

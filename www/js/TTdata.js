@@ -59,8 +59,8 @@ var bleData = (function ($) {
                 return "http://www.quilkin.co.uk/routes.svc/";
                 //return "http://192.168.1.73:54684/Service1.svc/";
             }
-           return "/Routes.svc/";
-           //return "http://localhost/routes/Routes.svc/";
+           //return "/Routes.svc/";
+           return "http://localhost/routes/Routes.svc/";
 
         },
         webRequestFailed = function (handle, status, error) {

@@ -1,5 +1,6 @@
 ﻿namespace Routes
 {
+    // not for repo!!!
     public class Connections
     {
         public const string emailServer = "mail.quilkin.co.uk";
