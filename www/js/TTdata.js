@@ -19,6 +19,7 @@ var bleData = (function ($) {
         map,
         chart,
         currentTab,
+        starthours, startmins,
 
         // button to be reset when json interaction is complete
         $jsonBtn,
@@ -59,14 +60,15 @@ var bleData = (function ($) {
                 return "http://www.quilkin.co.uk/routes.svc/";
                 //return "http://192.168.1.73:54684/Service1.svc/";
             }
-           //return "/Routes.svc/";
-            return "http://localhost:54684/Routes.svc/";
+           return "/Routes.svc/";
+            //return "https://www.quilkin.co.uk/Routes.svc/";
+            //return "http://localhost:54684/Routes.svc/";
 
         },
         webRequestFailed = function (handle, status, error) {
             var responseText = handle.responseText;
             //   popup.Alert("Error with web request: " + error);
-            popup.Alert("Error with web request: " + responseText);
+            popup.Alert("Error with web request: " + handle.responseText + ' ' + handle.statusText);
             if ($jsonBtn !== null) {
                 $jsonBtn.button('reset');
             }
@@ -83,7 +85,11 @@ var bleData = (function ($) {
 
     $("#dateTitle").on('click', chooseDates);
 
-
+    $('#start-time').timepicker().on('changeTime.timepicker', function (e) {
+        console.log('The time is ' + e.time.value);
+        starthours= e.time.hours;
+        startmins = e.time.minutes;
+    });
     // global functions
 
     ////var dataTime = new Date;
@@ -277,6 +283,7 @@ var bleData = (function ($) {
                 //a.style.fontStyle = "italic";
                 a.style.textDecoration = "underline";
                 a.appendChild(linkText);
+                //a.'data-toggle'="tooltip";
                 a.title = "get GPX";
                 a.href = 'data:text/csv;base64,' + btoa(gpxdata);
                 a.download = name + '.gpx';
@@ -318,15 +325,15 @@ var bleData = (function ($) {
         //$('#routeTitle').html('Destination (with unique name); Description e.g. easy,middle, hard');
         $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "dd M yyyy" });
         $("#rideDate1").datepicker('setDate', rideDate);
-
+        $('#start-time').timepicker('setTime', '08:00 AM');
         $("#rideDate1").change(function () {
             rideDate = new Date($("#rideDate1").val());
         });
         $("#saveRide").on('click', function () {
-            var startPlace = $("#rideMeeting").text();
+            var startPlace = $("#ride-meeting").val();
             var route = TCCroutes.currentRoute();
             var leader = login.User();
-            var time = 8 * 60 + 15;
+            var time = starthours * 60 + startmins;
             var dest = route.dest;
             var date = bleTime.toIntDays(rideDate);
             var ride = new TCCrides.Ride(dest, leader, date, time, startPlace, 0);

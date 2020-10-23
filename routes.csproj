@@ -123,6 +123,7 @@
     </None>
     <Content Include="Routes.svc" />
     <Content Include="www\css\bootstrap-theme.css.map" />
+    <Content Include="www\css\bootstrap-timepicker.min.css" />
     <Content Include="www\css\bootstrap.css.map" />
     <Content Include="www\css\gpx.css" />
     <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
@@ -150,6 +151,7 @@
     <Content Include="www\js-lib\bootbox.min.js" />
     <Content Include="www\js-lib\bootstrap-datepicker.js" />
     <Content Include="www\js-lib\bootstrap-orig.min.js" />
+    <Content Include="www\js-lib\bootstrap-timepicker.min.js" />
     <Content Include="www\js-lib\bootstrap.min.js" />
     <Content Include="www\js-lib\dataTables.bootstrap.min.js.js" />
     <Content Include="www\js-lib\dataTables.responsive.min.js" />

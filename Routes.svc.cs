@@ -35,7 +35,7 @@ namespace Routes
         }
 
 
-        public string Password { get; set; }
+        //public string Password { get; set; }
         private MySqlConnection connection = null;
         public MySqlConnection Connection
         {
@@ -88,7 +88,18 @@ namespace Routes
         DataTable dataLogins;
         //int currentID;
 
+        internal static string GetHash(string text)
+        {
+            if (String.IsNullOrEmpty(text))
+                return String.Empty;
 
+            using (var sha = new System.Security.Cryptography.SHA256Managed())
+            {
+                byte[] textData = System.Text.Encoding.UTF8.GetBytes(text);
+                byte[] hash = sha.ComputeHash(textData);
+                return BitConverter.ToString(hash).Replace("-", String.Empty);
+            }
+        }
 
 
         public static string TimeString(DateTime time)
@@ -136,10 +147,12 @@ namespace Routes
         /// <returns>login object with details of role and user id</returns>
         public Login Login(Login login)
         {
-            LogEntry log = new LogEntry(GetIP(), "Login", login.Name + " " +login.PW);
+
+            string hash = GetHash(login.PW);
+            LogEntry log = new LogEntry(GetIP(), "Login", login.Name );
 
 
-            string query = "SELECT Id, name, pw, email, role FROM logins";
+            string query = string.Format("SELECT Id, name, pw, email, role FROM logins where name = '{0}'", login.Name);
             if (gpxConnection.IsConnect())
             {
                 using (MySqlDataAdapter loginAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
@@ -155,7 +168,7 @@ namespace Routes
                         dbname = dbname.Trim();
                         string dbpw = (string)dr["pw"];
                         dbpw = dbpw.Trim();
-                        if (dbname == login.Name && dbpw == login.PW)
+                        if (dbname == login.Name && dbpw == hash)
                         {
                             login.Role = (int)dr["role"];
                             login.ID = (int)dr["id"];
@@ -173,6 +186,7 @@ namespace Routes
 
         public string Register(Login login)
         {
+           
             LogEntry log = new LogEntry(GetIP(), "Register", login.Name + " " + login.Code);
             string result = "";
             if (login.Code == login.CalcCode())
@@ -203,7 +217,8 @@ namespace Routes
 
         public string Signup(Login login)
         {
-            LogEntry log = new LogEntry(GetIP(), "Signup",  new JavaScriptSerializer().Serialize(login));
+            string hash = GetHash(login.PW);
+            LogEntry log = new LogEntry(GetIP(), "Signup",  login.Name);
 
 
             System.Net.Mail.MailAddress emailAddr;
@@ -274,7 +289,7 @@ namespace Routes
 
                         // save the login details but with role as zero so login won't yet work
                         log = new LogEntry(GetIP(), "Register", login.Name + " " + login.Code);
-                        query = string.Format("insert into logins (name, pw, email,role) values ('{0}','{1}','{2}',{3})", login.Name, login.PW, login.Email, 0);
+                        query = string.Format("insert into logins (name, pw, email,role) values ('{0}','{1}','{2}',{3})", login.Name, hash, login.Email, 0);
 
                         try
                         {
@@ -346,10 +361,17 @@ namespace Routes
                         {
                             using (System.Net.WebClient client = new System.Net.WebClient())
                             {
-                                if (route.URL == "none")
+                                if (route.URL == "none" || route.URL.Length > 1000)
                                 {
+                                    // either no GPX available, or full GPX has been uploaded
                                     fullText = route.URL;
-                                } else { 
+                                }
+                                //else if (route.URL.Length > 1000)
+                                //{
+                                //    // full data has been uploaded
+                                //}
+                                else
+                                { 
                                     fullText = client.DownloadString(route.URL);
 
                                     XmlDocument xmldoc = new XmlDocument();

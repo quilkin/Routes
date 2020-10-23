@@ -15,7 +15,7 @@
     <link href="css/datepicker3.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
-
+    <link href="css/bootstrap-timepicker.min.css" />
 
     <link rel="apple-touch-icon" sizes="57x57" href="icons/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="icons/apple-icon-60x60.png">
@@ -169,33 +169,39 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="panel panel-primary" id="uploadRoute">
-                            <div class="panel-heading" id="routeTitle">Destination (with unique name); Description e.g. easy,middle, hard</div>
+                            <div class="panel-heading" id="routeTitle">Create a new route</div>
 
                             <div class="panel-body">
                                 <form id="form-setup">
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="route-dest" class="control-label side-label" placeholder="Coffee stop?">Destination:</label>
-                                                <input type="text" class="form-control  side-input detectChange" id="route-dest">
+                                                <label for="route-dest" class="control-label side-label">Destination:</label>
+                                                <input type="text" class="form-control  side-input detectChange" data-toggle="tooltip" title="Compulsory: your coffee stop? " id="route-dest">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="route-descrip" class="control-label side-label" placeholder="Easy? Middle? Hard?">Description (optional):</label>
-                                                <input type="text" class="form-control side-input detectChange" id="route-descrip">
+                                                <label for="route-descrip" class="control-label side-label">Description:</label>
+                                                <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="Optional, e.g. Easy? Middle? Hard?" id="route-descrip">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="route-distance" class="control-label side-label" >Distance:</label>
-                                                <input type="text" class="form-control side-input detectChange" id="route-distance">
+                                                <label for="route-distance" class="control-label side-label">Distance:</label>
+                                                <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="optional if you have a GPX file" id="route-distance">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="route-url" class="control-label side-label" id="route-url-label">URL (link) to GPX file:</label>
                                                 <input type="text" class="form-control side-input detectChange" id="route-url">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="route-file" class="control-label side-label" id="route-file-label">or file on your computer:</label>
+                                                <input type="file" id="route-file" name="file" enctype="multipart/form-data" />
                                             </div>
                                         </div>
                                     </div>
@@ -218,15 +224,24 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="ride-meeting" class="control-label side-label">Meeting at:</label>
-                                                <input type="text" class="form-control side-input detectChange" id="ride-meeting">
+                                                <input type="text" class="form-control side-input detectChange" placeholder="Lemon Quay" id="ride-meeting">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="ride-date1" class="control-label side-label">Date for ride:</label>
                                                 <a id="myRideDate" class="list-group-item">Date:&emsp;<input type="text" id="rideDate1" readonly><span class="glyphicon glyphicon-calendar"></span></a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="input-group bootstrap-timepicker timepicker">
+                                                    <label for="start-time" class="control-label side-label">Starting at:</label>
+                                                    <input id="start-time" type="text" class="form-control input-small">
+                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                                </div>
 
-                                                <!--<input type="text" class="form-control side-input detectChange" id="ride-date">-->
+                                                <!-- <input type="text" class="form-control side-input detectChange" placeholder="08:00" id="start-time">-->
                                             </div>
                                         </div>
                                     </div>
@@ -269,27 +284,34 @@
                     <h4 class="modal-title">Login / Register</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-signin" id="form-signin">
-                        <h3 class="form-signin-heading">Please sign in</h3>
-                        <label for="username" class="sr-only">Username</label>
-                        <input type="text" id="username" class="form-control" placeholder="Username" required autofocus>
-                        <label for="password" class="sr-only">Password</label>
-                        <input type="password" id="password" class="form-control" placeholder="Password" required>
-                        <div class="checkbox">
-                            <label>
-                                <input id="remember" type="checkbox" value="remember-me"> Remember me
-                            </label>
-                        </div>
+                    <form class="form-signin  form-inline" id="form-signin">
 
-                        <button class="btn btn-primary" id="signin-cancel" type="button" data-loading-text="Checking...">Cancel</button>
-                       
-                        <button class="btn btn-info pull-right "type="submit" id="button-signin" data-loading-text="Checking...">Sign in</button>
+                        <div class="form-group">
+                            <!--<h3 class="form-signin-heading">Please sign in</h3>-->
+                            <label for="username" class="control-label">Username</label>
+                            <input type="text" id="username" class="form-control" required autofocus>
+                            <label for="password" class="control-label ">Password</label>
+                            <input type="password" id="password" class="form-control" placeholder="Password" required>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="remember" type="checkbox" value="remember-me"> Remember me
+                                </label>
+                            </div>
+
+                            <button class="btn btn-primary" id="signin-cancel" type="button" data-loading-text="Checking...">Cancel</button>
+
+                            <button class="btn btn-info pull-right " type="submit" id="button-signin" data-loading-text="Checking...">Sign in</button>
+                        </div>
                     </form>
-                    <form class="form-register" id="form-register">
+                    <form class="form-register form-inline" id="form-register">
                         <!--<h4 class="form-register-heading">...or register</h4>-->
-                        <input type="text" id="username1" class="form-control" placeholder="User name" required autofocus>
-                        <input type="email" id="email1" class="form-control" placeholder="Email address" required autofocus>
-                        <input type="password" id="password1" class="form-control" placeholder="Password" required>
+                        <label for="username1" class="control-label">Username</label>
+                        <input type="text" id="username1" class="form-control" data-toggle="tooltip" title="Something recognisable to other club members. Up to 10 letters, no spaces " placeholder="User name" required autofocus>
+                        <label for="email1" class="control-label ">Email</label>
+                        <input type="email" id="email1" class="form-control" placeholder="Email address" required>
+                        <label for="password1" class="control-label">Password</label>
+                        <input type="password" id="password1" class="form-control" data-toggle="tooltip" title="Password must be 10 characters or less, and no spaces" placeholder="Password" required>
+                        <label for="password2" class="control-label">Confirm password</label>
                         <input type="password" id="password2" class="form-control" placeholder="Confirm password" required>
                         <!--<input type="text" id="code" class="form-control" placeholder="Code from return email">-->
 
@@ -330,11 +352,13 @@
     <script src="js-lib/gpx.js"></script>
 
     <script src="js-lib/jquery.dataTables.min.js"></script>
+    <script src="js-lib/bootstrap-datepicker.js"></script>
+    <script src="js-lib/bootstrap-timepicker.min.js"></script>
     <script src="js/myTable.js"></script>
     <script src="js/routes.js"></script>
     <script src="js/rides.js"></script>
     <script src="js/TTdata.js"></script>
-    <script src="js-lib/bootstrap-datepicker.js"></script>
+
     <!--<script src="js/amchart.js"></script>-->
     <script src="js-lib/ion.rangeSlider.js"></script>
 

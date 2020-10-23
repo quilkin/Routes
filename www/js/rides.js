@@ -60,7 +60,7 @@ var TCCrides = (function () {
         // may need to split html for each row so that we can update part of it as user adds/removes names
         htmlstringFirstbit = [],
         htmlstringSecondbit = [],
-
+        today = bleTime.toIntDays(new Date()),
         showRideRow = function (index, ride) {
 
 
@@ -76,7 +76,10 @@ var TCCrides = (function () {
                 TCCroutes.SetGPX(null);
                 bleData.showRoute();
             });
-
+            if (ride.date < today) {
+                $('#join' + index).prop("disabled", true);
+                $('#join' + index).html('Closed');
+            }
             $('#join' + index).click(function () {
                 currentride = ride;
                 var buttontext = $('#join' + index).text();
@@ -107,15 +110,19 @@ var TCCrides = (function () {
            // data-complete-text="Select"
 
             $.each(rides, function (index, ride) {
-                var title = ride.dest;
+                var dest = ride.dest;
+                var start = ride.meetingAt;
                 var route = TCCroutes.findIDFromDest(ride.dest);
                 var distance = route.distance;
+                var time = bleTime.fromIntTime(ride.time);
                 if (distance === undefined) {
                     distance = "";
                 }
 
                 htmlstringFirstbit[index] = '<a id="sen' + index + '" class="list-group-item">' +
-                    '<button id="view' + index + '" type="button" class="btn btn-lifted btn-info btn-sm " data-toggle="button">' + title + '</button>' +
+                    '<button id="view' + index + '" type="button" class="btn btn-lifted btn-info btn-sm " data-toggle="button tooltip" title="Starting at: ' +
+                    start + ', ' + time + '">' + dest + '</button>' +
+
                     '<span style="color:red; font-weight: bold">  ' + distance + 'km</span>' +
                     '<span style="color:blue; font-weight: bold">  ' + ride.leaderName + '</span>';
                 htmlstringSecondbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button">' +

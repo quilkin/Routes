@@ -118,14 +118,20 @@ var login = (function () {
             $("#button-register").removeAttr("disabled");
             return false;
         }
-        if (u.length > 8 || u.includes(' ')) {
-            popup.Alert("User name must be 8 characters or less, and no spaces");
+        if (u.length > 10 || u.includes(' ')) {
+            popup.Alert("User name must be 10 characters or less, and no spaces");
+            $("#button-register").removeAttr("disabled");
+            return false;
+
+        }
+        if (p1.length > 10 || p1.includes(' ')) {
+            popup.Alert("Password must be 10 characters or less, and no spaces");
             $("#button-register").removeAttr("disabled");
             return false;
 
         }
 
-        if (u !== '' && p1 === p2 && p1 !== '' && e !== '') {
+        if (u !== '' && p1 === p2 && p1 !== ''  && e !== '') {
             creds = { name: u, pw: p1, email: e, code: c };
             bleData.myJson('Signup', "POST", creds, function (res) {
                 popup.Alert(res);
@@ -138,7 +144,7 @@ var login = (function () {
             }, true, null);
 
         } else {
-            popup.Alert("You must enter a username, password and valid email address");
+            popup.Alert("You must enter a usernameand valid email address");
             $("#button-register").removeAttr("disabled");
         }
         return false;

@@ -52,6 +52,23 @@ var bleTime = (function () {
             var date = new Date(msecs);
             return dateString(date);
         },
+        fromIntTime: function (intTime) {
+            // return time of day from minutes;
+            var hours = (intTime / 60).toFixed(0);
+            var mins = intTime % 60;
+            return pad2(hours) + ':' +pad2(mins);
+        },
+        toIntTime: function (stringTime) {
+            try {
+                var time = stringTime.split(':');
+                var hours = time[0];
+                var mns = time[1];
+                return hours * 60 + mns;
+            }
+            catch {
+                return (8 * 60 + 15);
+            }
+        },
         log: function (string) {
             var d, timestr;
             d = new Date();

@@ -1,12 +1,9 @@
 ﻿upload route: 
 	length of route name needs limiting
-	extract and save distance and climbing
 plan ride on existing route:
 	doesn't show route correctly
 	ride list date not updated?
 this week's rides:
-	inhibit 'join'  button for old weeks
-	display distance and description
 	don't allow rider to join more than one ride on same day
 
 

@@ -58,10 +58,29 @@
             //$('.nav-tabs a[href="#setup-tab"]').tab('show');
             bleData.setCurrentTab('setup-tab');
             $('#setup-tab').tab('show');
+            $('#uploadRoute').hide();
             bleData.showRoute();
             bleData.leadRide();
         });
-
+        //$('#panel-setup').on('show',function () {
+        //    $('#uploadRoute').show();
+        //});
+        //$(function () {
+        //    $('#tabs').tabs({
+        //        activate: function (event, ui) {
+        //            var $activeTab = $('#tabs').tabs('option', 'active');
+        //            if ($activeTab === 2) {
+        //                $('#uploadRoute').show();
+        //            }
+        //        }
+        //    });
+        //});
+        //$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        //    var target = $(e.target).attr("href"); // activated tab
+        //    if (target === $('#panel-setup')) {
+        //        $('#uploadRoute').show();
+        //    }
+        //});
         $('#home-tab').tab('show');
         bleData.setCurrentTab('home-tab');
 
@@ -75,7 +94,10 @@
         
         bleData.setDate(today);
         bleData.setDateChooser('View other dates');
-        
+
+
+        $('#start-time').timepicker();
+
         $(".detectChange").change(function () {
             $("#saveRoute").prop("disabled", false);
         });
@@ -95,6 +117,12 @@
             var tab = $(e.target).attr('id');
             bleData.setCurrentTab(tab);
             console.log(tab);
+            if (tab === 'setup-tab') {
+                $('#uploadRoute').show();
+            }
+        });
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
         });
 
         $('#loginModal').on('shown.bs.modal', function (e) {

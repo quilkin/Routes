@@ -11,60 +11,101 @@ var bleSetup = (function ($) {
     var bleSetup = {},
 
         saveRoute = function (route) {
-            if (route.dest.length < 2 || route.dist === null || route.dist === 0) {
-            popup.Alert("Destination and distance needed");
-            return;
-        }
-        if (route.description.length < 2 && route.url.length < 2) {
-            popup.Alert("Description needed");
-            return;
-        }
-        if (route.url.length < 2) {
-            route.url = 'none';
-            // prevent this route showing in routes listing
-            route.dest = '*' + route.dest;
-        }
 
-        bleData.myJson("SaveRoute", "POST", route, function (response) {
-            // if successful, response should be just a new ID
-            if (response.length < 5) {
-                route.id = response;
-                $("#setupDone").hide();
-                //popup.Alert("Route saved OK, id = " + route.id);
-                TCCroutes.SetRoute(route);
 
-                TCCroutes.Add(route);
-                if (route.url !== 'none') {
-                    bleData.getGPX();
-                    bleData.showRoute();
-                    TCCroutes.CreateRouteList();
+            if (route.url.length < 2) {
+                if (route.dest.length < 2 || route.dist === '' || route.dist === 0) {
+                    popup.Alert("Destination and distance needed");
+                    return;
                 }
-                $('#leadRide').show();
+                if (route.description.length < 2) {
+                    popup.Alert("Description needed");
+                    return;
+                }
+                route.url = 'none';
+                // prevent this route showing in routes listing
+                route.dest = '*' + route.dest;
+            }
 
+            bleData.myJson("SaveRoute", "POST", route, function (response) {
+                // if successful, response should be just a new ID
+                if (response.length < 5) {
+                    route.id = response;
+                    $("#setupDone").hide();
+                    //popup.Alert("Route saved OK, id = " + route.id);
+                    TCCroutes.SetRoute(route);
+
+                    TCCroutes.Add(route);
+                    if (route.url !== 'none') {
+                        bleData.getGPX();
+                        bleData.showRoute();
+                        TCCroutes.CreateRouteList();
+                    }
+                    $('#leadRide').show();
+
+                }
+                else {
+                    popup.Alert(response);
+                }
+
+            }, true, null);
+        },
+        validURL = function (string) {
+            try {
+                new URL(string);
+            }
+            catch (_) {
+                return false;
+            }
+            return true;
+        },
+        checkXML = function (xmlstring) {
+            var oParser = new DOMParser();
+            var oDOM = oParser.parseFromString(xmlstring, "text/xml");
+            // print the name of the root element or error message
+            console.log(oDOM.documentElement.nodeName);
+            if (oDOM.documentElement.nodeName === "parsererror")
+                return false;
+            return true;
+        },
+        myXML,
+        readEnd = function (event) {
+         //   popup.Alert(" file read ended");
+        },
+        readSuccess = function (event) {
+            myXML = event.target.result;
+            if (checkXML(myXML) === false) {
+                popup.Alert("Invalid route file");
             }
             else {
-                popup.Alert(response);
+                //   popup.Alert("Route file OK");
+                $("#route-url").html('Route file OK! ' + myXML.length + ' bytes');
+                console.log('Route file OK! ' + myXML.length + ' bytes');
             }
+        },
+        readFile = function(file) {
 
-        }, true, null);
-    },
-    validURL = function (string) {
-        try {
-            new URL(string);
-        } catch (_) {
-            return false;
-        }
+            var reader = new FileReader();
+            reader.onload = readSuccess;
+          //  reader.onloadstart = readStart;
+            reader.onloadend = readEnd;
 
-        return true;
-    };
+            reader.readAsText(file);
+        };
 
     $('#uploadRoute').show();
     $("#setupDone").show();
     $('#leadRide').hide();
     $('#convertToRide').hide();
-    $("#setupDone").show();
+
     //$('#routeTitle').html('Destination (with unique name); Description e.g. easy,middle, hard');
     $("#leadRide").on('click', bleData.leadRide);
+   // document.getElementById('route-file').addEventListener('change', readFile, false);
+    document.getElementById('route-file').onchange = function (e) {
+        readFile(e.srcElement.files[0]);
+    };
+    //$("#route-file").on('change', readFile, false);
+    myXML = "";
     $("#setupDone").on('click', function () {
         $("#saveRoute").prop("disabled", true);
 
@@ -72,18 +113,24 @@ var bleSetup = (function ($) {
             popup.Alert("You need to register for this");
             return;
         }
-        $("#setupDone").hide();
+       
         var descrip  = $("#route-descrip").val();
         var dest = $("#route-dest").val();
         var url = $("#route-url").val();
-        var dist = $("#route-distance").val();
+        var dist = $("#route-distance").val();         if (dist === '') dist = 0;
         var owner = login.ID();
         var route = new TCCroutes.Route(url, dest, descrip,dist, 0, owner, 0);
-        if (url.length < 2) {
-            popup.Confirm("Add a ride without uploading a route?", "Are you sure?", saveRoute(route), null, -10);
 
+        if (myXML.length > 1000) {
+            // user has complete data on PC
+            route.url = myXML;
+            route.dist = 0;
+            popup.Confirm("Save new route", "Are you sure?", saveRoute(route), null, -10);
         }
-        else if (validURL(url)) {
+        else if (url.length < 2) {
+            popup.Confirm("Add a ride without uploading a route?", "Are you sure?", saveRoute(route), null, -10);
+        }
+        else if (validURL(url) ) {
             route.url = url;
             popup.Confirm("Save new route", "Are you sure?", saveRoute(route), null, -10);
         }
