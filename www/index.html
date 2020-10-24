@@ -10,9 +10,10 @@
     <title>TCC rides signup</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/datepicker3.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     <link href="css/gpx.css" rel="stylesheet">
-    <link href="css/datepicker3.css" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <link href="css/bootstrap-timepicker.min.css" />
@@ -73,6 +74,8 @@
                         <div class="list-group" id="chooseDates">
                             <a id="dateTitle" class="list-group-item list-group-item-info">Choose date</a>
                             <a id="fromDate" class="list-group-item">Date:&emsp;<input type="text" id="rideDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
+                            <!--<a id="dateTitle" class="list-group-item list-group-item-info">Choose date<input type="text" id="rideDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>-->
+                            <!--<a id="fromDate" class="list-group-item">Date:&emsp;<input type="text" id="rideDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>-->
                         </div>
                         <p></p>
                         <div class="list-group scrollable-list" id="ridelist">
@@ -224,20 +227,24 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="ride-meeting" class="control-label side-label">Meeting at:</label>
-                                                <input type="text" class="form-control side-input detectChange" placeholder="Lemon Quay" id="ride-meeting">
+                                                <input type="text" class="form-control side-input detectChange" id="ride-meeting">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="ride-date1" class="control-label side-label">Date for ride:</label>
-                                                <a id="myRideDate" class="list-group-item">Date:&emsp;<input type="text" id="rideDate1" readonly><span class="glyphicon glyphicon-calendar"></span></a>
+                                                <!--<a id="myRideDate" class="list-group-item">Date:&emsp;<input type="text" id="rideDate1" readonly><span class="glyphicon glyphicon-calendar"></span></a>-->
+                                                <a id="myRideDate" ><input type="text" class="input-sm" id="rideDate1" readonly><span class="glyphicon glyphicon-calendar"></span></a>
+                                                <!--<div class="input-append date datepicker no-padding" data-date-format="dd-mm-yyyy">
+                                                    <input class="input-medium" size="16" type="text" id="myRideDate" ><span class="add-on"><i class="icon-th"></i></span>
+                                                </div>-->
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <div class="input-group bootstrap-timepicker timepicker">
                                                     <label for="start-time" class="control-label side-label">Starting at:</label>
-                                                    <input id="start-time" type="text" class="form-control input-small">
+                                                    <input id="start-time" type="text" class="form-control input-sm" data-show-Meridian="false"  data-template="modal" />
                                                     <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
                                                 </div>
 

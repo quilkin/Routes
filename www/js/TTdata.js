@@ -1,55 +1,43 @@
-﻿/*global bleTime,TCCroutes,bleTable,jQuery*/
+﻿/*global bleTime,TCCroutes,TCCrides,jQuery*/
 
 var bleData = (function ($) {
 
     "use strict";
 
     var bleData = {},
-        // recent values stored temporarily before adding timestamps
-        tempValues1 = [],
 
-        // values downloaded from database for displaying
-        dispValues = [],
-        // part of the data from device which was stored in RAM rather than flash
-        ramValues = [],
-        // keeping track up async uplaod process
-        uploadsDone = [],
         // start & end of currently displayed data
         rideDate,
+        newDate,
         map,
         chart,
         currentTab,
-        starthours, startmins,
+        
 
         // button to be reset when json interaction is complete
         $jsonBtn,
 
-        chooseDates = function (sensor) {
+
+
+        chooseDates = function () {
+            $('#fromDate').show();
             if ($('#fromDate').is(":visible")) {
-                // date has been chosen, get it and close options
-                rideDate = new Date($("#rideDate").val());
-                $('#fromDate').hide();
-                //$('#toDate').hide();
-                bleData.setDateChooser('View other dates');
-                TCCrides.Clear();
-                TCCrides.CreateRideList(rideDate);
-                return;
+                var newTime = newDate.getTime();
+                var oldTime = rideDate.getTime();
+                if (newTime !== oldTime) {
+                    //rideDate = new Date($("#rideDate").val());
+                    rideDate = newDate;
+                    bleData.setDateChooser('View other dates');
+                    TCCrides.Clear();
+                    TCCrides.CreateRideList(rideDate);
+                    $("#rideDate").datepicker('hide');
+                    $('#fromDate').hide();
+                    return;
+                }
             }
 
-            $("#rideDate").datepicker({ todayBtn: true, autoclose: true, format: "dd M yyyy" });
+
             $("#rideDate").datepicker('setDate', rideDate);
-
-            $("#rideDate").change(function () {
-                rideDate = new Date($("#rideDate").val());
-            });
-
-            //$("#chooseSensor").html(sensor.Name + ' <span class="caret"></span>');
-            $("#chartName").html(sensor.Name);
-            //$("#tableName").html("Preparing table.....");
-            $('#fromDate').show();
-            //$('#toDate').show();
-
-
 
             bleData.setDateChooser('OK');
         },
@@ -60,9 +48,10 @@ var bleData = (function ($) {
                 return "http://www.quilkin.co.uk/routes.svc/";
                 //return "http://192.168.1.73:54684/Service1.svc/";
             }
-           return "/Routes.svc/";
+           //return "/Routes.svc/";
             //return "https://www.quilkin.co.uk/Routes.svc/";
             //return "http://localhost:54684/Routes.svc/";
+            return "http://localhost/routes/Routes.svc/";
 
         },
         webRequestFailed = function (handle, status, error) {
@@ -82,44 +71,18 @@ var bleData = (function ($) {
 
         };
 
-
     $("#dateTitle").on('click', chooseDates);
 
-    $('#start-time').timepicker().on('changeTime.timepicker', function (e) {
-        console.log('The time is ' + e.time.value);
-        starthours= e.time.hours;
-        startmins = e.time.minutes;
+    $("#rideDate").change(function () {
+        newDate = new Date($("#rideDate").val());
     });
+
+
+
+
     // global functions
 
-    ////var dataTime = new Date;
-    //bleData.Logdata = function (ID, time, value) {
-    //    // short names to keep json.stringify small
-    //    this.S = ID;
-    //    this.T = time;
-    //    // just a  single value in the array for uploading
-    //    this.V = [value];
-    //};
 
-    //bleData.requestRecords = function (idlist, from, to) {
-    //    this.IDlist= idlist;
-    //    this.From = from;
-    //    this.To = to;
-    //};
-
-
-    //bleData.ClearData = function (address) {
-    //    var values, sensor = TCCroutes.findSensor(address);
-    //    if (sensor !== null && sensor !== undefined) {
-    //        values = sensor.NewValues;
-    //        if (values !== null && values !== undefined) {
-    //            while (values.length > 0) { values.pop(); }
-    //        }
-    //    }
-    //    while (tempValues1.length > 0) { tempValues1.pop(); }
-    //    while (ramValues.length > 0) { ramValues.pop(); }
-    //    while (dispValues.length > 0) { dispValues.pop(); }
-    //};
 
     bleData.CreateLists = function () {
         // get list of all routes in db
@@ -318,46 +281,7 @@ var bleData = (function ($) {
         }).addTo(map);
     };
 
-    bleData.leadRide = function () {
-        $('#convertToRide').show();
-        $('#route-url-label').hide();
-        $('#route-url').hide();
-        //$('#routeTitle').html('Destination (with unique name); Description e.g. easy,middle, hard');
-        $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "dd M yyyy" });
-        $("#rideDate1").datepicker('setDate', rideDate);
-        $('#start-time').timepicker('setTime', '08:00 AM');
-        $("#rideDate1").change(function () {
-            rideDate = new Date($("#rideDate1").val());
-        });
-        $("#saveRide").on('click', function () {
-            var startPlace = $("#ride-meeting").val();
-            var route = TCCroutes.currentRoute();
-            var leader = login.User();
-            var time = starthours * 60 + startmins;
-            var dest = route.dest;
-            var date = bleTime.toIntDays(rideDate);
-            var ride = new TCCrides.Ride(dest, leader, date, time, startPlace, 0);
-            popup.Confirm("Save this ride", "Are you sure?", function () {
-                bleData.myJson("SaveRide", "POST", ride, function (response) {
-                    // if successful, response should be just a new ID
-                    if (response.length < 5) {
-                        ride.id = response;
-                        TCCroutes.SetRoute(route);
-                        TCCrides.Add(ride);
-                        $('#home-tab').tab('show');
-                        bleData.setCurrentTab('home-tab');
-                        bleData.setDate(rideDate);
-                        bleData.setDateChooser('View other dates');
-                        TCCrides.CreateRideList(rideDate);
-                    }
-                    else {
-                        popup.Alert(response);
-                    }
-
-                }, true, null);
-            }, null, -10);
-        });
-    };
+    
 
     bleData.saveParticipant = function (rideID, rider) {
         var list = "";
@@ -368,6 +292,25 @@ var bleData = (function ($) {
                     // a list of riders entered
                     list = response.substr(1);
                     popup.Alert("You have been added to this ride");
+                    TCCrides.CreateRideList(null);
+                }
+                else {
+                    popup.Alert(response);
+                }
+            }, true, null);
+        }, null, -10);
+        return list;
+    };
+    bleData.saveReserveParticipant = function (rideID, rider) {
+        var list = "";
+        popup.Confirm("Ride is full", "Would you like to be on a  reserve list?", function () {
+            var reserve = '+' + rider;
+            var pp = new TCCrides.Participant(reserve, rideID);
+            bleData.myJson("SaveParticipant", "POST", pp, function (response) {
+                if (response[0] === '*') {
+                    // a list of riders entered
+                    list = response.substr(1);
+                    popup.Alert("You have been added to reserve list for this ride");
                     TCCrides.CreateRideList(null);
                 }
                 else {
@@ -410,6 +353,7 @@ var bleData = (function ($) {
 
     bleData.setDateChooser = function (btntext) {
         $('#dateTitle').html(bleTime.dateString(rideDate) +  '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span>');
+      //  $('#dateTitle').html(bleTime.dateString(rideDate) + 'Choose date: ' + '<input type = "text" id = "rideDate" readonly > <span class="glyphicon glyphicon-calendar"></span>');
     };
           
     bleData.myJson = function (url, type, data, successfunc, async, $btn) {

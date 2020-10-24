@@ -741,7 +741,8 @@ namespace Routes
                             routeAdapter.Fill(dataRoutes);
 
                             int length = dataRoutes.Rows.Count;
-                            if (length >= maxriders - 1)
+                            //if (length >= maxriders - 1)
+                            if (false)
                             {
                                 result = string.Format("Already {0} riders in this ride, including the leader. Sorry! If you turn up, though, there may be a cancellation :)", maxriders);
                             }

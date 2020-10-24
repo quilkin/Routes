@@ -99,7 +99,7 @@ var bleSetup = (function ($) {
     $('#convertToRide').hide();
 
     //$('#routeTitle').html('Destination (with unique name); Description e.g. easy,middle, hard');
-    $("#leadRide").on('click', bleData.leadRide);
+    $("#leadRide").on('click', TCCrides.leadRide);
    // document.getElementById('route-file').addEventListener('change', readFile, false);
     document.getElementById('route-file').onchange = function (e) {
         readFile(e.srcElement.files[0]);

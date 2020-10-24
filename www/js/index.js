@@ -53,6 +53,7 @@
         //$('#toDate').hide();
         $('#loading').hide();
         $('#planRide').hide();
+        $("#form-signin").show();
         $('#planRide').click(function () {
             // move to different tab
             //$('.nav-tabs a[href="#setup-tab"]').tab('show');
@@ -60,27 +61,13 @@
             $('#setup-tab').tab('show');
             $('#uploadRoute').hide();
             bleData.showRoute();
-            bleData.leadRide();
+            TCCrides.leadRide();
         });
-        //$('#panel-setup').on('show',function () {
-        //    $('#uploadRoute').show();
-        //});
-        //$(function () {
-        //    $('#tabs').tabs({
-        //        activate: function (event, ui) {
-        //            var $activeTab = $('#tabs').tabs('option', 'active');
-        //            if ($activeTab === 2) {
-        //                $('#uploadRoute').show();
-        //            }
-        //        }
-        //    });
-        //});
-        //$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        //    var target = $(e.target).attr("href"); // activated tab
-        //    if (target === $('#panel-setup')) {
-        //        $('#uploadRoute').show();
-        //    }
-        //});
+
+        $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "DD M dd yyyy" });
+        $("#rideDate").datepicker({ todayBtn: true, autoclose: true, format: "DD M dd yyyy" });
+
+
         $('#home-tab').tab('show');
         bleData.setCurrentTab('home-tab');
 
@@ -95,8 +82,6 @@
         bleData.setDate(today);
         bleData.setDateChooser('View other dates');
 
-
-        $('#start-time').timepicker();
 
         $(".detectChange").change(function () {
             $("#saveRoute").prop("disabled", false);
@@ -118,7 +103,9 @@
             bleData.setCurrentTab(tab);
             console.log(tab);
             if (tab === 'setup-tab') {
-                $('#uploadRoute').show();
+                if ($('#convertToRide').is(":hidden")) {
+                    $('#uploadRoute').show();
+                }
             }
         });
         $(function () {
@@ -136,6 +123,7 @@
             });
             $("#signin-register").on('click', function () {
                 $("#form-register").show();
+                $("#form-signin").hide();
             });
         });
 
