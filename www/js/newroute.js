@@ -1,18 +1,12 @@
-﻿
-/*global jQuery,TCCroutes*/
+﻿/*global jQuery,TCCroutes,bleData*/
 
-
-
-
-var bleSetup = (function ($) {
+var newRoute = (function ($) {
 
     "use strict";
 
-    var bleSetup = {},
+    var newRoute = {},
 
         saveRoute = function (route) {
-
-
             if (route.url.length < 2) {
                 if (route.dest.length < 2 || route.dist === '' || route.dist === 0) {
                     popup.Alert("Destination and distance needed");
@@ -32,7 +26,7 @@ var bleSetup = (function ($) {
                 if (response.length < 5) {
                     route.id = response;
                     $("#setupDone").hide();
-                    //popup.Alert("Route saved OK, id = " + route.id);
+                    //popup.Alert('Route "' + route.dest + '" saved OK');
                     TCCroutes.SetRoute(route);
 
                     TCCroutes.Add(route);
@@ -69,9 +63,7 @@ var bleSetup = (function ($) {
             return true;
         },
         myXML,
-        readEnd = function (event) {
-         //   popup.Alert(" file read ended");
-        },
+
         readSuccess = function (event) {
             myXML = event.target.result;
             if (checkXML(myXML) === false) {
@@ -87,9 +79,6 @@ var bleSetup = (function ($) {
 
             var reader = new FileReader();
             reader.onload = readSuccess;
-          //  reader.onloadstart = readStart;
-            reader.onloadend = readEnd;
-
             reader.readAsText(file);
         };
 
@@ -98,13 +87,11 @@ var bleSetup = (function ($) {
     $('#leadRide').hide();
     $('#convertToRide').hide();
 
-    //$('#routeTitle').html('Destination (with unique name); Description e.g. easy,middle, hard');
     $("#leadRide").on('click', TCCrides.leadRide);
-   // document.getElementById('route-file').addEventListener('change', readFile, false);
     document.getElementById('route-file').onchange = function (e) {
         readFile(e.srcElement.files[0]);
     };
-    //$("#route-file").on('change', readFile, false);
+
     myXML = "";
     $("#setupDone").on('click', function () {
         $("#saveRoute").prop("disabled", true);
@@ -142,7 +129,7 @@ var bleSetup = (function ($) {
     
     $("#cancelNewRoute").on('click', function () {
    
-            $(".navbar-nav a[href=#home]").tab('show');
+        $(".navbar-nav a[href=#home]").tab('show');
 
     });
     $("#cancelLeadRide").on('click', function () {
@@ -152,28 +139,21 @@ var bleSetup = (function ($) {
     });
  
 
-    bleSetup.initialise = function (reg) {
+    //bleSetup.initialise = function (reg) {
        
-        //if (bleData.currentRoute() === null) {
-        //    popup.Alert("Please choose a route");
-        //    return;
-        //}
-        registering = reg;
-        var perioditem,route =  TCCroutes.currentRoute();
-        if (route === undefined || route === null) {
-            route = new TCCroutes.Route("no gpx", "destination?", "description?", 0, 0, 0);
-        }
-        $("#route-dest").val(route.Dest);
-        $("#route-descrip").val(route.Description);
-        //periodButton(route);
-        //minAlarm = route.AlarmLow / 10;
-        //maxAlarm = route.AlarmHigh / 10;
-        $("#saveRoute").prop("disabled", true);
-        $('#leadRide').hide();
-        $('#convertToRide').hide();
+    //    registering = reg;
+    //    var perioditem,route =  TCCroutes.currentRoute();
+    //    if (route === undefined || route === null) {
+    //        route = new TCCroutes.Route("no gpx", "destination?", "description?", 0, 0, 0);
+    //    }
+    //    $("#route-dest").val(route.Dest);
+    //    $("#route-descrip").val(route.Description);
+    //    $("#saveRoute").prop("disabled", true);
+    //    $('#leadRide').hide();
+    //    $('#convertToRide').hide();
 
-        update();
-    };
+    //    update();
+    //};
 
-    return bleSetup;
+    return newRoute;
 }(jQuery));

@@ -722,39 +722,64 @@ namespace Routes
                     }
                     else
                     {
+                        ////// check that rider isn't booked on another ride on same day.
+                        ////// first get date for this ride
+                        ////query = string.Format("SELECT date from rides where rideID = {0}", pp.rideID);
+                        ////int date = 0;
+                        ////using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                        ////{
+                        ////    dataRoutes = new DataTable();
+                        ////    routeAdapter.Fill(dataRoutes);
+                        ////    DataRow dr = dataRoutes.Rows[0];
+                        ////    date = (int)dr["date"];
+                        ////}
+                        ////// now get other rides on same date
+                        ////query = string.Format("SELECT rideID from rides where date= {0}", date);
+                        ////using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                        ////{
+                        ////    dataRoutes = new DataTable();
+                        ////    routeAdapter.Fill(dataRoutes);
+                        ////    int length = dataRoutes.Rows.Count;
+                        ////    for (int row = 0; row < length; row++)
+                        ////    {
+                        ////        DataRow dr = dataRoutes.Rows[row];
+                        ////        riders = riders + (string)dr["rider"] + " ";
+                        ////    }
+                        ////}
+
                         // now check that there aren't too many riders
 
                         // ToDo: this next bit should be done globally, not every time a rider is added
-                        int maxriders = 6;
-                        query = string.Format("SELECT maxriders FROM settings");
-                        using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
-                        {
-                            dataRoutes = new DataTable();
-                            routeAdapter.Fill(dataRoutes);
-                            DataRow dr = dataRoutes.Rows[0];
-                            maxriders = (int)dr["maxriders"];
-                        }
-                        query = string.Format("SELECT rider FROM Participants where rideID = '{0}' ", pp.rideID);
-                        using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
-                        {
-                            dataRoutes = new DataTable();
-                            routeAdapter.Fill(dataRoutes);
+                        //int maxriders = 6;
+                        //query = string.Format("SELECT maxriders FROM settings");
+                        //using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                        //{
+                        //    dataRoutes = new DataTable();
+                        //    routeAdapter.Fill(dataRoutes);
+                        //    DataRow dr = dataRoutes.Rows[0];
+                        //    maxriders = (int)dr["maxriders"];
+                        //}
+                        //query = string.Format("SELECT rider FROM Participants where rideID = '{0}' ", pp.rideID);
+                        //using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                        //{
+                        //    dataRoutes = new DataTable();
+                        //    routeAdapter.Fill(dataRoutes);
 
-                            int length = dataRoutes.Rows.Count;
-                            //if (length >= maxriders - 1)
-                            if (false)
-                            {
-                                result = string.Format("Already {0} riders in this ride, including the leader. Sorry! If you turn up, though, there may be a cancellation :)", maxriders);
-                            }
-                            else
-                            {
-                                // todo: this string is now redundant
-                                string riders = "*";
-                                for (int row = 0; row < length; row++)
-                                {
-                                    DataRow dr = dataRoutes.Rows[row];
-                                    riders = riders + (string)dr["rider"] + " ";
-                                }
+                        //    int length = dataRoutes.Rows.Count;
+                        //    //if (length >= maxriders - 1)
+                        //    if (false)
+                        //    {
+                        //        result = string.Format("Already {0} riders in this ride, including the leader. Sorry! If you turn up, though, there may be a cancellation :)", maxriders);
+                        //    }
+                        //    else
+                        //    {
+                        // todo: this string is now redundant
+                        string riders = "*";
+                                //for (int row = 0; row < length; row++)
+                                //{
+                                //    DataRow dr = dataRoutes.Rows[row];
+                                //    riders = riders + (string)dr["rider"] + " ";
+                                //}
                                 using (System.Net.WebClient client = new System.Net.WebClient())
                                 {
 
@@ -767,8 +792,8 @@ namespace Routes
                                     }
                                     result = riders;
                                 }
-                            }
-                        }
+                        //    }
+                        //}
                     }
                 }
                 catch (Exception ex)

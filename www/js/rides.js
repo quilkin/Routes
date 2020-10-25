@@ -174,7 +174,7 @@ var TCCrides = (function ($) {
                     start  + '">' + dest + '</button>' +
                     '<span style="color:red; font-weight: bold">  ' + distance + 'km </span>' +
                     'Leader: <span style="color:blue; font-weight: bold">  ' + ride.leaderName + '  </span>';
-                htmlstringSecondbit[index] = '<button id="participants' + index + '" type="button" class="btn btn-lifted btn-info btn-sm " >Rider List</button>   ';
+                htmlstringSecondbit[index] = '<button id="participants' + index + '" type="button" class="btn btn-lifted btn-info btn-sm  pull-right" >Rider List</button>   ';
                 htmlstringFourthbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" >' + joinButton[index] + '</button > </a>';
             });
 

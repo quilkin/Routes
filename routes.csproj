@@ -170,7 +170,7 @@
     <Content Include="www\js\popups.js" />
     <Content Include="www\js\routes.js" />
     <Content Include="www\js\serial.js" />
-    <Content Include="www\js\setup.js" />
+    <Content Include="www\js\newroute.js" />
     <Content Include="www\js\timesdates.js" />
     <Content Include="www\js\TTdata.js" />
   </ItemGroup>

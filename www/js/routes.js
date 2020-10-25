@@ -38,8 +38,6 @@ var TCCroutes = (function () {
 //[DataMember(Name = "id")]//                   public int ID{ get; set; }
 
 
-//  public Route(string gpx, string dest, string descrip, int d, int climb, int ow, string place, DateTime date, DateTime time)
-
     TCCroutes.Route = function (url,dest,descrip,dist,climb, owner,id) {
         this.url= url;       // URL of gpx file
         this.dest = dest;
@@ -86,9 +84,6 @@ var TCCroutes = (function () {
     TCCroutes.SetGPX = function (gpx) {
         currentGPX = gpx;
     };
-    //TCCroutes.SetURL = function (u) {
-    //    url = u;
-    //};
     TCCroutes.displayedRoutes = function () {
         return displayedRoutes;
     };

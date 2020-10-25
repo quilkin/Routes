@@ -21,7 +21,7 @@ var bleData = (function ($) {
 
         chooseDates = function () {
             $('#fromDate').show();
-            if ($('#fromDate').is(":visible")) {
+            if ($('#fromDate').is(":visible") && newDate !== undefined) {
                 var newTime = newDate.getTime();
                 var oldTime = rideDate.getTime();
                 if (newTime !== oldTime) {
@@ -48,15 +48,13 @@ var bleData = (function ($) {
                 return "http://www.quilkin.co.uk/routes.svc/";
                 //return "http://192.168.1.73:54684/Service1.svc/";
             }
-           //return "/Routes.svc/";
+           return "/Routes.svc/";
             //return "https://www.quilkin.co.uk/Routes.svc/";
             //return "http://localhost:54684/Routes.svc/";
-            return "http://localhost/routes/Routes.svc/";
+            //return "http://localhost/routes/Routes.svc/";
 
         },
         webRequestFailed = function (handle, status, error) {
-            var responseText = handle.responseText;
-            //   popup.Alert("Error with web request: " + error);
             popup.Alert("Error with web request: " + handle.responseText + ' ' + handle.statusText);
             if ($jsonBtn !== null) {
                 $jsonBtn.button('reset');
