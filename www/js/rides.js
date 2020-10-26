@@ -12,6 +12,14 @@ var TCCrides = (function ($) {
 //[DataMember(Name = "date")]        public int Date { get; set; }
 //[DataMember(Name = "time")]        public int Time { get; set; }
 //[DataMember(Name = "meetingAt")]        public string MeetAt { get; set; }
+    const maxridesperday = 10;
+    const message = ", and cannot join more than one ride each day";
+    const joinText = 'Join';
+    const leaveText = 'Leave';
+    const reserveText = 'Ride full: Reserve';
+    const leaveReserveText = 'Leave Reserves';
+    const cancelRideText = 'Cancel this ride';
+
 
     var TCCrides = {},
 
@@ -22,13 +30,14 @@ var TCCrides = (function ($) {
         participants = [],
         //array of lists of reserve participants, each member will be a string of paticipants for that ride
         reserves = [],
+
+        pp,
+        rs,
+        alreadyRidingToday,
+        alreadyReservedToday,
         // state of join/leave button
         joinButton = [],
-        joinText = 'Join',
-        leaveText = 'Leave',
-        reserveText = 'Ride full: Reserve',
-        leaveReserveText = 'Leave Reserves',
-        cancelRideText = 'Cancel this ride',
+
         currentDate,
         starthours, startmins,
         // the latest one to be downloaded from web. Includes URL only, not full gpx
@@ -53,29 +62,41 @@ var TCCrides = (function ($) {
         },
 
         GetParticipants = function (rideIDs) {
-            
+            pp = new Array(maxridesperday);
+            rs = new Array(maxridesperday);
+
             while (reserves.length > 0) { reserves.pop(); }
             while (participants.length > 0) { participants.pop(); }
             bleData.myJson("GetParticipants", "POST", rideIDs, function (response) {
                 $.each(rideIDs, function (index, ride) {
+                    if (index >= maxridesperday) {
+                        popup.Alert('too many rides for this date');
+                        return false;
+                    }
                     // get a list of all participants and reserves for the ride, split into two lists
                     var list = response[index].split(',');
                     var reserveList = '';
                     var ppList = '';
-                    $.each(list, function (index,pp) {
+                    $.each(list, function (index, pp) {
                         if (pp.includes('+')) {
                             reserveList += pp.substring(1);
                             reserveList += ' ';
                         }
-                        else {
+                        else if (pp.length > 2) {
                             ppList += pp;
                             ppList += ' ';
                         }
                     });
+                    if (ppList.endsWith(' ')) {
+                        ppList = ppList.substring(0, ppList.length - 1);
+                    }
+                    if (reserveList.endsWith(' ')) {
+                        reserveList = reserveList.substring(0, reserveList.length - 1);
+                    }
                     participants.push(ppList);
                     reserves.push(reserveList);
                 });
-                
+
 
             }, false, null);
         },
@@ -86,14 +107,11 @@ var TCCrides = (function ($) {
         htmlstringSecondbit = [],
         htmlstringThirdbit = [],
         htmlstringFourthbit = [],
+
         today = bleTime.toIntDays(new Date()),
         showRideRow = function (index, ride) {
-
-
-            var htmlstr = htmlstringFirstbit[index]  + htmlstringSecondbit[index]  + htmlstringFourthbit[index];
-
+            var htmlstr = htmlstringFirstbit[index] + htmlstringSecondbit[index] + htmlstringFourthbit[index];
             $('#ridelist').append(htmlstr);
-
             $('#view' + index).click(function () {
                 currentride = ride;
                 var route = TCCroutes.findIDFromDest(ride.dest);
@@ -103,15 +121,14 @@ var TCCrides = (function ($) {
                 bleData.showRoute();
             });
             if (reserves[index].length > 4) {
-                $('#participants' + index).popover({ title: participants[index], content: 'Reserves: ' + reserves[index], container: 'body', placement: 'bottom' });
+                $('#btnParticipants' + index).popover({ title: participants[index], content: 'Reserves: ' + reserves[index], container: 'body', placement: 'bottom' });
             }
             else if (participants[index].length < 4) {
-                $('#participants' + index).popover({ title: 'Riders: ', content: 'none (yet)', container: 'body', placement: 'bottom' });
+                $('#btnParticipants' + index).popover({ title: 'Riders: ', content: 'none (yet)', container: 'body', placement: 'bottom' });
             }
             else {
-                $('#participants' + index).popover({ title: 'Riders: ', content: participants[index], container: 'body', placement: 'bottom' });
+                $('#btnParticipants' + index).popover({ title: 'Riders: ', content: participants[index], container: 'body', placement: 'bottom' });
             }
-            //$('#reserves' + index).popover({ title: 'Reserve List', content: reserves[index], container: 'body', placement: 'bottom' });
 
             if (ride.date < today) {
                 $('#join' + index).prop("disabled", true);
@@ -124,6 +141,12 @@ var TCCrides = (function ($) {
                     if (ride.leaderName === login.User()) {
                         popup.Alert("You cannot join your own ride!!");
                     }
+                    else if (alreadyRidingToday.length > 0) {
+                        popup.Alert("You are aleady listed for " + alreadyRidingToday + message);
+                    }
+                    else if (alreadyReservedToday.length > 0) {
+                        popup.Alert("You are aleady reserved for " + alreadyReservedToday + message);
+                    }
                     else {
                         bleData.saveParticipant(ride.rideID, login.User());
                     }
@@ -135,19 +158,28 @@ var TCCrides = (function ($) {
                     if (ride.leaderName === login.User()) {
                         popup.Alert("You cannot join your own ride!!");
                     }
+                    else if (alreadyReservedToday.length > 0) {
+                        popup.Alert("You are aleady reserved for " + alreadyReservedToday + message);
+                    }
+                    else if (alreadyRidingToday.length > 0) {
+                        popup.Alert("You are aleady listed for " + alreadyRidingToday + message);
+                    }
                     else {
                         bleData.saveReserveParticipant(ride.rideID, login.User());
                     }
                 }
                 else if (buttontext === leaveText) {
-                   
+
                     bleData.leaveParticipant(ride.rideID, login.User());
                 }
                 else if (buttontext === leaveReserveText) {
                     var reserve = '+' + login.User();
                     bleData.leaveParticipant(ride.rideID, reserve);
                 }
-                $('#participants' + index).popover('hide');
+               // TCCrides.clearPopovers(-1);
+            });
+            $('#btnParticipants' + index).click(function () {
+                TCCrides.clearPopovers(index);
             });
             if (index === 0) {
                 // show route for first ride in list
@@ -156,8 +188,10 @@ var TCCrides = (function ($) {
 
         },
 
+
         showRideList = function (rides) {
            // data-complete-text="Select"
+
 
             $.each(rides, function (index, ride) {
                 var dest = ride.dest;
@@ -174,8 +208,9 @@ var TCCrides = (function ($) {
                     start  + '">' + dest + '</button>' +
                     '<span style="color:red; font-weight: bold">  ' + distance + 'km </span>' +
                     'Leader: <span style="color:blue; font-weight: bold">  ' + ride.leaderName + '  </span>';
-                htmlstringSecondbit[index] = '<button id="participants' + index + '" type="button" class="btn btn-lifted btn-info btn-sm  pull-right" >Rider List</button>   ';
+                htmlstringSecondbit[index] = '<button id="btnParticipants' + index + '" type="button" class="btn btn-lifted btn-info btn-sm  pull-right has-popover" >Rider List</button>   ';
                 htmlstringFourthbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" >' + joinButton[index] + '</button > </a>';
+               
             });
 
             $('#ridelist').empty();  // this will also remove any handlers
@@ -202,31 +237,45 @@ var TCCrides = (function ($) {
         else {
             currentDate = date;
         }
-        while (participants.length > 0) { participants.pop(); }
 
         getWebRides(date);
+        alreadyRidingToday = '';
+        alreadyReservedToday = '';
+        // first, split participant list into arrays for each ride
+
+        $.each(rides, function (index, ride) {
+            pp[index] = participants[index].split(' ');
+            rs[index] = reserves[index].split(' ');
+        });
+
+        // now see if this rider is aleady booked on a  ride for this date
+        var ID = login.User();
+
+        $.each(rides, function (index, ride) {
+            if (pp[index].includes(ID))
+                alreadyRidingToday = ride.dest;
+            if (rs[index].includes(ID))
+                alreadyReservedToday = ride.dest;
+        });
 
         // decide wether to show 'Join' or 'leave' for each ride
         $.each(rides, function (index, ride) {
-           // string to search for in participant list
-            //var commaID = ',' + login.User() + ',';
-            //// participants in reserve list
-            //var commaPlusID = ',+' + login.User() + ',';
+
             if (login.Role() < 1) {
                 joinButton[index].hide();
             }
-            else if (participants[index].includes(login.User())) {
+            else if (pp[index].includes(ID)) {
                 // member is already signed up for this ride
                 joinButton[index] = leaveText;
             }
-            else if (reserves[index].includes(login.User())) {
+            else if (rs[index].includes(ID)) {
                 // member is on reserve list for this ride
                 joinButton[index] = leaveReserveText;
             }
-            else if (participants[index].length >= 6) {     // Todo: need to get this figure from DB beforehand
+            else if (pp[index].length >= 5) {     // Todo: need to get this figure from DB beforehand
                 joinButton[index] = reserveText;
             }
-            else if (login.User() === ride.leaderName && participants[index].length < 2) {
+            else if (login.User() === ride.leaderName && pp[index].length < 1) {
                 joinButton[index] = cancelRideText;
             }
             else {
@@ -362,6 +411,13 @@ var TCCrides = (function ($) {
 
     TCCrides.ShowFirstRide = function () {
 
+    };
+    TCCrides.clearPopovers = function (thisIndex) {
+        $.each(rides, function (index) {
+            if (index !== thisIndex) {
+                $('#btnParticipants' + index).popover('hide');
+            }
+        });
     };
     return TCCrides;
 }(jQuery));

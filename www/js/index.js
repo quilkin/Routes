@@ -71,6 +71,10 @@
         $('#home-tab').tab('show');
         bleData.setCurrentTab('home-tab');
 
+        //$('.navbar-nav a').on('hide.bs.tab', function (e) {
+        //    TCCrides.clearPopovers(-1);
+        //});
+
 
         var today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -156,13 +160,14 @@
 
         }
 
-
-    });
-
-    $('#scanlist').on('click', function (e) {
-        var previous = $(this).closest(".list-group").children(".active");
-        previous.removeClass('active'); // previous list-item
-        $(e.target).addClass('active'); // activated list-item
+        $(document).click(function (e) {
+            //var target = $(e.target);
+            //var context = target.context.to;
+            var popover = $(e.target).is('.has-popover');
+            if (!popover) {
+                TCCrides.clearPopovers(-1);
+            };
+        });
     });
 
 })();

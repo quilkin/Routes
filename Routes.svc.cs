@@ -646,7 +646,7 @@ namespace Routes
             return data;
         }
 
-        // need to get list of participants for all shown rides at once, to avoid javascript running forward to next requests
+        //  get list of participants for all shown rides at once
         public string[] GetParticipants(int[] rideIDs)
         {
             LogEntry log = new LogEntry(GetIP(), "GetParticipants for rides: " , rideIDs.Length.ToString() );

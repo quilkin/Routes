@@ -43,7 +43,10 @@
      position:relative; margin-top:-5px;
      
 }
-
+.has-popover {
+    position: relative;
+    margin-top: -5px;
+}
 
 
 
