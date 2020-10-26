@@ -30,6 +30,9 @@ var newRoute = (function ($) {
                     TCCroutes.SetRoute(route);
 
                     TCCroutes.Add(route);
+                    if (route.url !== 'none' && route.url.length < 1000) {
+                        bleData.getGPX();
+                    }
                     if (route.url !== 'none') {
                         bleData.getGPX();
                         bleData.showRoute();

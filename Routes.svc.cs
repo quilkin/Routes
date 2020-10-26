@@ -238,8 +238,9 @@ namespace Routes
             string query = "SELECT Id, name, pw, email FROM logins";
             if (gpxConnection.IsConnect())
             {
-                if (login.Code == 0)
+                //if (login.Code == 0)
                 // not yet confirmed the signup
+                try
                 {
                     using (MySqlDataAdapter loginAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -254,18 +255,28 @@ namespace Routes
                             dbname = dbname.Trim();
                             string dbpw = (string)dr["pw"];
                             dbpw = dbpw.Trim();
+                            string dbemail = (string)dr["email"];
+                            dbemail = dbemail.Trim();
                             if (dbname == login.Name)
                             {
-                                result = "Sorry, this username has already been taken";
-                                break;
+                                return ("Sorry, this username has already been taken");
+                            }
+                            if (dbemail == login.Email)
+                            {
+                                return( "Sorry, only one login allowed per email address");
                             }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    return "DB error: " + ex.Message;
+                }
 
 
-                if (login.Code == 0)
+                //if (login.Code == 0)
                 // not yet confirmed the signup
+                try
                 {
                     // create a code based on data
                     login.Code = login.CalcCode();
@@ -299,7 +310,7 @@ namespace Routes
                         }
                         catch (Exception ex2)
                         {
-                            result = "There is a database error, please try again:" + ex2.Message;  ;
+                            result = "There is a database error, please try again:" + ex2.Message; ;
                         }
                     }
                     catch (Exception ex)
@@ -309,12 +320,20 @@ namespace Routes
 
 
 
-                 }
-                log.Result = result;
-                log.Save(gpxConnection);
+                }
+                catch (Exception ex2)
+                {
+                    return "Error: " + ex2.Message;
+                }
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
 
-                gpxConnection.Close();
+                    gpxConnection.Close();
 
+
+                }
                 return result;
             }
             else

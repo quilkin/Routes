@@ -3,14 +3,10 @@
 plan ride on existing route:
 	doesn't show route correctly
 	ride list date not updated?
-this week's rides:
-	don't allow rider to join more than one ride on same day
-
 
 login:
     limit username length etc
-	don't allow >1 registration from each email
-	option to avoid password and email
+	option to avoid password and email?
 	max riders should be done globally, not every time a rider is added
 setup:
     make tab titles bolder

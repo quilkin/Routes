@@ -197,6 +197,8 @@ var TCCrides = (function ($) {
                 var dest = ride.dest;
                 var start = ride.meetingAt;
                 var route = TCCroutes.findIDFromDest(ride.dest);
+                if (route === null)
+                    return true;
                 var distance = route.distance;
                 var time = bleTime.fromIntTime(ride.time);
                 if (distance === undefined) {
@@ -346,11 +348,13 @@ var TCCrides = (function ($) {
                         ride.id = response;
                         TCCroutes.SetRoute(route);
                         TCCrides.Add(ride);
+                        $('#convertToRide').hide();
                         $('#home-tab').tab('show');
                         bleData.setCurrentTab('home-tab');
                         bleData.setDate(thisRideDate);
                         bleData.setDateChooser('View other dates');
                         TCCrides.CreateRideList(thisRideDate);
+                        
                     }
                     else {
                         popup.Alert(response);

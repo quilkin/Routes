@@ -67,3 +67,6 @@
     div[class^="col"]{padding-left:15px; padding-right:15px;}
 }
 
+button {
+    margin: 4px;
+}
