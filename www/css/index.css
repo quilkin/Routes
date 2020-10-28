@@ -40,8 +40,10 @@
 
 .btn-lifted {
     /* to get buttons in correct place when in list title*/
-     position:relative; margin-top:-5px;
-     
+    position: relative;
+    margin-top: -5px;
+    margin-left: 3px;
+    margin-right: 3px;
 }
 .has-popover {
     position: relative;
@@ -67,6 +69,6 @@
     div[class^="col"]{padding-left:15px; padding-right:15px;}
 }
 
-button {
-    margin: 4px;
-}
+/*button {
+    margin:3px;
+}*/

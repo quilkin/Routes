@@ -1,4 +1,4 @@
-﻿/*global jQuery,TCCroutes,bleData*/
+﻿/*global jQuery,TCCroutes,rideData*/
 
 var newRoute = (function ($) {
 
@@ -21,7 +21,7 @@ var newRoute = (function ($) {
                 route.dest = '*' + route.dest;
             }
 
-            bleData.myJson("SaveRoute", "POST", route, function (response) {
+            rideData.myJson("SaveRoute", "POST", route, function (response) {
                 // if successful, response should be just a new ID
                 if (response.length < 5) {
                     route.id = response;
@@ -31,11 +31,11 @@ var newRoute = (function ($) {
 
                     TCCroutes.Add(route);
                     if (route.url !== 'none' && route.url.length < 1000) {
-                        bleData.getGPX();
+                        rideData.getGPX();
                     }
                     if (route.url !== 'none') {
-                        bleData.getGPX();
-                        bleData.showRoute();
+                        rideData.getGPX();
+                        TCCMap.showRoute();
                         TCCroutes.CreateRouteList();
                     }
                     $('#leadRide').show();

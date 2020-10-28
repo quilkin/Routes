@@ -457,6 +457,7 @@ namespace Routes
                     string query = string.Format("SELECT dest FROM rides where date= '{0}' and leaderName = '{1}'", ride.Date, ride.LeaderName);
                     bool exists = true;
                     string now = TimeString(DateTime.Now);
+                    string rideDest = "";
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
                         dataRoutes = new DataTable();
@@ -466,32 +467,61 @@ namespace Routes
                         {
                             exists = false;
                         }
+                        else
+                        {
+                            DataRow dr = dataRoutes.Rows[0];
+                            try { rideDest = (string)dr["dest"]; } catch { }
+                        }
                     }
                     if (exists)
                     {
-                        result = "There is already a ride with you as leader on the same date. Please choose another date.";
+                        result = string.Format("There is already a ride ('{0}') with you as leader on the same date. Please choose another date.",rideDest);
                     }
 
                     else
                     {
+                        //// now check that user isn't booked on another ride on same date
+                        //exists = true;
+                        //query = string.Format("SELECT rider FROM Participants where date = '{0}' and rider = '{1}'", ride.ID, ride.LeaderName);
+                        //using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                        //{
+                        //    dataRoutes = new DataTable();
+                        //    routeAdapter.Fill(dataRoutes);
+                        //    if (dataRoutes.Rows.Count == 0)
+                        //    {
+                        //        exists = false;
+                        //    }
+                        //    else
+                        //    {
+                        //        DataRow dr = dataRoutes.Rows[0];
+                        //        try { rideDest = (string)dr["dest"]; } catch { }
+                        //    }
 
-                        using (System.Net.WebClient client = new System.Net.WebClient())
-                        {
+                        //}
+                        //if (exists)
+                        //{
+                        //    result = string.Format("You are booked as a rider on ride ('{0}') on the same date. Please choose another date.", rideDest);
+                        //}
+                        //else
+                        //{
 
-                            query = string.Format("insert into rides (dest,leaderName,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
-                                ride.Dest, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt);
-                            // get new ride ID
-                            query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
-                            object rideID = null;
-
-                            using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                            using (System.Net.WebClient client = new System.Net.WebClient())
                             {
-                                // successRows = command.ExecuteNonQuery();
-                                rideID = command.ExecuteScalar();
+
+                                query = string.Format("insert into rides (dest,leaderName,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
+                                    ride.Dest, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt);
+                                // get new ride ID
+                                query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
+                                object rideID = null;
+
+                                using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                                {
+                                    rideID = command.ExecuteScalar();
+                                }
+                                // return id of new route
+                                result = rideID.ToString();
                             }
-                            // return id of new route
-                            result = rideID.ToString();
-                        }
+                        //}
                     }
                 }
                 catch (Exception ex)
@@ -949,28 +979,20 @@ namespace Routes
             {
                 try
                 {
-
                         using (System.Net.WebClient client = new System.Net.WebClient())
                         {
-
                             string query = string.Format("delete from rides where rideID = {0}", rideID);
-
                             using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                             {
                                 successRows = command.ExecuteNonQuery();
-
                             }
                             result = "OK";
                         }
-
-
                 }
                 catch (Exception ex)
                 {
                     result = string.Format("Database error: {0}", ex.Message);
                 }
-
-
                 finally
                 {
                     log.Result = result;
@@ -979,7 +1001,7 @@ namespace Routes
                 }
             }
             return result;
-
         }
+
     }
 }

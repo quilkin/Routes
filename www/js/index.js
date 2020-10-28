@@ -42,7 +42,7 @@
         // add some handlers
         $("#form-signin").on("show", login.Login());
 
-        $("#tableName").click(bleData.DisplayValues);
+       // $("#tableName").click(rideData.DisplayValues);
 
         //$('#statusConnect').click(function () { $('#scanlist').show(); });
         // hide these elements until they are needed
@@ -57,10 +57,10 @@
         $('#planRide').click(function () {
             // move to different tab
             //$('.nav-tabs a[href="#setup-tab"]').tab('show');
-            bleData.setCurrentTab('setup-tab');
+            rideData.setCurrentTab('setup-tab');
             $('#setup-tab').tab('show');
             $('#uploadRoute').hide();
-            bleData.showRoute();
+            TCCMap.showRoute();
             TCCrides.leadRide();
         });
 
@@ -69,7 +69,7 @@
 
 
         $('#home-tab').tab('show');
-        bleData.setCurrentTab('home-tab');
+        rideData.setCurrentTab('home-tab');
 
         //$('.navbar-nav a').on('hide.bs.tab', function (e) {
         //    TCCrides.clearPopovers(-1);
@@ -83,8 +83,8 @@
             today = bleTime.addDays(today,1);
         }
         
-        bleData.setDate(today);
-        bleData.setDateChooser('View other dates');
+        rideData.setDate(today);
+        rideData.setDateChooser('View other dates');
 
 
         $(".detectChange").change(function () {
@@ -104,12 +104,15 @@
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             //show selected tab / active
             var tab = $(e.target).attr('id');
-            bleData.setCurrentTab(tab);
+            rideData.setCurrentTab(tab);
             console.log(tab);
             if (tab === 'setup-tab') {
                 if ($('#convertToRide').is(":hidden")) {
                     $('#uploadRoute').show();
                 }
+            }
+            if (tab === 'webdata-tab') {
+                TCCroutes.ShowStartLocation();
             }
         });
         $(function () {
@@ -131,7 +134,25 @@
             });
         });
 
-        
+        // add a hash to the URL when the user clicks on a tab
+        $('a[data-toggle="tab"]').on('click', function (e) {
+            history.pushState(null, null, $(this).attr('href'));
+        });
+        // navigate to a tab when the history changes
+        window.addEventListener("popstate", function (e) {
+            var hash = window.location.hash;
+            if (hash.length > 0) {
+                var activeTab = $('[href=' + hash + ']');
+                if (activeTab.length) {
+                    activeTab.tab('show');
+                }
+                else {
+                    $('.nav-tabs a:first').tab('show');
+                }
+            } else {
+                $('.nav-tabs a:first').tab('show');
+            }
+        });
 
 
         // see if any URL params for registration
@@ -161,12 +182,10 @@
         }
 
         $(document).click(function (e) {
-            //var target = $(e.target);
-            //var context = target.context.to;
             var popover = $(e.target).is('.has-popover');
             if (!popover) {
                 TCCrides.clearPopovers(-1);
-            };
+            }
         });
     });
 

@@ -121,7 +121,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="list-group" id="chooseDates">
-                            <a id="allRoutesTitle" class="list-group-item list-group-item-info">TCC suggested routes - choose one for your next ride!</a>
+                            <a id="allRoutesTitle" class="list-group-item list-group-item-info">TCC suggested routes - choose one for your next ride!'<span id="btnSort123" role="button" class="btn btn-info btn-sm btn-lifted pull-right">&uarr; km &darr;</span><span id="btnSortabc" type ="button" class="btn btn-info btn-lifted btn-sm pull-right">&uarr; abc &darr;</span>'</a>
                         </div>
                         <div class="list-group scrollable-list" id="routelist">
                             <a id="routeTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
@@ -235,7 +235,7 @@
                                             <div class="form-group">
                                                 <label for="ride-date1" class="control-label side-label">Date for ride:</label>
                                                 <!--<a id="myRideDate" class="list-group-item">Date:&emsp;<input type="text" id="rideDate1" readonly><span class="glyphicon glyphicon-calendar"></span></a>-->
-                                                <a id="myRideDate" ><input type="text" class="input-sm" id="rideDate1" readonly><span class="glyphicon glyphicon-calendar"></span></a>
+                                                <a id="myRideDate"><input type="text" class="input-sm" id="rideDate1" readonly><span class="glyphicon glyphicon-calendar"></span></a>
                                                 <!--<div class="input-append date datepicker no-padding" data-date-format="dd-mm-yyyy">
                                                     <input class="input-medium" size="16" type="text" id="myRideDate" ><span class="add-on"><i class="icon-th"></i></span>
                                                 </div>-->
@@ -245,7 +245,7 @@
                                             <div class="form-group">
                                                 <div class="input-group bootstrap-timepicker timepicker">
                                                     <label for="start-time" class="control-label side-label">Starting at:</label>
-                                                    <input id="start-time" type="text" class="form-control input-sm" data-show-Meridian="false"  data-template="modal" />
+                                                    <input id="start-time" type="text" class="form-control input-sm" data-show-Meridian="false" data-template="modal" />
                                                     <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
                                                 </div>
 
@@ -345,29 +345,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="js-lib/ie10-viewport-bug-workaround.js"></script>
+    <!--<script src="js-lib/ie10-viewport-bug-workaround.js"></script>-->
     <script src="js-lib/bootbox.min.js"></script>
+
     <script src="js-lib/amcharts.js"></script>
     <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
-    <script src="js/serial.js"></script>
+
     <script src="js/timesdates.js"></script>
     <script src="js/popups.js"></script>
     <script src="js/login.js"></script>
     <script src="js/index.js"></script>
-
+    <script src="js/serial.js"></script>
     <script src="js-lib/gpx.js"></script>
 
-    <script src="js-lib/jquery.dataTables.min.js"></script>
+    <!--<script src="js-lib/jquery.dataTables.min.js"></script>-->
     <script src="js-lib/bootstrap-datepicker.js"></script>
     <script src="js-lib/bootstrap-timepicker.min.js"></script>
-    <script src="js/myTable.js"></script>
+    <!--<script src="js/myTable.js"></script>-->
     <script src="js/routes.js"></script>
     <script src="js/rides.js"></script>
     <script src="js/TTdata.js"></script>
-    <script src="js-lib/ion.rangeSlider.js"></script>
+    <script src="js/map.js"></script>
+    <!--<script src="js-lib/ion.rangeSlider.js"></script>-->
     <script src="js/newroute.js"></script>
-    
+
 </body>
 </html>
 

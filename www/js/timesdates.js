@@ -58,17 +58,18 @@ var bleTime = (function () {
             var mins = intTime % 60;
             return pad2(hours) + ':' +pad2(mins);
         },
-        toIntTime: function (stringTime) {
-            try {
-                var time = stringTime.split(':');
-                var hours = time[0];
-                var mns = time[1];
-                return hours * 60 + mns;
-            }
-            catch {
-                return (8 * 60 + 15);
-            }
-        },
+        //toIntTime: function (stringTime) {
+        //    try {
+        //        var time = stringTime.split(':');
+        //        var hours = time[0];
+        //        var mns = time[1];
+        //        return hours * 60 + mns;
+        //    }
+        //    catch (e) {
+        //        console.log(e.message);
+        //        return (8 * 60 + 15);
+        //    }
+        //},
         log: function (string) {
             var d, timestr;
             d = new Date();

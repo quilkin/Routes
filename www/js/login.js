@@ -43,7 +43,7 @@ var login = (function () {
         $("home").show();
         $("webdata").show();
         $("panel-setup").show();
-        bleData.CreateLists();
+        rideData.CreateLists();
         $('#loginModal').modal('hide');
         // switch to web data tab
         $(".navbar-nav a[href=#home]").tab('show');
@@ -67,7 +67,7 @@ var login = (function () {
         if (u !== '' && p !== '') {
             creds = { name: u, pw: p, email: "", code: 0 };
 
-            bleData.myJson('Login', "POST", creds, function (res) {
+            rideData.myJson('Login', "POST", creds, function (res) {
                 if (res.id > 0) {
                     role = res.role;
                     id = res.id;
@@ -133,7 +133,7 @@ var login = (function () {
 
         if (u !== '' && p1 === p2 && p1 !== ''  && e !== '') {
             creds = { name: u, pw: p1, email: e, code: c };
-            bleData.myJson('Signup', "POST", creds, function (res) {
+            rideData.myJson('Signup', "POST", creds, function (res) {
                 popup.Alert(res);
                 $("#button-register").removeAttr("disabled");
                 if (res.substring(0, 2) === "OK") {
@@ -155,13 +155,13 @@ var login = (function () {
 
         var creds = { name: user, code: regcode, email: em };
         var success = false;
-        bleData.myJson('Register', "POST", creds, function (res) {
+        rideData.myJson('Register', "POST", creds, function (res) {
             if (res.substring(0, 9) === "Thank you")           //"Thank you, you have now registered"
             {
                 //role = UserRoles.Viewer;
                 //var creds = { name: u, pw: p1, email: "", code: 0 };
 
-                //bleData.myJson('Login', "POST", creds, function (res) {
+                //rideData.myJson('Login', "POST", creds, function (res) {
                 //    if (res.id > 0) {
                 //        role = res.role;
                 //        id = res.id;
