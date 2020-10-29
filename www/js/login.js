@@ -3,17 +3,24 @@
 var login = (function () {
     "use strict";
 
+
+    //const dropdownHtml1 = '<div class="dropdown"> <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">';
+    //const dropdownHtml2 = '< span class="caret" ></span ></button > ' +
+    //    '<ul class="dropdown-menu"><li><a href="#">HTML</a></li><li><a href="#">CSS</a></li><li><a href="#">JavaScript</a></li></ul></div>';
     var login = {},
         role,
         id,
         username,
-        //needSensorList = true,
+        email,
+        //needSensorList = true,;
         UserRoles = { None: 0, Viewer: 1, SiteAdmin: 2, FullAdmin: 3 };
 
     login.Role = function () { return role; };
     login.ID = function () { return id; };
     login.loggedIn = function () { return (role > UserRoles.None); };
+    login.loggedOut = function () { return (role === UserRoles.None); };
     login.User = function () { return username; };
+    login.Email = function () { return email; };
     
 
     function checkPreAuth() {
@@ -39,18 +46,42 @@ var login = (function () {
     // Logged in successfully
     ///
     function loggedInOK() {
-        $("myTabContent").show();
-        $("home").show();
-        $("webdata").show();
-        $("panel-setup").show();
+        //$("myTabContent").show();
+        //$("home").show();
+        //$("webdata").show();
+        //$("panel-setup").show();
         rideData.CreateLists();
         $('#loginModal').modal('hide');
-        // switch to web data tab
+        // switch to home tab
         $(".navbar-nav a[href=#home]").tab('show');
-        //if (needSensorList) {
+        //add username to account dropdown button
+        if (username !== undefined) {
+            $("#userName").html(username + ' <span class="caret"></span>');
+        }
+        // may need to redo things done by logging out
+        $("#logOut").html('Log Out');
+        $("#account").prop('disabled', false);
+        $("#setup-tab").attr('class', 'enabled');
 
-        //}
     }
+
+    function logout() {
+        username = '';
+        role = 0;
+        TCCrides.CreateRideList(null);
+        $("#logOut").html('Log In');
+        $("#account").prop('disabled', true);
+        $("#setup-tab").attr('class', 'disabled');
+        $('#setup-tab').click(function (event) {
+            if ($(this).hasClass('disabled')) {
+                return false;
+            }
+        });
+        popup.Alert("You are not logged in. Rides are still visible but you cannot join or create rides");
+
+    }
+
+
 
     function handleLogin() {
         var form, u, p, remember, creds;
@@ -59,8 +90,6 @@ var login = (function () {
         u = $("#username", form).val();
         p = $("#password", form).val();
         remember = $("#remember").is(':checked');
-
-
 
         role = 0;
 
@@ -72,6 +101,7 @@ var login = (function () {
                     role = res.role;
                     id = res.id;
                     username = res.name;
+                    email = res.email;
                     //if (userRole < 2)
                     //    $(".adminonly").prop("disabled", true);
                     //store
@@ -150,6 +180,37 @@ var login = (function () {
         return false;
     }
 
+
+    function handleAccount() {
+        var form, u, p1, p2, e, remember, creds;
+
+        form = $("#form-account");
+        u = $("#username2", form).val();
+        p1 = $("#password3", form).val();
+        p2 = $("#password4", form).val();
+        e = $("#email2", form).val();
+        return false;
+    }
+    function cancelSignIn() {
+
+        $('#loginModal').modal('hide');
+        rideData.CreateLists();
+        // switch to 'all routes' tab
+        $(".navbar-nav a[href=#webdata-tab]").tab('show');
+        $("#userName").html('Log In <span class="caret"></span>');
+        logout();
+
+    }
+    function cancelRegister() {
+        
+        // get ready for next time
+        $("#form-register").hide();
+        $("#form-signin").show();
+        cancelSignIn();
+    }
+    function cancelAccount() {
+        $('#accountModal').modal('hide');
+    }
     login.CompleteRegistration = function (user, regcode,em) {
         console.log('Registration: ' + user + ' ' + regcode + ' ' + em);
 
@@ -158,23 +219,7 @@ var login = (function () {
         rideData.myJson('Register', "POST", creds, function (res) {
             if (res.substring(0, 9) === "Thank you")           //"Thank you, you have now registered"
             {
-                //role = UserRoles.Viewer;
-                //var creds = { name: u, pw: p1, email: "", code: 0 };
 
-                //rideData.myJson('Login', "POST", creds, function (res) {
-                //    if (res.id > 0) {
-                //        role = res.role;
-                //        id = res.id;
-                //        username = res.name;
-                //        loggedInOK();
-
-                //    } else {
-                //        popup.Alert("Invalid username or password");
-                //    }
-
-                //}, true, null);
-
-                //loggedInOK();
                 success = true;
                 popup.Alert("Thank you, you can now log in");
  
@@ -192,17 +237,7 @@ var login = (function () {
         if (role === undefined || role === UserRoles.None) {
             $("#form-signin").on("submit", handleLogin);
             $("#form-register").on("submit", handleSignup);
-            //$("#button-signin").on("click", function () {
-            //    //var $btn = $(this).button('loading');
-            //    handleLogin();
-            //    //setTimeout(function () {
-            //    //      handleLogin($btn);
-            //    //}, 100);
-            //})
-            //$("#button-register").on("click", function () {
-            //    var $btn = $(this).button('loading');
-            //    setTimeout(function () { handleSignup($btn); }, 100);
-            //})
+            
             checkPreAuth();
 
         }
@@ -210,10 +245,43 @@ var login = (function () {
             role = UserRoles.None;
             $("#logIn").text("Log In");
         }
-    };
-    login.GetUserName = function (id) {
 
     };
+
+
+    $("#logOut").click(function () {
+        console.log('logOut clicked');
+        if (login.loggedOut()) {
+            $('#loginModal').modal();
+        }
+        else {
+            logout();
+        }
+    });
+    $('#loginModal').on('shown.bs.modal', function (e) {
+        $("#form-register").hide();
+        $("#signin-cancel").on('click', cancelSignIn);
+        $("#signin-register").on('click', function () {
+            $("#form-register").show();
+            $("#form-signin").hide();
+            $("#register-cancel").on('click', cancelRegister);
+        });
+    });
+    $('#accountModal').on('shown.bs.modal', function (e) {
+        $("#username2").attr("value", username);
+        $("#email2").attr("value", email);
+        $("#form-account").on("submit", handleAccount);
+        $("#account-cancel").on('click', cancelAccount);
+
+    });
+    $("#account").click(function () {
+
+        popup.Alert("not yet fully implemented, sorry");
+        $('#accountModal').modal();
+    });
+    $("#settings").click(function () {
+        popup.Alert("not yet implemented, sorry");
+    });
 
     return login;
 }());

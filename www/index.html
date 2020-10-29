@@ -39,7 +39,6 @@
 </head>
 
 <body>
-
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -49,15 +48,26 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" style="color:blue" id="realtime">TCC rides<span style="color:black; font-size:small"></span></a>
+                <a class="navbar-brand" style="color:blue" id="realtime">TCC Ride Planner<span style="color:black; font-size:small"></span></a>
+
             </div>
+
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right" role="tablist" id="mytabs">
                     <li class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><span class="glyphicon glyphicon-calendar"></span><span style="color:blue; font-size:medium">This Week's rides</span></a></li>
                     <li><a href="#webdata" id="webdata-tab" role="tab" data-toggle="tab" aria-controls="webdata"><span class="glyphicon glyphicon-globe"></span><span style="color:blue; font-size:medium">View all routes</span></a></li>
                     <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup"><span class="glyphicon glyphicon-wrench"></span><span style="color:blue; font-size:medium">Set Up new ride/route</span></a></li>
+                    <li class="dropdown">
+                        <button class="btn btn-dropped" type="button" data-toggle="dropdown" id="userName">Username<span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a id="logOut">Log Out</a></li>
+                            <li><a id="account">Account</a></li>
+                            <li><a id="settings">Settings</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
+
         </div>
     </nav>
 
@@ -121,7 +131,14 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="list-group" id="chooseDates">
-                            <a id="allRoutesTitle" class="list-group-item list-group-item-info">TCC suggested routes - choose one for your next ride!'<span id="btnSort123" role="button" class="btn btn-info btn-sm btn-lifted pull-right">&uarr; km &darr;</span><span id="btnSortabc" type ="button" class="btn btn-info btn-lifted btn-sm pull-right">&uarr; abc &darr;</span>'</a>
+                            <div id="allRoutesTitle" class="list-group-item list-group-item-info">
+                                Suggested routes
+                                <button class="btn btn-info btn-lifted pull-right" type="button" data-toggle="dropdown" id="userName">Sort <span class="caret"></span></button>
+                                <ul class="dropdown-menu  dropdown-menu-right">
+                                    <li><a id="btnSortabc">alphabetically</a></li>
+                                    <li><a id="btnSort123">by distance</a></li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="list-group scrollable-list" id="routelist">
                             <a id="routeTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
@@ -287,12 +304,12 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button class="btn btn-primary pull-right " id="signin-register" type="button" data-loading-text="Checking...">Register</button>
+                    <!--<button class="btn btn-primary pull-right " id="signin-register" type="button" data-loading-text="Checking...">Register</button>-->
                     <!--<button type="button" class="close" id="loginclose" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-                    <h4 class="modal-title">Login / Register</h4>
+                    <h4 class="modal-title">Sign In / Register</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-signin  form-inline" id="form-signin">
+                    <form id="form-signin">
 
                         <div class="form-group">
                             <!--<h3 class="form-signin-heading">Please sign in</h3>-->
@@ -305,31 +322,67 @@
                                     <input id="remember" type="checkbox" value="remember-me"> Remember me
                                 </label>
                             </div>
-
-                            <button class="btn btn-primary" id="signin-cancel" type="button" data-loading-text="Checking...">Cancel</button>
-
-                            <button class="btn btn-info pull-right " type="submit" id="button-signin" data-loading-text="Checking...">Sign in</button>
+                            <button class="btn btn-info " id="signin-register" type="button" data-loading-text="Checking...">Register</button>
+                            <button class="btn btn-info" id="signin-cancel" type="button" data-loading-text="Checking...">Continue as guest</button>
+                            <button class="btn btn-primary pull-right " type="submit" id="button-signin" data-loading-text="Checking...">Sign in</button>
                         </div>
                     </form>
-                    <form class="form-register form-inline" id="form-register">
-                        <!--<h4 class="form-register-heading">...or register</h4>-->
-                        <label for="username1" class="control-label">Username</label>
-                        <input type="text" id="username1" class="form-control" data-toggle="tooltip" title="Something recognisable to other club members. Up to 10 letters, no spaces " placeholder="User name" required autofocus>
-                        <label for="email1" class="control-label ">Email</label>
-                        <input type="email" id="email1" class="form-control" placeholder="Email address" required>
-                        <label for="password1" class="control-label">Password</label>
-                        <input type="password" id="password1" class="form-control" data-toggle="tooltip" title="Password must be 10 characters or less, and no spaces" placeholder="Password" required>
-                        <label for="password2" class="control-label">Confirm password</label>
-                        <input type="password" id="password2" class="form-control" placeholder="Confirm password" required>
-                        <!--<input type="text" id="code" class="form-control" placeholder="Code from return email">-->
+                    <form id="form-register">
+                        <div class="form-group">
+                            <!--<h4 class="form-register-heading">...or register</h4>-->
+                            <label for="username1" class="control-label">Username</label>
+                            <input type="text" id="username1" class="form-control" data-toggle="tooltip" title="Something recognisable to other club members. Up to 10 letters, no spaces " placeholder="User name" required autofocus>
+                            <label for="email1" class="control-label ">Email</label>
+                            <input type="email" id="email1" class="form-control" placeholder="Email address" required>
+                            <label for="password1" class="control-label">Password</label>
+                            <input type="password" id="password1" class="form-control" data-toggle="tooltip" title="Password must be 10 characters or less, and no spaces" placeholder="Password" required>
+                            <label for="password2" class="control-label">Confirm password</label>
+                            <input type="password" id="password2" class="form-control" placeholder="Confirm password" required>
 
-                        <button class="btn btn-lg btn-primary btn-block" type="submit" id="button-register" data-loading-text="Registering...">Register</button>
+                            <button class="btn btn-info btn-dropped" id="register-cancel" type="button" data-loading-text="Checking...">Cancel</button>
+                            <button class="btn btn-primary  btn-dropped pull-right " type="submit" id="button-register" data-loading-text="Registering...">Register</button>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <!--<button type="button" class="btn btn-info" id="saveRoute">Save changes</button>
-                    <button type="button" class="btn btn-primary" id="setupDone" data-dismiss="modal">Done</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div id="accountModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!--<button class="btn btn-primary pull-right " id="signin-register" type="button" data-loading-text="Checking...">Register</button>-->
+                    <h4 class="modal-title">Account details</h4>
+                </div>
+                <div class="modal-body">
+                    <form  id="form-account">
+
+                        <div class="form-group">
+                            <label for="username2" class="control-label">Change Username</label>
+                            <input type="text" id="username2" class="form-control" autofocus required>
+                            <label for="password3" class="control-label ">Change Password</label>
+                            <input type="password" id="password3" class="form-control" placeholder="New Password">
+                            <label for="password4" class="control-label">Confirm password</label>
+                            <input type="password" id="password4" class="form-control" placeholder="Confirm password">
+                            <label for="email2" class="control-label ">Email</label>
+                            <input type="email" id="email2" class="form-control"  required>
+                            <div class="radio-inline">
+                                <label> <input id="radioKm" type="radio" checked>Distances in Km</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label> <input id="radioMile" type="radio">Distances in miles</label>
+                            </div>
+
+                            
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="account-cancel" type="button" data-loading-text="Checking...">Cancel</button>
+                    <button class="btn btn-info pull-right " type="submit" id="account-ok" data-loading-text="Checking...">OK</button>
                 </div>
             </div>
         </div>

@@ -168,10 +168,14 @@ namespace Routes
                         dbname = dbname.Trim();
                         string dbpw = (string)dr["pw"];
                         dbpw = dbpw.Trim();
+                        string dbemail = (string)dr["email"];
+                        dbemail = dbemail.Trim();
+
                         if (dbname == login.Name && dbpw == hash)
                         {
                             login.Role = (int)dr["role"];
                             login.ID = (int)dr["id"];
+                            login.Email = (string)dr["email"];
                             break;
                         }
                     }
@@ -213,7 +217,18 @@ namespace Routes
             }
             return "Error with email or code, sorry";
         }
-           
+        bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         public string Signup(Login login)
         {
@@ -264,6 +279,10 @@ namespace Routes
                             if (dbemail == login.Email)
                             {
                                 return( "Sorry, only one login allowed per email address");
+                            }
+                            if (IsValidEmail(dbemail)==false)
+                            {
+                                return ("Sorry, this email doesn't appear to be valid");
                             }
                         }
                     }

@@ -24,8 +24,8 @@ var TCCroutes = (function () {
         currentGPX = null,
 
 
-        getWebRoutes = function (userID) {
-            rideData.myJson("GetRouteSummaries", "POST", userID, function (response) {
+        getWebRoutes = function () {
+            rideData.myJson("GetRouteSummaries", "POST", null, function (response) {
                 routes = response;
                 if (routes.length === 0) {
                     popup.Alert("No data found!");
@@ -182,13 +182,13 @@ var TCCroutes = (function () {
     };
 
     TCCroutes.CreateRouteList = function () {
-        var id = login.ID();
-        if (id === undefined || id === 0) {
-            $('#loginModal').modal();
-            return;
-        }
+        //var id = login.ID();
+        //if (id === undefined || id === 0) {
+        //    $('#loginModal').modal();
+        //    return;
+        //}
         if (routes === undefined || routes.length === 0) {
-            getWebRoutes(id);
+            getWebRoutes();
         }
         showRouteList();
     };

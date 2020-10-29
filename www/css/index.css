@@ -45,6 +45,13 @@
     margin-left: 3px;
     margin-right: 3px;
 }
+.btn-dropped {
+    /* to get buttons in correct place when in list title*/
+    position: relative;
+    margin-top: 5px;
+    margin-left: 3px;
+    margin-right: 3px;
+}
 .has-popover {
     position: relative;
     margin-top: -5px;

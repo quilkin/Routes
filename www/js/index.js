@@ -4,32 +4,32 @@
 (function () {
     "use strict";
 
-    function onPause() {
-        // TODO: This application has been suspended. Save application state here.
-    }
+    //function onPause() {
+    //    // TODO: This application has been suspended. Save application state here.
+    //}
 
-    function onResume() {
-        // TODO: This application has been reactivated. Restore application state here.
-    }
-    function onDeviceReady() {
-        // Handle the Cordova pause and resume events
-        document.addEventListener('pause', onPause.bind(this), false);
-        document.addEventListener('resume', onResume.bind(this), false);
-        window.addEventListener('load', function () { FastClick.attach(document.body); }, false);
+    //function onResume() {
+    //    // TODO: This application has been reactivated. Restore application state here.
+    //}
+    //function onDeviceReady() {
+    //    // Handle the Cordova pause and resume events
+    //    document.addEventListener('pause', onPause.bind(this), false);
+    //    document.addEventListener('resume', onResume.bind(this), false);
+    //    window.addEventListener('load', function () { FastClick.attach(document.body); }, false);
 
-        bleTime.log(device.platform + ": " + device.model);
-        bleApp.setMobile(true);
-        // needs doing again
-        //bleApp.detectScreenHeight();
-        // don't always need login for mobile use (login may not be possible when downloading devices)
-        $('#loginModal').modal('hide');
-        // go straight to connection page
-        $(".navbar-nav a[href=#home]").tab('show');
-        tagConnect.initialize();
-        bleApp.SetPlatform(device.platform);
-    }
+    //    bleTime.log(device.platform + ": " + device.model);
+    //    bleApp.setMobile(true);
+    //    // needs doing again
+    //    //bleApp.detectScreenHeight();
+    //    // don't always need login for mobile use (login may not be possible when downloading devices)
+    //    $('#loginModal').modal('hide');
+    //    // go straight to connection page
+    //    $(".navbar-nav a[href=#home]").tab('show');
+    //    tagConnect.initialize();
+    //    bleApp.SetPlatform(device.platform);
+    //}
 
-    document.addEventListener( 'deviceready', onDeviceReady.bind( this ), false );
+    //document.addEventListener( 'deviceready', onDeviceReady.bind( this ), false );
     
 
     $(document).ready(function () {
@@ -37,26 +37,19 @@
             $(".navbar-collapse").collapse('hide');
         });
         bleApp.init();
-        //bleApp.detectScreenHeight();
 
-        // add some handlers
         $("#form-signin").on("show", login.Login());
 
-       // $("#tableName").click(rideData.DisplayValues);
-
-        //$('#statusConnect').click(function () { $('#scanlist').show(); });
         // hide these elements until they are needed
         $("#progress-bar").hide();
         $("#upload-all").hide();
         $('#statusConnect').hide();
         $('#fromDate').hide();
-        //$('#toDate').hide();
         $('#loading').hide();
         $('#planRide').hide();
         $("#form-signin").show();
         $('#planRide').click(function () {
             // move to different tab
-            //$('.nav-tabs a[href="#setup-tab"]').tab('show');
             rideData.setCurrentTab('setup-tab');
             $('#setup-tab').tab('show');
             $('#uploadRoute').hide();
@@ -64,17 +57,14 @@
             TCCrides.leadRide();
         });
 
+
+
         $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "DD M dd yyyy" });
         $("#rideDate").datepicker({ todayBtn: true, autoclose: true, format: "DD M dd yyyy" });
 
 
         $('#home-tab').tab('show');
         rideData.setCurrentTab('home-tab');
-
-        //$('.navbar-nav a').on('hide.bs.tab', function (e) {
-        //    TCCrides.clearPopovers(-1);
-        //});
-
 
         var today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -97,9 +87,9 @@
         });
 
         $(document).ajaxStop(function()  {
-           // $('.loader').hide();
             $('.loader').remove();
         });
+        var lasttab = 'home-tab';
         // need to know which tab is in use so we know where to place map etc
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             //show selected tab / active
@@ -119,23 +109,18 @@
             $('[data-toggle="tooltip"]').tooltip();
         });
 
-        $('#loginModal').on('shown.bs.modal', function (e) {
-            $("#form-register").hide();
-            $("#signin-cancel").on('click', function () {
-                $("#myTabContent").hide();
-                $("#home").hide();
-                $("#webdata").hide();
-                $("#panel-setup").hide();
-                $('#loginModal').modal('hide');
-            });
-            $("#signin-register").on('click', function () {
-                $("#form-register").show();
-                $("#form-signin").hide();
-            });
-        });
+        //$('#loginModal').on('shown.bs.modal', function (e) {
+        //    $("#form-register").hide();
+        //    $("#signin-cancel").on('click', login.cancelSignIn);
+        //    $("#signin-register").on('click', function () {
+        //        $("#form-register").show();
+        //        $("#form-signin").hide();
+        //    });
+        //});
 
         // add a hash to the URL when the user clicks on a tab
         $('a[data-toggle="tab"]').on('click', function (e) {
+            lasttab = $(e.target).attr('id');
             history.pushState(null, null, $(this).attr('href'));
         });
         // navigate to a tab when the history changes
@@ -181,12 +166,7 @@
 
         }
 
-        $(document).click(function (e) {
-            var popover = $(e.target).is('.has-popover');
-            if (!popover) {
-                TCCrides.clearPopovers(-1);
-            }
-        });
+
     });
 
 })();
@@ -194,34 +174,56 @@
 var bleApp = (function () {
     "use strict";
     var bleApp = {},
-    ismobile,
-    interval = 60;  // seconds
+        ismobile,
+        lastClickTime = new Date(),
+        interval = 60;  // seconds
+
 
     function updateTime() {
         var d = new Date();
-        var timetext, string, username = login.User();
+        //var timetext, string, username = login.User();
         if (d.getSeconds() < interval) {
-            if ($(window).width() >= 800) {
-                timetext = d.toDateString() + ' ' + bleTime.timeString(d);
-                string = 'TCC Ride Planner <span style="color:black; font-size:small">' + timetext;
-                if (username !== undefined) {
-                    string = string + ' Logged in as: </span>' + username;
-                }
+         //   $('#realtime').empty(); 
+        //    if ($(window).width() >= 800) {
+                //timetext = d.toDateString() + ' ' + bleTime.timeString(d);
+            //string = 'TCC Ride Planner <span style="color:black; font-size:small">'; // + timetext;
+            //    if (username !== undefined) {
+            //        string = string + ' Logged in as: </span> <button id="userName">' + username + '</button >';
+            //    }
+        //    }
+            //else {
+            //    timetext = d.toDateString();
+            //    string = 'TCC Rides <span style="color:black; font-size:small">' + timetext;
+            //    if (username !== undefined) {
+            //        string = string + '  </span> (' + username + ')';
+            //    }
+            //}
+            var sinceLastClick = d.valueOf() - lastClickTime.valueOf();
+            if (sinceLastClick > 60000 && rideData.getCurrentTab()==='home-tab') {
+                // update rides list in case other users have modified it
+                TCCrides.clearPopovers(-1);
+                TCCrides.CreateRideList(null);
+                lastClickTime = d;
             }
-            else {
-                timetext = d.toDateString();
-                string = 'TCC Rides <span style="color:black; font-size:small">' + timetext;
-                if (username !== undefined) {
-                    string = string + '  </span> (' + username + ')';
-                }
-            }
-            $("#realtime").html(string);
+
+            //$("#realtime").html(string);
+            //$('#userName').click(function () {
+            //    console.log('username clicked');
+            //});
         }
         if (ismobile) {
             // every few seconds, update connected status of devices
             tagConnect.updateConnections(interval);
         }
     }
+    $(document).click(function (e) {
+        var popover = $(e.target).is('.has-popover');
+        if (!popover) {
+            TCCrides.clearPopovers(-1);
+        }
+        lastClickTime = new Date();
+    });
+
 
     return {
         init: function () {

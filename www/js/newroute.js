@@ -25,8 +25,8 @@ var newRoute = (function ($) {
                 // if successful, response should be just a new ID
                 if (response.length < 5) {
                     route.id = response;
-                    $("#setupDone").hide();
-                    //popup.Alert('Route "' + route.dest + '" saved OK');
+                    //$("#setupDone").hide();
+
                     TCCroutes.SetRoute(route);
 
                     TCCroutes.Add(route);

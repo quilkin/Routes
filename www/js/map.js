@@ -117,7 +117,7 @@
             var elev_loss = gpx.get_elevation_loss().toFixed(0);
 
             var route = TCCroutes.currentRoute();
-            if (route.distance === null || route.distance === 0 || route.distance.includes('?')) {
+            if (route.distance === 0 || isNaN(route.distance)) {
                 route.distance = distance;
                 rideData.myJson("UpdateRoute", "POST", route, function (response) {
                     var reply = response;

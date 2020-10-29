@@ -141,9 +141,14 @@ var TCCrides = (function ($) {
             }
             $('#join' + index).click(function () {
                 currentride = ride;
+                var user = login.User();
+                if (login.loggedOut()) {
+                    popup.Alert("Not logged in");
+                    return false;
+                }
                 var buttontext = $('#join' + index).text();
                 if (buttontext === joinText) {
-                    if (ride.leaderName === login.User()) {
+                    if (ride.leaderName === user) {
                         popup.Alert("You cannot join your own ride!!");
                     }
                     else if (alreadyRidingToday.length > 0) {
@@ -231,11 +236,11 @@ var TCCrides = (function ($) {
 
 
     TCCrides.CreateRideList = function (date) {
-        var id = login.ID();
-        if (id === undefined || id === 0) {
-            $('#loginModal').modal();
-            return;
-        }
+        //var id = login.ID();
+        //if (id === undefined || id === 0) {
+        //    $('#loginModal').modal();
+        //    return;
+        //}
         if (date === null) {
             // recursive call from having aadded or removed a rider
             date = currentDate;
@@ -268,8 +273,10 @@ var TCCrides = (function ($) {
         });
 
         // now see if this rider is aleady booked on a  ride for this date
-        var ID = login.User();
-
+        var ID = 'nobody';
+        if (login.loggedIn())
+            ID = login.User();
+   
         $.each(rides, function (index, ride) {
             try {
                 if (pp[index].includes(ID))
@@ -285,10 +292,13 @@ var TCCrides = (function ($) {
         // decide wether to show 'Join' or 'leave' for each ride
         $.each(rides, function (index, ride) {
 
-            if (login.Role() < 1) {
-                joinButton[index].hide();
-            }
-            else if (pp[index].includes(ID)) {
+            //if (login.loggedOut()) {
+            //    $('#join' + index).prop("disabled", true);
+            //    $('#btnParticipants' + index).prop("disabled", true);
+
+            //}
+            //else
+            if (pp[index].includes(ID)) {
                 // member is already signed up for this ride
                 joinButton[index] = leaveText;
             }
@@ -309,6 +319,12 @@ var TCCrides = (function ($) {
         });
 
         showRideList(rides);
+        $.each(rides, function (index, ride) {
+            if (login.loggedOut()) {
+                $('#join' + index).prop("disabled", true);
+                $('#btnParticipants' + index).prop("disabled", true);
+            }
+        });
 
         // to review: maybe can't load a route here because of web callbacks overloading. Previous callbacks now made sync not async - will this be OK?
         var ride = TCCrides.currentride();
