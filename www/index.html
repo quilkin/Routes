@@ -144,6 +144,7 @@
                             <a id="routeTitle" class="list-group-item list-group-item-info">Choose route(s)</a>
                         </div>
                         <div class="panel-footer">
+                            <button type="button" class="btn btn-info" id="deleteRoute" data-dismiss="modal">Delete this route</button>
                             <button type="button" class="btn btn-primary" id="planRide" data-dismiss="modal">Lead a ride using this route</button>
                         </div>
                     </div>
@@ -209,14 +210,14 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="route-distance" class="control-label side-label">Distance:</label>
-                                                <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="optional if you have a GPX file" id="route-distance">
+                                                <label for="route-distance" class="control-label side-label">Distance (km):</label>
+                                                <input type="number" class="form-control side-input detectChange" data-toggle="tooltip" title="Not required if you have a GPX file" id="route-distance">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="route-url" class="control-label side-label" id="route-url-label">URL (link) to GPX file:</label>
-                                                <input type="text" class="form-control side-input detectChange" id="route-url">
+                                                <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="a valid link to a .GPX file anywhere on the internet" id="route-url">
                                             </div>
                                         </div>
                                         <div class="col-md-4">

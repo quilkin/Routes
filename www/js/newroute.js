@@ -5,22 +5,7 @@ var newRoute = (function ($) {
     "use strict";
 
     var newRoute = {},
-
-        saveRoute = function (route) {
-            if (route.url.length < 2) {
-                if (route.dest.length < 2 || route.dist === '' || route.dist === 0) {
-                    popup.Alert("Destination and distance needed");
-                    return;
-                }
-                if (route.description.length < 2) {
-                    popup.Alert("Description needed");
-                    return;
-                }
-                route.url = 'none';
-                // prevent this route showing in routes listing
-                route.dest = '*' + route.dest;
-            }
-
+        saveRouteStage2 = function (route) {
             rideData.myJson("SaveRoute", "POST", route, function (response) {
                 // if successful, response should be just a new ID
                 if (response.length < 5) {
@@ -46,6 +31,33 @@ var newRoute = (function ($) {
                 }
 
             }, true, null);
+
+        },
+
+        saveRoute = function (route) {
+            if (route.url.length < 2) {
+                if (route.dest.length < 2 || route.dist === '' || route.dist === 0) {
+                    popup.Alert("Destination and distance needed");
+                    return;
+                }
+                if (route.description.length < 2) {
+                    popup.Alert("Description needed");
+                    return;
+                }
+                route.url = 'none';
+                // prevent this route showing in routes listing
+                route.dest = '*' + route.dest;
+            }
+            var existing = TCCroutes.findDest(route.dest);
+            var confirmed = false;
+            if (existing === route.dest) {
+                popup.Confirm("There is already a route with this destination.", "Do you want to use the same destination?", saveRouteStage2(route), null, -10);
+            }
+            else {
+                saveRouteStage2(route);
+            }
+
+            
         },
         validURL = function (string) {
             try {
@@ -107,7 +119,10 @@ var newRoute = (function ($) {
         var descrip  = $("#route-descrip").val();
         var dest = $("#route-dest").val();
         var url = $("#route-url").val();
-        var dist = $("#route-distance").val();         if (dist === '') dist = 0;
+        var dist = $("#route-distance").val();
+        if (dist === '') dist = 0;
+            dist = Number(dist);
+            dist = dist.toFixed(0);
         var owner = login.ID();
         var route = new TCCroutes.Route(url, dest, descrip,dist, 0, owner, 0);
 

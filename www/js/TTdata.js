@@ -13,7 +13,7 @@ var rideData = (function ($) {
             }
 
             return "http://localhost/routes/Routes.svc/";
-        //    return "/Routes.svc/";
+           //return "/Routes.svc/";
             //return "http://localhost:54684/Routes.svc/";
 
 

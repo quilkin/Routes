@@ -6,7 +6,7 @@ var TCCrides = (function ($) {
     "use strict";
 
         //ride data members
-//[DataMember(Name = "dest")]        public string Dest { get; set; }
+//[DataMember(Name = "routeID")]           public int routeID { get; set; }
 //[DataMember(Name = "leaderName")]        public string LeaderName { get; set; }
 //[DataMember(Name = "rideID")]        public int ID { get; set; }
 //[DataMember(Name = "date")]        public int Date { get; set; }
@@ -119,7 +119,8 @@ var TCCrides = (function ($) {
             $('#ridelist').append(htmlstr);
             $('#view' + index).click(function () {
                 currentride = ride;
-                var route = TCCroutes.findIDFromDest(ride.dest);
+                //var route = TCCroutes.findIDFromDest(ride.dest);
+                var route = TCCroutes.findRoute(ride.routeID);
                 TCCroutes.SetRoute(route);
                 // get ready to load new map
                 TCCroutes.SetGPX(null);
@@ -204,9 +205,9 @@ var TCCrides = (function ($) {
 
 
             $.each(rides, function (index, ride) {
-                var dest = ride.dest;
+               // var dest = ride.dest;
                 var start = ride.meetingAt;
-                var route = TCCroutes.findIDFromDest(ride.dest);
+                var route = TCCroutes.findRoute(ride.routeID);
                 if (route === null)
                     return true;
                 var distance = route.distance;
@@ -217,7 +218,7 @@ var TCCrides = (function ($) {
 
                 htmlstringFirstbit[index] = '<a id="sen' + index + '" class="list-group-item">' +
                     time + ' <button id="view' + index + '" type="button" class="btn btn-lifted btn-primary btn-sm " data-toggle="button tooltip" title="Starting at: ' +
-                    start  + '">' + dest + '</button>' +
+                    start  + '">' + route.dest + '</button>' +
                     '<span style="color:red; font-weight: bold">  ' + distance + 'km </span>' +
                     'Leader: <span style="color:blue; font-weight: bold">  ' + ride.leaderName + '  </span>';
                 htmlstringSecondbit[index] = '<button id="btnParticipants' + index + '" type="button" class="btn btn-lifted btn-info btn-sm  pull-right has-popover" >Rider List</button>   ';
@@ -279,10 +280,11 @@ var TCCrides = (function ($) {
    
         $.each(rides, function (index, ride) {
             try {
+                var dest = TCCroutes.findDestFromID();
                 if (pp[index].includes(ID))
-                    alreadyRidingToday = ride.dest;
+                    alreadyRidingToday = dest;
                 if (rs[index].includes(ID))
-                    alreadyReservedToday = ride.dest;
+                    alreadyReservedToday = dest;
             }
             catch (e) {
                 console.log(e.message);
@@ -328,7 +330,7 @@ var TCCrides = (function ($) {
 
         // to review: maybe can't load a route here because of web callbacks overloading. Previous callbacks now made sync not async - will this be OK?
         var ride = TCCrides.currentride();
-        var route = TCCroutes.findIDFromDest(ride.dest);
+        var route = TCCroutes.findRoute(ride.routeID);
         TCCroutes.SetRoute(route);
         // load new map
         TCCroutes.SetGPX(null);
@@ -336,12 +338,10 @@ var TCCrides = (function ($) {
         //$('#fromDate').hide();
     };
 
-    TCCrides.Ride = function (dest, leader, date, time, meeting, id) {
+    TCCrides.Ride = function (r_id, leader, date, time, meeting, id) {
         this.leaderName = leader;
-        this.dest = dest;
+        this.routeID= r_id;
         this.date = date;
-        //this.distance = dist;
-        //this.description = descrip;
         this.rideID = id;
         this.time = time;
         this.meetingAt = meeting;
@@ -376,9 +376,9 @@ var TCCrides = (function ($) {
             var route = TCCroutes.currentRoute();
             var leader = login.User();
             var time = starthours * 60 + startmins;
-            var dest = route.dest;
+            //var dest = route.dest;
             var date = bleTime.toIntDays(thisRideDate);
-            var ride = new TCCrides.Ride(dest, leader, date, time, startPlace, 0);
+            var ride = new TCCrides.Ride(route.id, leader, date, time, startPlace, 0);
             popup.Confirm("Save this ride", "Are you sure?", function () {
                 rideData.myJson("SaveRide", "POST", ride, function (response) {
                     // if successful, response should be just a new ID

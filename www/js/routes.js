@@ -86,7 +86,8 @@ var TCCroutes = (function () {
                     '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Select">Show</button>' +
                     '</a>';
                 $('#routelist').append(htmlstr);
-
+                $('#planRide').hide();
+                $('#deleteRoute').hide();
 
                 $('#get' + index).click(function () {
                     currentRoute = route;
@@ -95,9 +96,12 @@ var TCCroutes = (function () {
 
                     TCCroutes.SetGPX(null);
                     TCCMap.showRoute();
-                    if (login.Role() > 0)
+                    if (login.loggedIn())
                         // allow user to plan a  ride from this route
                         $('#planRide').show();
+                    var user = login.ID();
+                    if (route.owner === user)
+                        $('#deleteRoute').show();
                 });
 
                 index++;
@@ -129,16 +133,33 @@ var TCCroutes = (function () {
         }
         return null;
     };
-    TCCroutes.findIDFromDest = function (dest) {
+    //TCCroutes.findIDFromDest = function (dest) {
+    //    var found = $.grep(routes, function (e, i) {
+    //        return e.dest === dest;
+    //    });
+    //    if (found.length > 0) {
+    //        return found[0];
+    //    }
+    //    return null;
+    //};
+    TCCroutes.findDestFromID = function (id) {
+        var found = $.grep(routes, function (e, i) {
+            return e.id === id;
+        });
+        if (found.length > 0) {
+            return found[0].dest;
+        }
+        return 'none';
+    };
+    TCCroutes.findDest = function (dest) {
         var found = $.grep(routes, function (e, i) {
             return e.dest === dest;
         });
         if (found.length > 0) {
-            return found[0];
+            return dest;
         }
-        return null;
+        return 'none';
     };
-
     TCCroutes.Add = function (route) {
         routes.push(route);
     };
@@ -193,7 +214,33 @@ var TCCroutes = (function () {
         showRouteList();
     };
 
-    
+    $('#planRide').click(function () {
+        // move to different tab
+        rideData.setCurrentTab('setup-tab');
+        $('#setup-tab').tab('show');
+        $('#uploadRoute').hide();
+        TCCMap.showRoute();
+        TCCrides.leadRide();
+    });
+
+    $('#deleteRoute').click(function () {
+        var id = currentRoute.id;
+        var dest = currentRoute.dest;
+
+        popup.Confirm("Delete this route", "Are you sure?", function () {
+            rideData.myJson("DeleteRoute", "POST", id, function (response) {
+                if (response === 'OK') {
+                    popup.Alert("You have deleted this route");
+                    routes = routes.filter(function (e) { return e.id !== id;});
+                    TCCroutes.CreateRouteList();
+                }
+                else {
+                    popup.Alert(response);
+                }
+            }, true, null);
+        }, null, -10);
+    });
+
     $("#btnSort123").click(sort123);
     $("#btnSortabc").click(sortabc);
 

@@ -65,7 +65,7 @@
  //       }
 
         gpxdata = TCCroutes.currentGPX();
-        // }
+
         var tab = rideData.getCurrentTab();
         var mapid = "demo-map";
         var elevid = "demo-elev";
@@ -79,6 +79,24 @@
             mapid = "home-map";
             elevid = "home-elev";
             demo = document.getElementById('home');
+        }
+        if (gpxdata === 'none' || gpxdata.length < 100) {
+            $("#" + mapid).hide();
+            $("#" + elevid).hide();
+            _t('h3').textContent = "No route map available";
+            //$("h3").hide();
+            //$('.info').textContent = "No route map available";
+            $('.info').hide();
+
+            return;
+
+        }
+        else {
+            $("#" + mapid).show();
+            $("#" + elevid).show();
+            //$("h3").show();
+            $('.info').show();
+
         }
 
 
@@ -111,6 +129,7 @@
 
             var name = TCCroutes.currentRoute().dest;
             _t('h3').textContent = name + ":  ";
+
 
             var distance = (gpx.get_distance() / 1000).toFixed(0);
             var elev_gain = gpx.get_elevation_gain().toFixed(0);

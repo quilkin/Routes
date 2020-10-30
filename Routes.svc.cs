@@ -371,28 +371,28 @@ namespace Routes
             {
                 try
                 {
-                    // check route of same name isn't already there***************
+                    //// check route of same name isn't already there
 
-                    string query = string.Format("SELECT dest FROM routes where dest = '{0}'", route.Dest);
-                    bool exists = true;
-                    string now = TimeString(DateTime.Now);
-                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
-                    {
-                        dataRoutes = new DataTable();
-                        routeAdapter.Fill(dataRoutes);
+                    //string query = string.Format("SELECT dest FROM routes where dest = '{0}'", route.Dest);
+                    //bool exists = true;
+                    //string now = TimeString(DateTime.Now);
+                    //using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    //{
+                    //    dataRoutes = new DataTable();
+                    //    routeAdapter.Fill(dataRoutes);
 
-                        if (dataRoutes.Rows.Count == 0)
-                        {
-                            exists = false;
-                        }
-                    }
-                    if (exists)
-                    {
-                        result = "This route destination already exists. Please choose another name: add -a or -b ?";
-                    }
+                    //    if (dataRoutes.Rows.Count == 0)
+                    //    {
+                    //        exists = false;
+                    //    }
+                    //}
+                    //if (exists)
+                    //{
+                    //    result = "This route destination already exists. Please choose another name: add -a or -b ?";
+                    //}
 
-                    else
-                    {
+                    //else
+                    //{
                         // fetch the text from the URL
                         string fullText;
                         try
@@ -418,7 +418,7 @@ namespace Routes
                                 }
 
 
-                                query = string.Format("insert into routes (dest,distance,description,climbing,route,owner) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
+                                string query = string.Format("insert into routes (dest,distance,description,climbing,route,owner) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
                                     route.Dest, route.Distance, route.Descrip, route.Climbing, fullText, route.Owner);
                                 query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
                                 object routeID = null;
@@ -441,7 +441,7 @@ namespace Routes
                         {
                             result = string.Format("Database error: route \"{0}\" not saved: {1}", route.Dest, ex2.Message);
                         }
-                    }
+                    //}
 
                 }
                 catch (Exception ex)
@@ -463,7 +463,7 @@ namespace Routes
 
         public string SaveRide(Ride ride)
         {
-            LogEntry log = new LogEntry(GetIP(), "SaveRide", ride.Date + " " + ride.Dest);
+            LogEntry log = new LogEntry(GetIP(), "SaveRide", ride.Date + " " + ride.routeID);
 
             //int successRows = 0;
             string result = "";
@@ -494,7 +494,7 @@ namespace Routes
                     }
                     if (exists)
                     {
-                        result = string.Format("There is already a ride ('{0}') with you as leader on the same date. Please choose another date.",rideDest);
+                        result = string.Format("There is already a ride with you as leader on the same date. Please choose another date.");
                     }
 
                     else
@@ -527,8 +527,8 @@ namespace Routes
                             using (System.Net.WebClient client = new System.Net.WebClient())
                             {
 
-                                query = string.Format("insert into rides (dest,leaderName,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
-                                    ride.Dest, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt);
+                                query = string.Format("insert into rides (routeID,leaderName,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
+                                    ride.routeID, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt);
                                 // get new ride ID
                                 query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
                                 object rideID = null;
@@ -545,7 +545,7 @@ namespace Routes
                 }
                 catch (Exception ex)
                 {
-                    result = string.Format("Database error: ride \"{0}\" not saved: {1}", ride.Dest,  ex.Message);
+                    result = string.Format("Database error: ride \"{0}\" not saved: {1}", ride.ID,  ex.Message);
                 }
 
 
@@ -627,7 +627,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT rideID,dest,date,time,meetingAt,leaderName FROM rides where date= {0}",date);
+                    string query = string.Format("SELECT rideID,routeID,date,time,meetingAt,leaderName FROM rides where date= {0}",date);
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -636,19 +636,19 @@ namespace Routes
                         int length = dataRoutes.Rows.Count;
                         for (int row = 0; row < length; row++)
                         {
-                            string dest = "", meet = "", leader = "";
-                            int time = 0, id;
+                            string  meet = "", leader = "";
+                            int time = 0, id, routeID=0;
                             try
                             {
                                 DataRow dr = dataRoutes.Rows[row];
                                 id = (int)dr["rideID"];
-                                try { dest = (string)dr["dest"]; } catch { }
+                                try { routeID = (int)dr["routeID"]; } catch { }
                                 try { meet = (string)dr["meetingAt"]; } catch { }
                                 try { date = (int)dr["date"]; } catch { }
                                 try { time = (int)dr["time"]; } catch { }
                                 try { leader = (string)dr["leadername"]; } catch { }
 
-                                rides.Add(new Ride(dest, leader, id, date, time, meet));
+                                rides.Add(new Ride(routeID, leader, id, date, time, meet));
                             }
                             catch (Exception ex)
                             {
@@ -1007,6 +1007,72 @@ namespace Routes
                             }
                             result = "OK";
                         }
+                }
+                catch (Exception ex)
+                {
+                    result = string.Format("Database error: {0}", ex.Message);
+                }
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            return result;
+        }
+
+        public string DeleteRoute(int routeID)
+        {
+            LogEntry log = new LogEntry(GetIP(), "DeleteRoute ", routeID.ToString());
+
+            int successRows = 0;
+            string result = "";
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    // first check that there are no future rides connected with this route
+                    // convert to our app date type
+                    DateTime today = DateTime.Now;
+                    DateTime jan1970 = new DateTime(1970, 1, 1);
+                    TimeSpan appSpan = today - jan1970;
+                    int appdays = appSpan.Days;
+
+                    string query = string.Format("SELECT rideID,date FROM rides where routeID = '{0}' and date > '{1}'", routeID,appdays);
+                    int count = 0;
+
+                    string now = TimeString(DateTime.Now);
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
+                        count = dataRoutes.Rows.Count;
+                        if (count > 0)
+                        {
+                            DataRow dr = dataRoutes.Rows[0];
+                            appdays = (int)dr["date"] ;
+                        }
+                    }
+                    if (count > 0)
+                    {
+                        // convert app days back to c# date
+                        TimeSpan days = new TimeSpan(appdays, 0, 0,0);
+                        DateTime when = jan1970 + days;
+                        result = string.Format("There is at least one ride using this route in the future, on {0}. Please delete the ride first (if there are no riders signed up for it)", when.ToShortDateString());
+                    }
+                    else
+                    {
+                        using (System.Net.WebClient client = new System.Net.WebClient())
+                        {
+                            query = string.Format("delete from routes where id = {0}", routeID);
+                            using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                            {
+                                successRows = command.ExecuteNonQuery();
+                            }
+                            result = "OK";
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

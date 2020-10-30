@@ -90,14 +90,18 @@ namespace Routes
     [DataContract]
     public class Ride
     {
-        [DataMember(Name = "dest")]
-        public string Dest { get; set; }
+        //[DataMember(Name = "dest")]
+        //public string Dest { get; set; }
 
-        [DataMember(Name = "leaderName")]
-        public string LeaderName { get; set; }
 
         [DataMember(Name = "rideID")]
         public int ID { get; set; }
+
+        [DataMember(Name = "routeID")]
+        public int routeID { get; set; }
+
+        [DataMember(Name = "leaderName")]
+        public string LeaderName { get; set; }
 
         [DataMember(Name = "date")]
         public int Date { get; set; }
@@ -108,9 +112,9 @@ namespace Routes
         [DataMember(Name = "meetingAt")]
         public string MeetAt { get; set; }
 
-        public Ride(string dest, string lead, int id, int date, int time, string meet)
+        public Ride(int r_ID, string lead, int id, int date, int time, string meet)
         {
-             Dest = dest;
+            routeID = r_ID;
             LeaderName = lead;
             Date = date;
             Time = time;

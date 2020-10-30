@@ -47,15 +47,16 @@
         $('#fromDate').hide();
         $('#loading').hide();
         $('#planRide').hide();
+        $('#deleteRoute').hide();
         $("#form-signin").show();
-        $('#planRide').click(function () {
-            // move to different tab
-            rideData.setCurrentTab('setup-tab');
-            $('#setup-tab').tab('show');
-            $('#uploadRoute').hide();
-            TCCMap.showRoute();
-            TCCrides.leadRide();
-        });
+        //$('#planRide').click(function () {
+        //    // move to different tab
+        //    rideData.setCurrentTab('setup-tab');
+        //    $('#setup-tab').tab('show');
+        //    $('#uploadRoute').hide();
+        //    TCCMap.showRoute();
+        //    TCCrides.leadRide();
+        //});
 
 
 

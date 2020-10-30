@@ -1,7 +1,7 @@
 ﻿upload route: 
 	length of route name needs limiting
 plan ride on existing route:
-	doesn't show route correctly
+
 	ride list date not updated?
 
 login:
@@ -10,3 +10,5 @@ login:
 	max riders should be done globally, not every time a rider is added
 setup:
     make tab titles bolder
+
+	route descriptions not shown

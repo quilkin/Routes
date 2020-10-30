@@ -72,6 +72,10 @@ namespace Routes
         string DeleteRide(int rideID);
 
         [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/DeleteRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string DeleteRoute(int routeID);
+
+        [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/UpdateRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string UpdateRoute(Route route);
 
