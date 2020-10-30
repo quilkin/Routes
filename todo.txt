@@ -2,8 +2,6 @@
 	length of route name needs limiting
 plan ride on existing route:
 
-	ride list date not updated?
-
 login:
     limit username length etc
 	option to avoid password and email?
@@ -11,4 +9,3 @@ login:
 setup:
     make tab titles bolder
 
-	route descriptions not shown

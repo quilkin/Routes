@@ -81,13 +81,10 @@ var TCCroutes = (function () {
                     route.distance = '? ';
                 }
 
-                var htmlstr = '<a id="sen' + index + '" class="list-group-item">' + title +
-                    '<span style="color:red; font-weight: bold">  ' + route.distance + 'km</span>' +
-                    '<button id="get' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" data-toggle="button" data-complete-text="Select">Show</button>' +
-                    '</a>';
+                var htmlstr = '<a id="sen' + index + '" class="list-group-item"><button id="get' + index + '" type="button" class="btn btn-lifted btn-primary btn-sm">' + title +
+                    '</button><span style="color:red; font-weight: bold">  ' + route.distance + 'km</span> ' + route.description + '</a>';
                 $('#routelist').append(htmlstr);
-                $('#planRide').hide();
-                $('#deleteRoute').hide();
+
 
                 $('#get' + index).click(function () {
                     currentRoute = route;
@@ -96,12 +93,15 @@ var TCCroutes = (function () {
 
                     TCCroutes.SetGPX(null);
                     TCCMap.showRoute();
+                    $('#planRide').hide();
+                    $('#deleteRoute').hide();
                     if (login.loggedIn())
                         // allow user to plan a  ride from this route
                         $('#planRide').show();
                     var user = login.ID();
-                    if (route.owner === user)
+                    if (route.owner === user && login.loggedIn())
                         $('#deleteRoute').show();
+
                 });
 
                 index++;

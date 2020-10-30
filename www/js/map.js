@@ -83,7 +83,7 @@
         if (gpxdata === 'none' || gpxdata.length < 100) {
             $("#" + mapid).hide();
             $("#" + elevid).hide();
-            _t('h3').textContent = "No route map available";
+            _t('h4').textContent = "No route map available";
             //$("h3").hide();
             //$('.info').textContent = "No route map available";
             $('.info').hide();
@@ -101,7 +101,7 @@
 
 
 
-        _t('h3').textContent = "please wait...";
+        _t('h4').textContent = "please wait...";
 
         function _t(t) { return demo.getElementsByTagName(t)[0]; }
         function _c(c) { return demo.getElementsByClassName(c)[0]; }
@@ -128,7 +128,7 @@
             map.fitBounds(bounds);
 
             var name = TCCroutes.currentRoute().dest;
-            _t('h3').textContent = name + ":  ";
+            _t('h4').textContent = name + ":  ";
 
 
             var distance = (gpx.get_distance() / 1000).toFixed(0);
@@ -152,7 +152,7 @@
                 a.title = "Get this into your PC's download folder so you can load into Garmin etc";
                 a.href = 'data:text/csv;base64,' + btoa(gpxdata);
                 a.download = name + '.gpx';
-                _t('h3').appendChild(a);
+                _t('h4').appendChild(a);
 
 
                 _c('distance').textContent = distance;

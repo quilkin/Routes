@@ -1,6 +1,10 @@
 ﻿body {
     margin: 10px;
 }
+h4 {
+    margin-top: -20px;
+    margin-bottom: -20px;
+}
 #myTabContent {
     margin-top:71px;
 }

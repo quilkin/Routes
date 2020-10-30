@@ -217,7 +217,7 @@ var TCCrides = (function ($) {
                 }
 
                 htmlstringFirstbit[index] = '<a id="sen' + index + '" class="list-group-item">' +
-                    time + ' <button id="view' + index + '" type="button" class="btn btn-lifted btn-primary btn-sm " data-toggle="button tooltip" title="Starting at: ' +
+                    time + ' <button id="view' + index + '" type="button" class="btn btn-lifted btn-primary btn-sm " data-toggle="button tooltip" title="' + route.description + ', Starting at: ' +
                     start  + '">' + route.dest + '</button>' +
                     '<span style="color:red; font-weight: bold">  ' + distance + 'km </span>' +
                     'Leader: <span style="color:blue; font-weight: bold">  ' + ride.leaderName + '  </span>';
