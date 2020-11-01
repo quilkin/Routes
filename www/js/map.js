@@ -80,7 +80,7 @@
             elevid = "home-elev";
             demo = document.getElementById('home');
         }
-        if (gpxdata === 'none' || gpxdata.length < 100) {
+        if (gpxdata === null ||  gpxdata === 'none' || gpxdata.length < 100) {
             $("#" + mapid).hide();
             $("#" + elevid).hide();
             _t('h4').textContent = "No route map available";

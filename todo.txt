@@ -9,3 +9,4 @@ login:
 setup:
     make tab titles bolder
 
+	flush logs table in DB every now % again

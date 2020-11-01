@@ -179,7 +179,9 @@
     <Compile Include="Connections.cs" />
     <Compile Include="IRoutes.cs" />
     <Compile Include="logdata.cs" />
+    <Compile Include="Logins.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rides.cs" />
     <Compile Include="Routes.svc.cs">
       <DependentUpon>Routes.svc</DependentUpon>
     </Compile>

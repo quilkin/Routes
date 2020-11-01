@@ -49,17 +49,6 @@
         $('#planRide').hide();
         $('#deleteRoute').hide();
         $("#form-signin").show();
-        //$('#planRide').click(function () {
-        //    // move to different tab
-        //    rideData.setCurrentTab('setup-tab');
-        //    $('#setup-tab').tab('show');
-        //    $('#uploadRoute').hide();
-        //    TCCMap.showRoute();
-        //    TCCrides.leadRide();
-        //});
-
-
-
         $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "DD M dd yyyy" });
         $("#rideDate").datepicker({ todayBtn: true, autoclose: true, format: "DD M dd yyyy" });
 
@@ -110,15 +99,6 @@
             $('[data-toggle="tooltip"]').tooltip();
         });
 
-        //$('#loginModal').on('shown.bs.modal', function (e) {
-        //    $("#form-register").hide();
-        //    $("#signin-cancel").on('click', login.cancelSignIn);
-        //    $("#signin-register").on('click', function () {
-        //        $("#form-register").show();
-        //        $("#form-signin").hide();
-        //    });
-        //});
-
         // add a hash to the URL when the user clicks on a tab
         $('a[data-toggle="tab"]').on('click', function (e) {
             lasttab = $(e.target).attr('id');
@@ -144,23 +124,21 @@
         // see if any URL params for registration
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const username = urlParams.get('username');
+        const username = urlParams.get('user');
         const regcode = urlParams.get('regcode');
-        const email1 = urlParams.get('m1');
-        const email2 = urlParams.get('m2');
 
-        const email = email1 + '@' + email2;
         if (username !== null && regcode !== null) {
-            var success = login.CompleteRegistration(username, regcode, email);
+
+            var success = login.CompleteRegistration(username, regcode);
             if (success === true) {
-                // always need to login, cannot download devices from non-mobile
+                // always need to login, 
                 $('#loginModal').modal();
                 // switch straight to home tab
                 $(".navbar-nav a[href=#home]").tab('show');
             }
         }
         else if (bleApp.isMobile() === false) {
-            // always need to login, cannot download devices from non-mobile
+            // always need to login, 
             $('#loginModal').modal();
             // switch straight to home tab
             $(".navbar-nav a[href=#home]").tab('show');
@@ -203,7 +181,7 @@ var bleApp = (function () {
             if (sinceLastClick > 60000 && rideData.getCurrentTab()==='home-tab') {
                 // update rides list in case other users have modified it
                 TCCrides.clearPopovers(-1);
-                TCCrides.CreateRideList(null);
+                TCCrides.CreateRideList(d);
                 lastClickTime = d;
             }
 

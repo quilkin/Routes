@@ -46,10 +46,7 @@ var login = (function () {
     // Logged in successfully
     ///
     function loggedInOK() {
-        //$("myTabContent").show();
-        //$("home").show();
-        //$("webdata").show();
-        //$("panel-setup").show();
+
         rideData.CreateLists();
         $('#loginModal').modal('hide');
         // switch to home tab
@@ -211,20 +208,18 @@ var login = (function () {
     function cancelAccount() {
         $('#accountModal').modal('hide');
     }
-    login.CompleteRegistration = function (user, regcode,em) {
-        console.log('Registration: ' + user + ' ' + regcode + ' ' + em);
+    login.CompleteRegistration = function (user, regcode) {
 
-        var creds = { name: user, code: regcode, email: em };
+        console.log('Registration: ' + user + ' ' + regcode + ' ');
+
+        var creds = { name: user, code: regcode};
         var success = false;
         rideData.myJson('Register', "POST", creds, function (res) {
             if (res.substring(0, 9) === "Thank you")           //"Thank you, you have now registered"
             {
-
                 success = true;
                 popup.Alert("Thank you, you can now log in");
- 
-
-            } else {
+             } else {
                 popup.Alert("Invalid username , code or email");
             }
 
