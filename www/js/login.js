@@ -208,6 +208,22 @@ var login = (function () {
     function cancelAccount() {
         $('#accountModal').modal('hide');
     }
+    function handlePassword() {
+        var form, u, p1, p2, e, remember, creds;
+
+        form = $("#form-password");
+        e = $("#email3", form).val();
+        creds = { email: e};
+        rideData.myJson('ForgetPassword', "POST", creds, function (res) {
+            popup.Alert(res);
+
+        }, true, null);
+        return false;
+    }
+    function cancelPassword() {
+        $('#passwordModal').modal('hide');
+    }
+
     login.CompleteRegistration = function (user, regcode) {
 
         console.log('Registration: ' + user + ' ' + regcode + ' ');
@@ -276,6 +292,14 @@ var login = (function () {
     });
     $("#settings").click(function () {
         popup.Alert("not yet implemented, sorry");
+    });
+    $("#signin-pw").click(function () {
+        $('#passwordModal').modal();
+    });
+    $('#passwordModal').on('shown.bs.modal', function (e) {
+        $("#form-password").on("submit", handlePassword);
+        $("#password-cancel").on('click', cancelPassword);
+
     });
 
     return login;

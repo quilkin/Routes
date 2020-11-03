@@ -197,7 +197,7 @@ var TCCroutes = (function () {
     TCCroutes.ShowStartLocation = function () {
         // get default map which shows Lemon Quay
 
-        currentRoute = TCCroutes.findRoute(0);
+        currentRoute = TCCroutes.findRoute(71);
         currentRoute.dest = 'Truro CC rides start here';
         TCCMap.showRoute();
     };

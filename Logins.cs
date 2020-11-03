@@ -212,7 +212,8 @@ namespace Routes
 
                         // save the login details but with role as zero so login won't yet work
                         log = new LogEntry("Register1", login.Name + " " + login.EmailCode);
-                        query = string.Format("insert into logins (name, pw, email,role) values ('{0}','{1}','{2}',{3})", login.Name, hash, login.Email, 0);
+                        query = string.Format("insert into logins (name, pw, email,role,messagetime) values ('{0}','{1}','{2}',{3},'{4}')",
+                            login.Name, hash, login.Email, 0, Logdata.TimeString(DateTime.Now));
 
                         try
                         {
@@ -280,13 +281,17 @@ namespace Routes
                     {
                         dataLogins = new DataTable();
                         loginAdapter.Fill(dataLogins);
-
-                        if (dataLogins.Rows.Count == 1)
+                        int count = dataLogins.Rows.Count;
+                        if (count == 1)
                         {
                             DataRow dr = dataLogins.Rows[0];
                             string dbname = (string)dr["name"];
                             username = dbname.Trim();
 
+                        }
+                        else if (count == 0)
+                        {
+                            return string.Format("Error: cannot find an account with that email");
                         }
                         else
                         {
@@ -314,7 +319,7 @@ namespace Routes
                     MailMessage message = new MailMessage(from, emailAddr)
                     {
                         Subject = "TCC rides forgotten password",
-                        Body = string.Format("Please click {0}  to reset your password", URLstr)
+                        Body = string.Format("Please click {0}  to reset your password\n\r For security, this link will expire in 15 minutes!", URLstr)
                     };
 
                     try
@@ -324,6 +329,21 @@ namespace Routes
                             Credentials = new System.Net.NetworkCredential(ec.User, ec.PW)
                         };
                         client.Send(message);
+
+                        // save the time this message was delivered
+                        
+                        query = string.Format("update logins set messagetime = '{0}' where email = '{1}'", Logdata.TimeString(DateTime.Now),email);
+
+                        try
+                        {
+                            var cmd = new MySqlCommand(query, gpxConnection.Connection);
+                            cmd.ExecuteNonQuery();
+                            
+                        }
+                        catch (Exception ex2)
+                        {
+                            result = "There is a database error, please try again:" + ex2.Message; ;
+                        }
                         result = "OK, now please wait for an email and click the link to set a new password";
                        
                     }

@@ -10,7 +10,7 @@ using System.Data;
 namespace Routes
 {
 
-     [ServiceContract]
+    [ServiceContract]
     public interface IRoutes
     {
         [OperationContract]
@@ -79,6 +79,9 @@ namespace Routes
         [WebInvoke(Method = "POST", UriTemplate = "/UpdateRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string UpdateRoute(Route route);
 
-    }
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/ForgetPassword", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string ForgetPassword(string email);
 
+    }
 }

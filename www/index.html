@@ -325,6 +325,7 @@
                             </div>
                             <button class="btn btn-info " id="signin-register" type="button" data-loading-text="Checking...">Register</button>
                             <button class="btn btn-info" id="signin-cancel" type="button" data-loading-text="Checking...">Continue as guest</button>
+                            <button class="btn btn-info" id="signin-pw" type="button" data-loading-text="Checking...">Forgot details?</button>
                             <button class="btn btn-primary pull-right " type="submit" id="button-signin" data-loading-text="Checking...">Sign in</button>
                         </div>
                     </form>
@@ -359,7 +360,7 @@
                     <h4 class="modal-title">Account details</h4>
                 </div>
                 <div class="modal-body">
-                    <form  id="form-account">
+                    <form id="form-account">
 
                         <div class="form-group">
                             <label for="username2" class="control-label">Change Username</label>
@@ -369,7 +370,7 @@
                             <label for="password4" class="control-label">Confirm password</label>
                             <input type="password" id="password4" class="form-control" placeholder="Confirm password">
                             <label for="email2" class="control-label ">Email</label>
-                            <input type="email" id="email2" class="form-control"  required>
+                            <input type="email" id="email2" class="form-control" required>
                             <div class="radio-inline">
                                 <label> <input id="radioKm" type="radio" checked>Distances in Km</label>
                             </div>
@@ -377,13 +378,36 @@
                                 <label> <input id="radioMile" type="radio">Distances in miles</label>
                             </div>
 
-                            
+
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" id="account-cancel" type="button" data-loading-text="Checking...">Cancel</button>
                     <button class="btn btn-info pull-right " type="submit" id="account-ok" data-loading-text="Checking...">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="passwordModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    
+                    <h4 class="modal-title">Forgotten login details?</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form-password">
+
+                        <div class="form-group">
+                            <label for="email3" class="control-label ">Your email address:</label>
+                            <input type="email" id="email3" class="form-control" required data-toggle="tooltip" title="Send us your email adress and we will try to recoonect you">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="password-cancel" type="button" data-loading-text="Checking...">Cancel</button>
+                    <button class="btn btn-info pull-right " type="submit" id="password-ok" data-loading-text="Checking...">Submit</button>
                 </div>
             </div>
         </div>
