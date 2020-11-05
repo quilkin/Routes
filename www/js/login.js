@@ -3,6 +3,7 @@
 var login = (function () {
     "use strict";
 
+    const dummyEmail = 'do_not@change.me';
 
     //const dropdownHtml1 = '<div class="dropdown"> <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">';
     //const dropdownHtml2 = '< span class="caret" ></span ></button > ' +
@@ -21,7 +22,8 @@ var login = (function () {
     login.loggedOut = function () { return (role === UserRoles.None); };
     login.User = function () { return username; };
     login.Email = function () { return email; };
-    
+    login.setUser = function (u) { username = u; };
+
 
     function checkPreAuth() {
         //   comment out temporarily to test sign-up
@@ -126,6 +128,25 @@ var login = (function () {
         return false;
     }
 
+    function checkdetails(u, p1, p2, blanksOK) {
+        if (p1 !== p2) {
+            popup.Alert("Passwords do not match");
+            return false;
+        }
+        if (u.length > 10 || u.includes(' ')) {
+            popup.Alert("User name must be 10 characters or less, and no spaces");
+            return false;
+        }
+        if (blanksOK)
+            return true;
+        if (p1.length < 4 || p1.length > 10 || p1.includes(' ')) {
+            popup.Alert("Password must be 4-10 characters and no spaces");
+            return false;
+        }
+
+        return true;
+
+    }
 
     function handleSignup() {
         var form, u, p1, p2, e, c, creds;
@@ -140,22 +161,9 @@ var login = (function () {
         c = $("#code", form).val();
         if (c === undefined || c === '') { c = 0; }
 
-        if (p1 !== p2) {
-            popup.Alert("Passwords do not match");
+        if (checkdetails(u, p1, p2, false) === false) {
             $("#button-register").removeAttr("disabled");
             return false;
-        }
-        if (u.length > 10 || u.includes(' ')) {
-            popup.Alert("User name must be 10 characters or less, and no spaces");
-            $("#button-register").removeAttr("disabled");
-            return false;
-
-        }
-        if (p1.length > 10 || p1.includes(' ')) {
-            popup.Alert("Password must be 10 characters or less, and no spaces");
-            $("#button-register").removeAttr("disabled");
-            return false;
-
         }
 
         if (u !== '' && p1 === p2 && p1 !== ''  && e !== '') {
@@ -179,14 +187,42 @@ var login = (function () {
 
 
     function handleAccount() {
-        var form, u, p1, p2, e, remember, creds;
+        var form, u, p1, p2, e,  creds;
 
         form = $("#form-account");
         u = $("#username2", form).val();
         p1 = $("#password3", form).val();
         p2 = $("#password4", form).val();
         e = $("#email2", form).val();
-        return false;
+
+
+        if (checkdetails(u, p1, p2, true) === false)
+            return false;
+        if (e === dummyEmail) {
+            e = '';
+        }
+        var myid = id;
+        creds = { id: myid, name: u, pw: p1, email: e };
+        var success = false;
+        rideData.myJson('ChangeAccount', "POST", creds, function (res) {
+           
+            if (res.substring(0, 2) === "OK") {
+                success = true;
+                popup.Alert("Your details have been saved");
+                cancelAccount();
+                username = u;
+                if (e !== '')
+                    email = e;
+                $('#loginModal').modal();
+
+            }
+            else 
+                popup.Alert(res);
+
+        }, true, null);
+
+
+        return success;
     }
     function cancelSignIn() {
 
@@ -208,17 +244,22 @@ var login = (function () {
     function cancelAccount() {
         $('#accountModal').modal('hide');
     }
-    function handlePassword() {
-        var form, u, p1, p2, e, remember, creds;
+    function handlePassword()
+    {
+        var form, email;
 
         form = $("#form-password");
-        e = $("#email3", form).val();
-        creds = { email: e};
-        rideData.myJson('ForgetPassword', "POST", creds, function (res) {
-            popup.Alert(res);
+        email = $("#email3", form).val();
+        if (email !== '') {
+            var success = false;
+            rideData.myJson('ForgetPassword', "POST", email, function (res) {
+                success = true;
+                $('#passwordModal').modal('hide');
+                popup.Alert(res);
 
-        }, true, null);
-        return false;
+            }, true, null);
+        }
+        return success;
     }
     function cancelPassword() {
         $('#passwordModal').modal('hide');
@@ -239,10 +280,29 @@ var login = (function () {
                 popup.Alert("Invalid username , code or email");
             }
 
-        }, false, null);
+        }, true, null);
         return success;
     };
+    login.ResetAccount = function (user) {
+        username = user;
+        var success = false;
+        // check that timeout hasn't expired
+        rideData.myJson('CheckTimeout', "POST", username, function (res) {
+            
+            if (res.substring(0, 2) === "OK")           
+            {
+                success = true;
+                // remainder of res has login id
+                var userID = res.substring(2);
+                id = parseInt(userID);
+                $('#accountModal').modal();
+            } else {
+                popup.Alert(res);
+            }
 
+        }, true, null);
+        return success;
+    };
     login.Login = function () {
         
         if (role === undefined || role === UserRoles.None) {
@@ -279,6 +339,9 @@ var login = (function () {
         });
     });
     $('#accountModal').on('shown.bs.modal', function (e) {
+
+        if (email === '')
+            email = dummyEmail;
         $("#username2").attr("value", username);
         $("#email2").attr("value", email);
         $("#form-account").on("submit", handleAccount);
@@ -287,7 +350,6 @@ var login = (function () {
     });
     $("#account").click(function () {
 
-        popup.Alert("not yet fully implemented, sorry");
         $('#accountModal').modal();
     });
     $("#settings").click(function () {
@@ -297,10 +359,11 @@ var login = (function () {
         $('#passwordModal').modal();
     });
     $('#passwordModal').on('shown.bs.modal', function (e) {
-        $("#form-password").on("submit", handlePassword);
+        $("#form-password").on('submit', handlePassword);
         $("#password-cancel").on('click', cancelPassword);
+    //    $("#password-ok").on('click', handlePassword);
 
     });
-
+  //  $(document).on('submit', 'form-password', handlePassword);
     return login;
 }());

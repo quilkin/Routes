@@ -308,6 +308,7 @@
                     <!--<button class="btn btn-primary pull-right " id="signin-register" type="button" data-loading-text="Checking...">Register</button>-->
                     <!--<button type="button" class="close" id="loginclose" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
                     <h4 class="modal-title">Sign In / Register</h4>
+                    <h4 class="modal-title">Under development! Any dated rides and/or participants shown are fictional , for testing purposes only :)</h4>
                 </div>
                 <div class="modal-body">
                     <form id="form-signin">
@@ -342,7 +343,7 @@
                             <input type="password" id="password2" class="form-control" placeholder="Confirm password" required>
 
                             <button class="btn btn-info btn-dropped" id="register-cancel" type="button" data-loading-text="Checking...">Cancel</button>
-                            <button class="btn btn-primary  btn-dropped pull-right " type="submit" id="button-register" data-loading-text="Registering...">Register</button>
+                            <button class="btn btn-primary  btn-dropped pull-right" type="submit" id="button-register" data-loading-text="Registering...">Register</button>
                         </div>
                     </form>
                 </div>
@@ -356,14 +357,14 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <!--<button class="btn btn-primary pull-right " id="signin-register" type="button" data-loading-text="Checking...">Register</button>-->
-                    <h4 class="modal-title">Account details</h4>
+                    <h4 class="modal-title">Account details:</h4>
+                    <h4 class="modal-title"><i>(Edit as required or leave entries blank for no change)</i></h4>
                 </div>
                 <div class="modal-body">
                     <form id="form-account">
 
                         <div class="form-group">
-                            <label for="username2" class="control-label">Change Username</label>
+                            <label for="username2" class="control-label">Username</label>
                             <input type="text" id="username2" class="form-control" autofocus required>
                             <label for="password3" class="control-label ">Change Password</label>
                             <input type="password" id="password3" class="form-control" placeholder="New Password">
@@ -375,16 +376,17 @@
                                 <label> <input id="radioKm" type="radio" checked>Distances in Km</label>
                             </div>
                             <div class="radio-inline">
-                                <label> <input id="radioMile" type="radio">Distances in miles</label>
+                                <label> <input id="radioMile" type="radio">Distances in miles (not yet implemented)</label>
                             </div>
+                            <p></p>
+                            <button class="btn btn-info" id="account-cancel" type="button">Cancel</button>
+                            <button class="btn btn-primary pull-right " type="submit" id="account-ok" data-loading-text="Checking...">OK</button>
 
 
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" id="account-cancel" type="button" data-loading-text="Checking...">Cancel</button>
-                    <button class="btn btn-info pull-right " type="submit" id="account-ok" data-loading-text="Checking...">OK</button>
                 </div>
             </div>
         </div>
@@ -398,16 +400,17 @@
                 </div>
                 <div class="modal-body">
                     <form id="form-password">
-
                         <div class="form-group">
                             <label for="email3" class="control-label ">Your email address:</label>
-                            <input type="email" id="email3" class="form-control" required data-toggle="tooltip" title="Send us your email adress and we will try to recoonect you">
+                            <input type="email" id="email3" class="form-control" required data-toggle="tooltip" title="Send us your email adress and we will try to reconnect you">
+                            <p></p>
+                            <button class="btn btn-info" id="password-cancel" type="button">Cancel</button>
+                            <button class="btn btn-primary pull-right" type="submit" id="password-ok" data-loading-text="Checking...">Submit</button>
+
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" id="password-cancel" type="button" data-loading-text="Checking...">Cancel</button>
-                    <button class="btn btn-info pull-right " type="submit" id="password-ok" data-loading-text="Checking...">Submit</button>
                 </div>
             </div>
         </div>

@@ -119,6 +119,14 @@ namespace Routes
                 time.Year, time.Month.ToString("00"), time.Day.ToString("00"),
                 time.Hour.ToString("00"), time.Minute.ToString("00"), time.Second.ToString("00"));
         }
+        public static string DBTimeString(DateTime time)
+        {
+            if (time == DateTime.MinValue)
+                return System.DBNull.Value.ToString();
+            return string.Format("{0}-{1}-{2} {3}:{4}:{5}",
+                time.Year, time.Month.ToString("00"), time.Day.ToString("00"),
+                time.Hour.ToString("00"), time.Minute.ToString("00"), time.Second.ToString("00"));
+        }
 
     }
 

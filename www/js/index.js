@@ -126,16 +126,23 @@
         const urlParams = new URLSearchParams(queryString);
         const username = urlParams.get('user');
         const regcode = urlParams.get('regcode');
-
+        const forgotPW = urlParams.get('pwuser');
+                
+        var success = false;
         if (username !== null && regcode !== null) {
 
-            var success = login.CompleteRegistration(username, regcode);
+            success = login.CompleteRegistration(username, regcode);
             if (success === true) {
                 // always need to login, 
                 $('#loginModal').modal();
                 // switch straight to home tab
                 $(".navbar-nav a[href=#home]").tab('show');
             }
+        }
+        else if (forgotPW !== null && regcode !== null) {
+            login.ResetAccount(forgotPW);
+
+
         }
         else if (bleApp.isMobile() === false) {
             // always need to login, 
@@ -181,7 +188,7 @@ var bleApp = (function () {
             if (sinceLastClick > 60000 && rideData.getCurrentTab()==='home-tab') {
                 // update rides list in case other users have modified it
                 TCCrides.clearPopovers(-1);
-                TCCrides.CreateRideList(d);
+    //            TCCrides.CreateRideList(d);
                 lastClickTime = d;
             }
 

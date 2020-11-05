@@ -3,6 +3,7 @@
     "use strict";
 
     var TCCMap = {},
+        gpxdata,
         map,
         chart,
         clearChart = function () {
@@ -52,19 +53,35 @@
                     "precision": 0
                 }
             });
-        };
+        },
 
 
 
+    //getGPX = function () {
+    //    //var currentroute = TCCroutes.currentRoute();
+    //    //if (currentroute === null) {
+    //    //    popup.Alert("No GPX data found!");
+    //    //    return null;
+    //    //}
+    //    //var routeID = currentroute.id;
+    //    //var gpxdata = null;
+
+    //    //rideData.myJson("GetGPXforRoute", "POST", routeID, function (response) {
+    //    //    gpxdata = response;
+    //    //    if (gpxdata.length === 0) {
+    //    //        popup.Alert("No GPX data found!");
+    //    //        return null;
+    //    //    }
+    //    //    showRouteStage2(gpxdata);
+    //    //    // TCCroutes.SetGPX(gpxdata);
+    //    //    return gpxdata;
+    //    //}, true, null);
+    //    //return gpxdata;
+    //}; 
 
 
-    TCCMap.showRoute = function () {
-        var gpxdata = TCCroutes.currentGPX();
- //       if (gpxdata === null || gpxdata.length < 100) {    // always reload GPX or else it isn't shown properly for some reason
-            rideData.getGPX();
- //       }
 
-        gpxdata = TCCroutes.currentGPX();
+    showRouteStage2 = function (gpxdata) {
 
         var tab = rideData.getCurrentTab();
         var mapid = "demo-map";
@@ -84,8 +101,7 @@
             $("#" + mapid).hide();
             $("#" + elevid).hide();
             _t('h4').textContent = "No route map available";
-            //$("h3").hide();
-            //$('.info').textContent = "No route map available";
+
             $('.info').hide();
 
             return;
@@ -94,7 +110,6 @@
         else {
             $("#" + mapid).show();
             $("#" + elevid).show();
-            //$("h3").show();
             $('.info').show();
 
         }
@@ -141,7 +156,7 @@
                 rideData.myJson("UpdateRoute", "POST", route, function (response) {
                     var reply = response;
 
-                }, false, null);
+                }, true, null);
             }
             if (tab !== 'setup-tab' && route.id > 0) {
                 // add a download link
@@ -181,7 +196,33 @@
         }).addTo(map);
     };
 
+    TCCMap.showRoute = function () {
 
+        //rideData.getGPX();
+        //var gpxdata = TCCroutes.currentGPX();
+    //    getGPX();
+        // will call stage 2 when ready
+
+        var currentroute = TCCroutes.currentRoute();
+        if (currentroute === null) {
+            popup.Alert("No GPX data found!");
+            return null;
+        }
+        var routeID = currentroute.id;
+        var gpxdata = null;
+
+        rideData.myJson("GetGPXforRoute", "POST", routeID, function (response) {
+            gpxdata = response;
+            if (gpxdata.length === 0) {
+                popup.Alert("No GPX data found!");
+                return null;
+            }
+            showRouteStage2(gpxdata);
+            // TCCroutes.SetGPX(gpxdata);
+            return gpxdata;
+        }, true, null);
+        //return gpxdata;
+    };
     
 
     return TCCMap;

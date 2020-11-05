@@ -47,6 +47,11 @@ namespace Routes
         string Signup(Login login);
 
         [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/ChangeAccount", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string ChangeAccount(Login login);
+
+
+        [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/SaveRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string SaveRoute(Route route);
 
@@ -83,5 +88,8 @@ namespace Routes
         [WebInvoke(Method = "POST", UriTemplate = "/ForgetPassword", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string ForgetPassword(string email);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/CheckTimeout", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string CheckTimeout(string username);
     }
 }

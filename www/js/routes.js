@@ -24,15 +24,26 @@ var TCCroutes = (function () {
         currentGPX = null,
 
 
-        getWebRoutes = function () {
+        getWebRoutes = function (alsoGetRides) {
             rideData.myJson("GetRouteSummaries", "POST", null, function (response) {
                 routes = response;
                 if (routes.length === 0) {
                     popup.Alert("No data found!");
                     return null;
                 }
+                if (alsoGetRides) {
+                    // get list of rides for next Sunday
+                    // find next Sunday's date
+                    var today = new Date();
+                    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    while (today.getDay() !== 0) {
+                        today = bleTime.addDays(today, 1);
+                    }
+                    TCCrides.CreateRideList(today);
+                    showRouteList();
+                }
                 return routes;
-            }, false, null);
+            }, true, null);
 
             return routes;
         },
@@ -91,7 +102,7 @@ var TCCroutes = (function () {
 
                     // get ready to load new map
 
-                    TCCroutes.SetGPX(null);
+                    //TCCroutes.SetGPX(null);
                     TCCMap.showRoute();
                     $('#planRide').hide();
                     $('#deleteRoute').hide();
@@ -166,15 +177,15 @@ var TCCroutes = (function () {
     TCCroutes.currentRoute = function () {
         return currentRoute;
     };
-    TCCroutes.currentGPX = function () {
-        return currentGPX;
-    };
+    //TCCroutes.currentGPX = function () {
+    //    return currentGPX;
+    //};
     TCCroutes.SetRoute = function (route) {
         currentRoute = route;
     };
-    TCCroutes.SetGPX = function (gpx) {
-        currentGPX = gpx;
-    };
+    //TCCroutes.SetGPX = function (gpx) {
+    //    currentGPX = gpx;
+    //};
     TCCroutes.displayedRoutes = function () {
         return displayedRoutes;
     };
@@ -202,16 +213,15 @@ var TCCroutes = (function () {
         TCCMap.showRoute();
     };
 
-    TCCroutes.CreateRouteList = function () {
-        //var id = login.ID();
-        //if (id === undefined || id === 0) {
-        //    $('#loginModal').modal();
-        //    return;
-        //}
+    TCCroutes.CreateRouteList = function (alsoGetRides) {
+
         if (routes === undefined || routes.length === 0) {
-            getWebRoutes();
+            getWebRoutes(alsoGetRides);
+            // showroutelist() will be called when ready
         }
-        showRouteList();
+        else {
+            showRouteList();
+        }
     };
 
     $('#planRide').click(function () {
@@ -232,7 +242,7 @@ var TCCroutes = (function () {
                 if (response === 'OK') {
                     popup.Alert("You have deleted this route");
                     routes = routes.filter(function (e) { return e.id !== id;});
-                    TCCroutes.CreateRouteList();
+                    TCCroutes.CreateRouteList(false);
                 }
                 else {
                     popup.Alert(response);

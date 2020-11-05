@@ -255,6 +255,51 @@ namespace Routes
 
         }
 
+        public string ChangeAccount(Login login)
+        {
+           
+            LogEntry log = new LogEntry("ChangeAccount", login.Name);
+            string query;
+
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    if (login.PW != string.Empty) // has actually been changed
+                    {
+                        string hash = Logdata.GetHash(login.PW);
+                        query = string.Format("update logins set pw = '{0}' where id = {1}", hash, login.ID);
+                        var cmd = new MySqlCommand(query, gpxConnection.Connection);
+                        cmd.ExecuteNonQuery();
+
+                    }
+                    if (login.Email != string.Empty) // has actually been changed
+                    {
+                        query = string.Format("update logins set email = '{0}' where id = {1}", login.Email, login.ID);
+                        var cmd = new MySqlCommand(query, gpxConnection.Connection);
+                        cmd.ExecuteNonQuery();
+
+                    }
+                    if (login.Name != string.Empty) // has actually been changed
+                    {
+                        query = string.Format("update logins set name = '{0}' where id = {1}", login.Name, login.ID);
+                        var cmd = new MySqlCommand(query, gpxConnection.Connection);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                }
+                catch (Exception ex2)
+                {
+                    return "There is a database error, sme details not changed, please try again: " + ex2.Message;
+                }
+            }
+            else
+                return "No DB Connecton";
+
+            return "OK";
+        }
+
+
         public string ForgetPassword(string email)
         {
             LogEntry log = new LogEntry("ForgetPassword", email);
@@ -310,7 +355,6 @@ namespace Routes
                     // create a code based on data
                     string emailCode = Logdata.GetHash(username + username);
 
-                    //string URLstr = string.Format("https://quilkin.co.uk/tccrides?username={0}&regcode={1}&m1={2}&m2={3}", login.Name, login.Code, emailparts[0], emailparts[1]);
                    // string URLstr = string.Format("https://quilkin.co.uk/tccrides?pwuser={0}&regcode={1}", username, emailCode);
                     string URLstr = string.Format("http://localhost/routes/www?pwuser={0}&regcode={1}",username, emailCode);
 
@@ -319,7 +363,7 @@ namespace Routes
                     MailMessage message = new MailMessage(from, emailAddr)
                     {
                         Subject = "TCC rides forgotten password",
-                        Body = string.Format("Please click {0}  to reset your password\n\r For security, this link will expire in 15 minutes!", URLstr)
+                        Body = string.Format("Please click {0}  to reset your password or other details.\n\rFor security, this link will expire in 15 minutes!", URLstr)
                     };
 
                     try
@@ -332,7 +376,7 @@ namespace Routes
 
                         // save the time this message was delivered
                         
-                        query = string.Format("update logins set messagetime = '{0}' where email = '{1}'", Logdata.TimeString(DateTime.Now),email);
+                        query = string.Format("update logins set messagetime = '{0}' where email = '{1}'", Logdata.DBTimeString(DateTime.Now),email);
 
                         try
                         {
@@ -373,6 +417,55 @@ namespace Routes
                 return "No DB Connecton";
 
         }
+        public string CheckTimeout(string username)
+        {
+            LogEntry log = new LogEntry("CheckTimeout", username);
+
+            if (gpxConnection.IsConnect())
+            {
+                string query = string.Format("SELECT id, messagetime FROM logins where name = '{0}'", username);
+                try
+                {
+                    using (MySqlDataAdapter loginAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataLogins = new DataTable();
+                        loginAdapter.Fill(dataLogins);
+                        int count = dataLogins.Rows.Count;
+                        if (count == 1)
+                        {
+                            DataRow dr = dataLogins.Rows[0];
+                            DateTime msgTime = (DateTime)dr["messagetime"];
+                            int id = (int)dr["id"];
+                            TimeSpan since = DateTime.Now - msgTime;
+                            if (since.TotalMinutes > 15)
+                            {
+                                return "Sorry, email code has timed out. Please request your details again.";
+                            }
+                            else
+                            {
+                                return "OK" + id.ToString();
+                            }
+
+
+                        }
+                        else
+                        {
+                            return string.Format("DB Error: {0} users found ", dataLogins.Rows.Count);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return "DB error: " + ex.Message;
+                }
+
+
+            }
+            else
+
+                return "No DB Connecton";
+        }
 
     }
+
 }

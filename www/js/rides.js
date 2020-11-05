@@ -25,7 +25,7 @@ var TCCrides = (function ($) {
 
         // list of rides downloaded from database
         rides = [],
-        rideIDs = [],
+        //rideIDs = [],
         //array of lists of participants, each member will be a string of paticipants for that ride
         participants = [],
         //array of lists of reserve participants, each member will be a string of paticipants for that ride
@@ -47,30 +47,40 @@ var TCCrides = (function ($) {
         currentride = null,
 
         getWebRides = function (date) {
+            var rideIDs = [];
+        //    console.log("getWebRides start");
             var intdays = bleTime.toIntDays(date);
+            var success = false;
             rideData.myJson("GetRidesForDate", "POST", intdays, function (response) {
+      //          console.log("getWebRides ajaxreturn");
                 rides = response;
                 if (rides.length === 0) {
+                    $('#ridelist').empty();  // this will also remove any handlers
                     popup.Alert("No rides found for " + bleTime.dateString(date));
+
                     return null;
                 }
                 $.each(rides, function (index) {
                     rideIDs[index] = rides[index].rideID;
                 });
                 GetParticipants(rideIDs);
-                return rides;
-            }, false, null);
 
-            return rides;
+                success = true;
+            }, true, null);
+
+            return success;
         },
 
         GetParticipants = function (rideIDs) {
+            //console.log("GetParticipants start");
             pp = new Array(maxridesperday);
             rs = new Array(maxridesperday);
 
+            var success = false;
             while (reserves.length > 0) { reserves.pop(); }
             while (participants.length > 0) { participants.pop(); }
             rideData.myJson("GetParticipants", "POST", rideIDs, function (response) {
+               // console.log("GetParticipants ajax return");
                 $.each(rideIDs, function (index, ride) {
                     if (index >= maxridesperday) {
                         popup.Alert('too many rides for this date');
@@ -97,13 +107,16 @@ var TCCrides = (function ($) {
                         reserveList = reserveList.substring(0, reserveList.length - 1);
                     }
                     //if (ppList.length > 0)
-                        participants.push(ppList);
+                    participants.push(ppList);
                     //if (reserveList.length > 0)
-                        reserves.push(reserveList);
+                    reserves.push(reserveList);
                 });
+                // all ready now to show the rides list??
+                createRideListPart2();
+                success = true;
 
-
-            }, false, null);
+            }, true, null);
+            return success;
         },
 
 
@@ -123,7 +136,7 @@ var TCCrides = (function ($) {
                 var route = TCCroutes.findRoute(ride.routeID);
                 TCCroutes.SetRoute(route);
                 // get ready to load new map
-                TCCroutes.SetGPX(null);
+                //TCCroutes.SetGPX(null);
                 TCCMap.showRoute();
             });
             if (reserves[index].length > 4) {
@@ -187,7 +200,7 @@ var TCCrides = (function ($) {
                     var reserve = '+' + login.User();
                     rideData.leaveParticipant(ride.rideID, reserve);
                 }
-               // TCCrides.clearPopovers(-1);
+                // TCCrides.clearPopovers(-1);
             });
             $('#btnParticipants' + index).click(function () {
                 TCCrides.clearPopovers(index);
@@ -201,11 +214,11 @@ var TCCrides = (function ($) {
 
 
         showRideList = function (rides) {
-           // data-complete-text="Select"
+            // data-complete-text="Select"
 
 
             $.each(rides, function (index, ride) {
-               // var dest = ride.dest;
+                // var dest = ride.dest;
                 var start = ride.meetingAt;
                 var route = TCCroutes.findRoute(ride.routeID);
                 if (route === null)
@@ -218,12 +231,12 @@ var TCCrides = (function ($) {
 
                 htmlstringFirstbit[index] = '<a id="sen' + index + '" class="list-group-item">' +
                     time + ' <button id="view' + index + '" type="button" class="btn btn-lifted btn-primary btn-sm " data-toggle="button tooltip" title="' + route.description + ', Starting at: ' +
-                    start  + '">' + route.dest + '</button>' +
+                    start + '">' + route.dest + '</button>' +
                     '<span style="color:red; font-weight: bold">  ' + distance + 'km </span>' +
                     'Leader: <span style="color:blue; font-weight: bold">  ' + ride.leaderName + '  </span>';
                 htmlstringSecondbit[index] = '<button id="btnParticipants' + index + '" type="button" class="btn btn-lifted btn-info btn-sm  pull-right has-popover" >Rider List</button>   ';
                 htmlstringFourthbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" >' + joinButton[index] + '</button > </a>';
-               
+
             });
 
             $('#ridelist').empty();  // this will also remove any handlers
@@ -232,16 +245,94 @@ var TCCrides = (function ($) {
             });
 
         },
-        // the latest full gpx text
-        currentGPX = null;
+
+        createRideListPart2 = function () {
+
+            alreadyRidingToday = '';
+            alreadyReservedToday = '';
+            // first, split participant list into arrays for each ride
+
+            $.each(rides, function (index, ride) {
+                try {
+                    if (participants.length > 0)
+                        pp[index] = participants[index].split(' ');
+                }
+                catch (e) {
+                    console.log(e.message);
+                }
+                try {
+                    if (reserves.length > 0)
+                        rs[index] = reserves[index].split(' ');
+                }
+                catch (e) {
+                    console.log(e.message);
+                }
+            });
+
+            // now see if this rider is aleady booked on a  ride for this date
+            var ID = 'nobody';
+            if (login.loggedIn())
+                ID = login.User();
+
+            $.each(rides, function (index, ride) {
+                try {
+                    var dest = TCCroutes.findDestFromID();
+                    if (pp[index].includes(ID))
+                        alreadyRidingToday = dest;
+                    if (rs[index].includes(ID))
+                        alreadyReservedToday = dest;
+                }
+                catch (e) {
+                    console.log(e.message);
+                }
+            });
+
+            // decide wether to show 'Join' or 'leave' for each ride
+            $.each(rides, function (index, ride) {
+
+
+                if (pp[index].includes(ID)) {
+                    // member is already signed up for this ride
+                    joinButton[index] = leaveText;
+                }
+                else if (rs[index].includes(ID)) {
+                    // member is on reserve list for this ride
+                    joinButton[index] = leaveReserveText;
+                }
+                else if (pp[index].length >= 5) {     // Todo: need to get this figure from DB beforehand
+                    joinButton[index] = reserveText;
+                }
+                else if (login.User() === ride.leaderName && pp[index][0] === '') {
+                    joinButton[index] = cancelRideText;
+                }
+                else {
+                    joinButton[index] = joinText;
+                }
+
+            });
+
+            showRideList(rides);
+            $.each(rides, function (index, ride) {
+                if (login.loggedOut()) {
+                    $('#join' + index).prop("disabled", true);
+                    $('#btnParticipants' + index).prop("disabled", true);
+                }
+            });
+
+            // to review: maybe can't load a route here because of web callbacks overloading. Previous callbacks now made sync not async - will this be OK?
+            var ride = TCCrides.currentride();
+            var route = TCCroutes.findRoute(ride.routeID);
+            TCCroutes.SetRoute(route);
+            // load new map
+            //TCCroutes.SetGPX(null);
+            TCCMap.showRoute();
+
+        };
+
 
 
     TCCrides.CreateRideList = function (date) {
-        //var id = login.ID();
-        //if (id === undefined || id === 0) {
-        //    $('#loginModal').modal();
-        //    return;
-        //}
+
         if (date === null) {
             // recursive call from having aadded or removed a rider
             date = currentDate;
@@ -251,91 +342,9 @@ var TCCrides = (function ($) {
             currentDate = date;
         }
 
-        getWebRides(date);
-        alreadyRidingToday = '';
-        alreadyReservedToday = '';
-        // first, split participant list into arrays for each ride
+        getWebRides(date); // will call part 2 as and when ready
 
-        $.each(rides, function (index, ride) {
-            try {
-                if (participants.length > 0)
-                    pp[index] = participants[index].split(' ');
-            }
-            catch (e) {
-                console.log(e.message);
-            }
-            try {
-                if (reserves.length > 0)
-                    rs[index] = reserves[index].split(' ');
-            }
-            catch (e) {
-                console.log(e.message);
-            }
-        });
 
-        // now see if this rider is aleady booked on a  ride for this date
-        var ID = 'nobody';
-        if (login.loggedIn())
-            ID = login.User();
-   
-        $.each(rides, function (index, ride) {
-            try {
-                var dest = TCCroutes.findDestFromID();
-                if (pp[index].includes(ID))
-                    alreadyRidingToday = dest;
-                if (rs[index].includes(ID))
-                    alreadyReservedToday = dest;
-            }
-            catch (e) {
-                console.log(e.message);
-            }
-        });
-
-        // decide wether to show 'Join' or 'leave' for each ride
-        $.each(rides, function (index, ride) {
-
-            //if (login.loggedOut()) {
-            //    $('#join' + index).prop("disabled", true);
-            //    $('#btnParticipants' + index).prop("disabled", true);
-
-            //}
-            //else
-            if (pp[index].includes(ID)) {
-                // member is already signed up for this ride
-                joinButton[index] = leaveText;
-            }
-            else if (rs[index].includes(ID)) {
-                // member is on reserve list for this ride
-                joinButton[index] = leaveReserveText;
-            }
-            else if (pp[index].length >= 5) {     // Todo: need to get this figure from DB beforehand
-                joinButton[index] = reserveText;
-            }
-            else if (login.User() === ride.leaderName && pp[index][0] === '') {
-                joinButton[index] = cancelRideText;
-            }
-            else {
-                joinButton[index] = joinText;
-            }
-
-        });
-
-        showRideList(rides);
-        $.each(rides, function (index, ride) {
-            if (login.loggedOut()) {
-                $('#join' + index).prop("disabled", true);
-                $('#btnParticipants' + index).prop("disabled", true);
-            }
-        });
-
-        // to review: maybe can't load a route here because of web callbacks overloading. Previous callbacks now made sync not async - will this be OK?
-        var ride = TCCrides.currentride();
-        var route = TCCroutes.findRoute(ride.routeID);
-        TCCroutes.SetRoute(route);
-        // load new map
-        TCCroutes.SetGPX(null);
-        TCCMap.showRoute();
-        //$('#fromDate').hide();
     };
 
     TCCrides.Ride = function (r_id, leader, date, time, meeting, id) {
@@ -423,24 +432,15 @@ var TCCrides = (function ($) {
     TCCrides.Clear = function () {
         while (rides.length > 0) { rides.pop(); }
     };
-    //TCCrides.currentGPX = function () {
-    //    return currentGPX;
-    //};
+
     TCCrides.Setride = function (ride) {
         currentride = ride;
     };
-    //TCCrides.SetGPX = function (gpx) {
-    //    currentGPX = gpx;
-    //};
+
     TCCrides.displayedrides = function () {
         return displayedrides;
     };
-    //TCCrides.Foundrides = function () {
-    //    return foundrides;
-    //};
-    //TCCrides.ClearFoundrides = function () {
-    //    while (foundrides.length > 0) { foundrides.pop(); }
-    //};
+
     TCCrides.DisplayedrideNames = function () {
         var index, nameStr = '';
         for (index = 0; index < displayedrides.length; index++) {

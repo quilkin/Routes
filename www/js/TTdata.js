@@ -12,9 +12,9 @@ var rideData = (function ($) {
                 //return "http://192.168.1.73:54684/Service1.svc/";
             }
 
-            //return "http://localhost/routes/Routes.svc/";
+            return "http://localhost/routes/Routes.svc/";
            //return "/Routes.svc/";
-            return "http://localhost:54684/Routes.svc/";
+            //return "http://localhost:54684/Routes.svc/";
 
 
         },
@@ -70,7 +70,7 @@ var rideData = (function ($) {
         var newTime = newDate.getTime();
         var oldTime = rideDate.getTime();
         if (newTime !== oldTime) {
-            console.log("new ride time!");
+            //console.log("new ride time!");
             //rideDate = new Date($("#rideDate").val());
             rideDate = newDate;
             rideData.setDateChooser('View other dates');
@@ -85,16 +85,16 @@ var rideData = (function ($) {
 
     rideData.CreateLists = function () {
         // get list of all routes in db
-        TCCroutes.CreateRouteList();
+        TCCroutes.CreateRouteList(true);
 
-        // get list of rides for next Sunday
-        // find next Sunday's date
-        var today = new Date();
-        today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        while (today.getDay() !== 0) {
-            today = bleTime.addDays(today, 1);
-        }
-        TCCrides.CreateRideList(today);
+        //// get list of rides for next Sunday
+        //// find next Sunday's date
+        //var today = new Date();
+        //today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        //while (today.getDay() !== 0) {
+        //    today = bleTime.addDays(today, 1);
+        //}
+        //TCCrides.CreateRideList(today);
     };
     rideData.setDate = function (start) {
         rideDate = start;
@@ -109,24 +109,27 @@ var rideData = (function ($) {
     };
 
 
-    rideData.getGPX = function () {
-        var currentroute = TCCroutes.currentRoute();
-        if (currentroute === null) {
-            popup.Alert("No GPX data found!");
-            return null;
-        }
-        var routeID = currentroute.id;
-        var gpxdata = null;
+    //rideData.getGPX = function () {
+    //    var currentroute = TCCroutes.currentRoute();
+    //    if (currentroute === null) {
+    //        popup.Alert("No GPX data found!");
+    //        return null;
+    //    }
+    //    var routeID = currentroute.id;
+    //    var gpxdata = null;
 
-        rideData.myJson("GetGPXforRoute", "POST", routeID, function (response) {
-            gpxdata = response;
-            if (gpxdata.length === 0) {
-                popup.Alert("No GPX data found!");
-                return null;
-            }
-            TCCroutes.SetGPX(gpxdata);
-        }, false, null);
-    }; 
+    //    rideData.myJson("GetGPXforRoute", "POST", routeID, function (response) {
+    //        gpxdata = response;
+    //        if (gpxdata.length === 0) {
+    //            popup.Alert("No GPX data found!");
+    //            return null;
+    //        }
+    //        TCCMap.showRouteStage2(gpxdata);
+    //       // TCCroutes.SetGPX(gpxdata);
+    //        return gpxdata;
+    //    }, true, null);
+    //    return gpxdata;
+    //}; 
   
 
     rideData.saveParticipant = function (rideID, rider) {
@@ -213,7 +216,8 @@ var rideData = (function ($) {
             url: thisurl,
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            async: async,
+           // async: async,
+            async: true,
             success: function (response) { webRequestSuccess(successfunc, response); },
             error: webRequestFailed
 

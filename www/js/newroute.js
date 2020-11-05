@@ -15,13 +15,13 @@ var newRoute = (function ($) {
                     TCCroutes.SetRoute(route);
 
                     TCCroutes.Add(route);
-                    if (route.url !== 'none' && route.url.length < 1000) {
-                        rideData.getGPX();
-                    }
+                    //if (route.url !== 'none' && route.url.length < 1000) {
+                    //    rideData.getGPX();
+                    //}
                     if (route.url !== 'none') {
-                        rideData.getGPX();
+                     //   rideData.getGPX();
                         TCCMap.showRoute();
-                        TCCroutes.CreateRouteList();
+                        TCCroutes.CreateRouteList(false);
                     }
                     $('#leadRide').show();
 
