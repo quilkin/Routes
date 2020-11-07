@@ -147,6 +147,8 @@ namespace Routes
 
         }
 
+
+
         public IEnumerable<Route> GetRouteSummaries()
         {
             // get details of all routes (but not yet the GPX data)
@@ -245,7 +247,7 @@ namespace Routes
             return data;
         }
 
-        // update with distance extracted from GPX file
+        // update with distance and name extracted from GPX file
         public string UpdateRoute(Route route)
         {
             LogEntry log = new LogEntry("UpdateRoute ", route.ID.ToString());
@@ -260,7 +262,7 @@ namespace Routes
                     using (System.Net.WebClient client = new System.Net.WebClient())
                     {
 
-                        string query = string.Format("update routes set distance = {0} where id = {1}", route.Distance, route.ID);
+                        string query = string.Format("update routes set distance = {0}, dest = '{1}' where id = {2}", route.Distance, route.Dest, route.ID);
 
                         using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                         {
@@ -287,6 +289,48 @@ namespace Routes
             }
             return result;
         }
+
+        // change destination or description
+        public string EditRoute(Route route)
+        {
+            LogEntry log = new LogEntry("EditRoute", route.ID + " " + route.Dest);
+
+            string result = "";
+            if (gpxConnection.IsConnect())
+            {
+
+                try
+                {
+                    using (System.Net.WebClient client = new System.Net.WebClient())
+                    {
+
+
+                        string query = string.Format("update routes set dest = '{0}', description = '{1}' where id = {2}", route.Dest, route.Descrip, route.ID);
+
+                        using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                        {
+                            command.ExecuteNonQuery();
+
+                        }
+                        result = "OK";
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    result = string.Format("Database error: route \"{0}\" not saved: {1}", route.Dest, ex2.Message);
+                }
+
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            return result;
+
+        }
+
         public string DeleteRoute(int routeID)
         {
             LogEntry log = new LogEntry("DeleteRoute ", routeID.ToString());

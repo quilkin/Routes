@@ -50,7 +50,7 @@ var TCCroutes = (function () {
         lastCompareABC = 1,
         lastCompare123 = 1,
 
-        compareDest = function(a, b) {
+        compareDest = function (a, b) {
             // Use toUpperCase() to ignore character casing
             const destA = a.dest.toUpperCase();
             const destB = b.dest.toUpperCase();
@@ -72,13 +72,40 @@ var TCCroutes = (function () {
             routes.sort(compareDest);
             showRouteList();
             lastCompareABC = - lastCompareABC;
-        }, 
+        },
         sort123 = function () {
             console.log('sorting 123');
             routes.sort(compareKm);
             showRouteList();
             lastCompare123 = - lastCompare123;
         },
+
+        handleRouteEdit = function () {
+            var descrip = $("#edit-route-descrip").val();
+            var dest = $("#edit-route-dest").val();
+            var dist = $("#edit-route-distance").val();
+
+
+            if (dest.length < 2 || dist === '' || dist === 0) {
+                popup.Alert("Destination and distance needed");
+                return;
+            }
+
+            popup.Confirm("Save edited route", "Are you sure?", function () {
+                currentRoute.dest = dest;
+                currentRoute.description = descrip;
+                rideData.myJson("EditRoute", "POST", currentRoute, function (response) {
+                    if (response === 'OK') {
+                        showRouteList();
+                        $('#editRouteModal').modal('hide');
+                    }
+                    else {
+                        popup.Alert(response);
+                    }
+                }, true, null);
+            }, null, -10);
+        },
+
         showRouteList = function () {
             $('#routelist').empty();  // this will also remove any handlers
             //$('#setuplist').empty();
@@ -106,12 +133,15 @@ var TCCroutes = (function () {
                     TCCMap.showRoute();
                     $('#planRide').hide();
                     $('#deleteRoute').hide();
+                    $('#editRoute').hide();
                     if (login.loggedIn())
                         // allow user to plan a  ride from this route
                         $('#planRide').show();
                     var user = login.ID();
-                    if (route.owner === user && login.loggedIn())
+                    if (route.owner === user && login.loggedIn()) {
+                        $('#editRoute').show();
                         $('#deleteRoute').show();
+                    }
 
                 });
 
@@ -119,6 +149,7 @@ var TCCroutes = (function () {
             });
 
         };
+
 
 
 
@@ -177,24 +208,15 @@ var TCCroutes = (function () {
     TCCroutes.currentRoute = function () {
         return currentRoute;
     };
-    //TCCroutes.currentGPX = function () {
-    //    return currentGPX;
-    //};
+
     TCCroutes.SetRoute = function (route) {
         currentRoute = route;
     };
-    //TCCroutes.SetGPX = function (gpx) {
-    //    currentGPX = gpx;
-    //};
+
     TCCroutes.displayedRoutes = function () {
         return displayedRoutes;
     };
-    //TCCroutes.FoundRoutes = function () {
-    //    return foundRoutes;
-    //};
-    //TCCroutes.ClearFoundRoutes = function () {
-    //    while (foundRoutes.length > 0) { foundRoutes.pop(); }
-    //};
+
     TCCroutes.DisplayedRouteNames = function () {
         var index, nameStr='';
         for (index = 0; index < displayedRoutes.length; index++) {
@@ -224,19 +246,21 @@ var TCCroutes = (function () {
         }
     };
 
+
+
     $('#planRide').click(function () {
         // move to different tab
         rideData.setCurrentTab('setup-tab');
         $('#setup-tab').tab('show');
         $('#uploadRoute').hide();
+        $('#manualRoute').hide();
         TCCMap.showRoute();
         TCCrides.leadRide();
     });
 
     $('#deleteRoute').click(function () {
         var id = currentRoute.id;
-        var dest = currentRoute.dest;
-
+        
         popup.Confirm("Delete this route", "Are you sure?", function () {
             rideData.myJson("DeleteRoute", "POST", id, function (response) {
                 if (response === 'OK') {
@@ -251,6 +275,26 @@ var TCCroutes = (function () {
         }, null, -10);
     });
 
+    $('#editRouteModal').on('shown.bs.modal', function (e) {
+        $("#edit-route-descrip").attr("value", currentRoute.description);
+        $("#edit-route-dest").attr("value", currentRoute.dest);
+        $("#edit-route-distance").attr("value", currentRoute.distance);
+
+       // if (currentRoute.url.length > 10) {
+            // cannot edit distance for routes wth GPX file
+            $("#edit-route-distance").prop('disabled', true);
+       // }
+       // $("#form-editroute").on("submit", handleRouteEdit);  // strange bug if this is used!
+        $("#edit-ok").on("click", handleRouteEdit);
+        $("#edit-cancel").on('click', function () {
+            $('#editRouteModal').modal('hide');
+        });
+
+    });
+    $('#editRoute').click(function () {
+        $('#editRouteModal').modal();
+        
+    });
     $("#btnSort123").click(sort123);
     $("#btnSortabc").click(sortabc);
 

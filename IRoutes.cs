@@ -56,6 +56,10 @@ namespace Routes
         string SaveRoute(Route route);
 
         [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/EditRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string EditRoute(Route route);
+
+        [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/SaveRide", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string SaveRide(Ride ride);
 

@@ -1,12 +1,21 @@
 ﻿upload route: 
 	length of route name needs limiting
-plan ride on existing route:
+	route name from GPX?
+	route name no spaces for Wahoo?
+	different dialog for manual routes?
+	allow editing of route name etc
+
 
 login:
     limit username length etc
 	option to avoid password and email?
 	max riders should be done globally, not every time a rider is added
 setup:
-    make tab titles bolder
 
-	flush logs table in DB every now % again
+
+	flush logs table in DB every now & again
+
+maps:
+	
+
+	show arrows on map

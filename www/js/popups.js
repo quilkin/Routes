@@ -5,16 +5,22 @@ var popup = (function () {
     "use strict";
 
     var popup = {},
-        popupCount = 0;
+        popupCount = 0,
+        yesfunc = function () {
+            console.log("popup yes");
+        },
+        nofunc = function () {
+            console.log("popup no");
+        },
+        checkpopups = function () {
+            if (popupCount > 5) {
+                window.alert("Too many popups?");
+                popupCount = 0;
+            }
+            ++popupCount;
+        };
 
 
-    function checkpopups() {
-        if (popupCount > 5) {
-            window.alert("Too many popups?");
-            popupCount = 0;
-        }
-        ++popupCount;
-    }
     popup.Alert = function (alertstr, timeout) {
         var alert, timer = null;
 

@@ -48,6 +48,7 @@
         $('#loading').hide();
         $('#planRide').hide();
         $('#deleteRoute').hide();
+        $('#editRoute').hide();
         $("#form-signin").show();
         $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "DD M dd yyyy" });
         $("#rideDate").datepicker({ todayBtn: true, autoclose: true, format: "DD M dd yyyy" });
@@ -89,6 +90,7 @@
             if (tab === 'setup-tab') {
                 if ($('#convertToRide').is(":hidden")) {
                     $('#uploadRoute').show();
+                    $('#manualRoute').show();
                 }
             }
             if (tab === 'webdata-tab') {
@@ -188,7 +190,7 @@ var bleApp = (function () {
             if (sinceLastClick > 60000 && rideData.getCurrentTab()==='home-tab') {
                 // update rides list in case other users have modified it
                 TCCrides.clearPopovers(-1);
-    //            TCCrides.CreateRideList(d);
+                TCCrides.CreateRideList(d);
                 lastClickTime = d;
             }
 

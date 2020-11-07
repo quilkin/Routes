@@ -14,7 +14,7 @@
     <RootNamespace>routes</RootNamespace>
     <AssemblyName>routes</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -114,6 +114,7 @@
     <Content Include=".eslintignore" />
     <Content Include=".gitignore" />
     <None Include="packages.config" />
+    <Content Include="www\icons\manifest.json" />
     <None Include="_references.js" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -126,6 +127,7 @@
     <Content Include="www\css\bootstrap-timepicker.min.css" />
     <Content Include="www\css\bootstrap.css.map" />
     <Content Include="www\css\gpx.css" />
+    <Content Include="www\css\leaflet-distance-marker.css" />
     <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="www\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="www\fonts\glyphicons-halflings-regular.woff" />
@@ -144,7 +146,32 @@
     <Content Include="www\css\jquery.dataTables.min.css" />
     <Content Include="www\css\normalize.css" />
     <Content Include="www\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="www\icon.png" />
+    <Content Include="www\icons\android-icon-144x144.png" />
+    <Content Include="www\icons\android-icon-192x192.png" />
+    <Content Include="www\icons\android-icon-36x36.png" />
+    <Content Include="www\icons\android-icon-48x48.png" />
+    <Content Include="www\icons\android-icon-72x72.png" />
+    <Content Include="www\icons\android-icon-96x96.png" />
+    <Content Include="www\icons\apple-icon-114x114.png" />
+    <Content Include="www\icons\apple-icon-120x120.png" />
+    <Content Include="www\icons\apple-icon-144x144.png" />
+    <Content Include="www\icons\apple-icon-152x152.png" />
+    <Content Include="www\icons\apple-icon-180x180.png" />
+    <Content Include="www\icons\apple-icon-57x57.png" />
+    <Content Include="www\icons\apple-icon-60x60.png" />
+    <Content Include="www\icons\apple-icon-72x72.png" />
+    <Content Include="www\icons\apple-icon-76x76.png" />
+    <Content Include="www\icons\apple-icon-precomposed.png" />
+    <Content Include="www\icons\apple-icon.png" />
+    <Content Include="www\icons\browserconfig.xml" />
+    <Content Include="www\icons\favicon-16x16.png" />
+    <Content Include="www\icons\favicon-32x32.png" />
+    <Content Include="www\icons\favicon-96x96.png" />
+    <Content Include="www\icons\favicon.ico" />
+    <Content Include="www\icons\ms-icon-144x144.png" />
+    <Content Include="www\icons\ms-icon-150x150.png" />
+    <Content Include="www\icons\ms-icon-310x310.png" />
+    <Content Include="www\icons\ms-icon-70x70.png" />
     <Content Include="www\images\page-loader.gif" />
     <Content Include="www\js-lib\amcharts.js" />
     <Content Include="www\js-lib\bluetoothle.js" />
@@ -159,12 +186,12 @@
     <Content Include="www\js-lib\ion.rangeSlider.js" />
     <Content Include="www\js-lib\jquery-1.11.1.min.js" />
     <Content Include="www\js-lib\jquery.dataTables.min.js" />
+    <Content Include="www\js-lib\leaflet-distance-marker.js" />
     <Content Include="www\js-lib\platformOverrides.js" />
     <Content Include="www\js-lib\gpx.js" />
     <Content Include="www\js\map.js" />
     <Content Include="www\js\rides.js" />
     <Content Include="www\js\serial.js" />
-    <Content Include="www\splash.PNG" />
     <Content Include="www\index.html" />
     <Content Include="www\js\index.js" />
     <Content Include="www\js\login.js" />

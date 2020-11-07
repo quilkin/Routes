@@ -318,8 +318,7 @@ var TCCrides = (function ($) {
                     $('#btnParticipants' + index).prop("disabled", true);
                 }
             });
-
-            // to review: maybe can't load a route here because of web callbacks overloading. Previous callbacks now made sync not async - will this be OK?
+            // show the current route (first in list)
             var ride = TCCrides.currentride();
             var route = TCCroutes.findRoute(ride.routeID);
             TCCroutes.SetRoute(route);
@@ -361,7 +360,7 @@ var TCCrides = (function ($) {
     };
     $('#start-time').timepicker().on('changeTime.timepicker', function (e) {
         if (e.time !== undefined) {
-            console.log('The time is ' + e.time.value);
+           // console.log('The time is ' + e.time.value);
             starthours = e.time.hours;
             startmins = e.time.minutes;
         }
