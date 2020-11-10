@@ -12,8 +12,8 @@ var rideData = (function ($) {
                 //return "http://192.168.1.73:54684/Service1.svc/";
             }
 
-           // return "http://localhost/routes/Routes.svc/";
-           return "/Routes.svc/";
+           return "http://localhost/routes/Routes.svc/";
+           //return "/Routes.svc/";
             //return "http://localhost:54684/Routes.svc/";
 
 
@@ -42,9 +42,15 @@ var rideData = (function ($) {
                     return;
                 }
             }
-            $("#rideDate").datepicker('setDate', rideDate);
+            // show highlighted dates for those when a ride is planned
 
-           // rideData.setDateChooser('OK');
+            $("#rideDate").datepicker({
+                beforeShowDay: function (date) { return bleTime.datepickerDates(date); },
+                todayBtn: false,
+                autoclose: true,
+                format: "DD M dd yyyy",
+                'setDate': rideDate
+            });
         },
 
 
@@ -201,7 +207,7 @@ var rideData = (function ($) {
 
 
     rideData.setDateChooser = function (btntext) {
-        $('#dateTitle').html(bleTime.dateString(rideDate) +  '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span>');
+        $('#dateTitle').html(bleTime.DateString(rideDate) +  '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span>');
     };
           
     rideData.myJson = function (url, type, data, successfunc, async, $btn) {

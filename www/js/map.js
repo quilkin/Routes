@@ -201,6 +201,7 @@
             }
             TCCMap.showRouteStage2(gpxdata,true);
             // TCCroutes.SetGPX(gpxdata);
+            currentroute.url = gpxdata;
             return gpxdata;
         }, true, null);
         //return gpxdata;

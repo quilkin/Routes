@@ -72,7 +72,7 @@ namespace Routes
 
     public partial class Routes : IRoutes, IDisposable
     {
-
+       
         public string SaveRide(Ride ride)
         {
             LogEntry log = new LogEntry("SaveRide", ride.Date + " " + ride.routeID);
@@ -156,7 +156,7 @@ namespace Routes
             // date represented by days since 01/01/1970
             LogEntry log = new LogEntry("GetRidesForDate", Logdata.JSDateToDateTime(date).ToShortDateString());
 
-            rides = new List<Ride>();
+            List<Ride>  rides = new List<Ride>();
 
             if (gpxConnection.IsConnect())
             {
@@ -200,6 +200,63 @@ namespace Routes
                 }
             }
             log.Result = rides.Count.ToString() + " rides for " + Logdata.JSDateToDateTime(date).ToShortDateString();
+            log.Save(gpxConnection);
+            gpxConnection.Close();
+            return rides;
+        }
+
+        public IEnumerable<Ride> GetRecentRides()
+        {
+            // get a list of all dates (in future or recent past) that have rides attached
+            // date represented by days since 01/01/1970
+            LogEntry log = new LogEntry("GetDatesWithRides", "");
+
+            //List<int> dates = new List<int>();
+            List<Ride> rides = new List<Ride>();
+
+            // get JS date for a month ago
+            int appdays = Logdata.NowtoJSDate() - 31;
+
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    string query = string.Format("SELECT date,leaderName,routeID FROM rides where date > {0}",appdays);
+
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
+                        int length = dataRoutes.Rows.Count;
+                        for (int row = 0; row < length; row++)
+                        {
+                            string leader = "";
+                            int   routeID=0, date = 0;
+                            try
+                            {
+                                DataRow dr = dataRoutes.Rows[row];
+                                routeID = (int)dr["routeID"];
+                                try { date = (int)dr["date"]; } catch { }
+                                try { leader = (string)dr["leadername"]; } catch { }
+                                //DateTime dt = Logdata.JSDateToDateTime(date);
+                                rides.Add(new Ride(routeID, leader, 0, date, 0, ""));
+                                //dates.Add(date);
+                            }
+                            catch (Exception ex)
+                            {
+                                Trace.WriteLine(ex.Message);
+                                log.Error = ex.Message;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    Trace.WriteLine(ex2.Message);
+                    log.Error = ex2.Message;
+                }
+            }
+            log.Result = rides.Count.ToString() + " future and recent rides found ";
             log.Save(gpxConnection);
             gpxConnection.Close();
             return rides;

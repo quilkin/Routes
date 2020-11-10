@@ -106,9 +106,16 @@ namespace Routes
         public static DateTime JSDateToDateTime(int date)
         {
             // date as days since 01/01/1970
-            long millisecs = date * 1000 * 24 * 3600;
+            UInt64 millisecs = (UInt64)date * 1000 * 24 * 3600;
             DateTime t = new DateTime(1970, 1, 1);
             return t.AddMilliseconds(millisecs);
+        }
+        public static int NowtoJSDate()
+        {
+            DateTime today = DateTime.Now;
+            DateTime jan1970 = new DateTime(1970, 1, 1);
+            TimeSpan appSpan = today - jan1970;
+            return appSpan.Days;
         }
 
         public static string TimeString(DateTime time)

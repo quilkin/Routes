@@ -5,15 +5,12 @@ var login = (function () {
 
     const dummyEmail = 'do_not@change.me';
 
-    //const dropdownHtml1 = '<div class="dropdown"> <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">';
-    //const dropdownHtml2 = '< span class="caret" ></span ></button > ' +
-    //    '<ul class="dropdown-menu"><li><a href="#">HTML</a></li><li><a href="#">CSS</a></li><li><a href="#">JavaScript</a></li></ul></div>';
     var login = {},
         role,
         id,
         username,
         email,
-        //needSensorList = true,;
+
         UserRoles = { None: 0, Viewer: 1, SiteAdmin: 2, FullAdmin: 3 };
 
     login.Role = function () { return role; };
@@ -23,6 +20,7 @@ var login = (function () {
     login.User = function () { return username; };
     login.Email = function () { return email; };
     login.setUser = function (u) { username = u; };
+    login.LogOut = function () { logout();}
 
 
     function checkPreAuth() {

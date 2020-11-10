@@ -26,12 +26,12 @@ namespace Routes
         [DataMember(Name = "climbing")]
         public int Climbing { get; set; }
         [DataMember(Name = "owner")]
-        public int Owner { get; set; }
+        public string Owner { get; set; }
         [DataMember(Name = "id")]
         public int ID { get; set; }
 
 
-        public Route(string url, string dest, string descrip, int d, int climb, int ow, int id)
+        public Route(string url, string dest, string descrip, int d, int climb, string ow, int id)
         {
             URL = url;
             Dest = dest;
@@ -54,7 +54,7 @@ namespace Routes
 
         DataTable dataRoutes;
         List<Route> routes;
-        List<Ride> rides;
+       // List<Ride> rides;
         DataTable dataLogins;
 
         public Routes()
@@ -96,20 +96,41 @@ namespace Routes
                             if (route.URL == "none" || route.URL.Length > 1000)
                             {
                                 // either no GPX available, or full GPX has been uploaded
-                                fullText = route.URL;
+                                if (route.URL.Contains("TrainingCenterDatabase"))
+                                {
+                                    // full text of TCX file
+                                    System.IO.StringReader sr = new System.IO.StringReader(route.URL);
+                                    // convert TCX to GPX
+                                    GarminTrack.SetRoot(sr);
+                                    fullText = GarminTrack.CreateGPX();
+                                }
+                                else
+                                {
+
+                                    fullText = route.URL;
+                                }
                             }
 
+                            else  if (route.URL.ToLower().Contains(".tcx"))
+                            {
+                                // convert TCX to GPX
+                                GarminTrack.SetRoot(route.URL);
+                                fullText = GarminTrack.CreateGPX();
+                            }
                             else
                             {
                                 fullText = client.DownloadString(route.URL);
+                            }
 
+                            if (fullText != "none") {
                                 XmlDocument xmldoc = new XmlDocument();
                                 // will catch if not valid XML
                                 xmldoc.LoadXml(fullText);
                             }
 
 
-                            string query = string.Format("insert into routes (dest,distance,description,climbing,route,owner) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
+
+                            string query = string.Format("insert into routes (dest,distance,description,climbing,route,ownername) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
                                 route.Dest, route.Distance, route.Descrip, route.Climbing, fullText, route.Owner);
                             query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
                             object routeID = null;
@@ -123,6 +144,10 @@ namespace Routes
                             result = routeID.ToString();
 
                         }
+                    }
+                    catch (XmlException exXml)
+                    {
+                        result = string.Format("XML parse error: route \"{0}\" not saved: {1}", route.Dest, exXml.Message);
                     }
                     catch (Exception ex2)
                     {
@@ -160,7 +185,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT id,dest,description,distance,climbing,owner FROM routes ");
+                    string query = string.Format("SELECT id,dest,description,distance,climbing,ownername FROM routes ");
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -169,8 +194,8 @@ namespace Routes
                         int length = dataRoutes.Rows.Count;
                         for (int row = 0; row < length; row++)
                         {
-                            string dest = "", descrip = "";
-                            int id, owner = 0, climbing = 0, distance = 0;
+                            string dest = "", descrip = "", owner = "";
+                            int id,  climbing = 0, distance = 0;
                             try
                             {
                                 DataRow dr = dataRoutes.Rows[row];
@@ -179,7 +204,7 @@ namespace Routes
                                 try { descrip = (string)dr["description"]; } catch { }
                                 try { climbing = (int)dr["climbing"]; } catch { }
                                 try { distance = (int)dr["distance"]; } catch { }
-                                try { owner = (int)dr["owner"]; } catch { }
+                                try { owner = (string)dr["ownername"]; } catch { }
 
                                 routes.Add(new Route(null, dest, descrip, distance, climbing, owner, id));
                             }
@@ -343,12 +368,13 @@ namespace Routes
                 {
                     // first check that there are no future rides connected with this route
                     // convert to our app date type
-                    DateTime today = DateTime.Now;
+                    int appdays = Logdata.NowtoJSDate();
+                    //DateTime today = DateTime.Now;
                     DateTime jan1970 = new DateTime(1970, 1, 1);
-                    TimeSpan appSpan = today - jan1970;
-                    int appdays = appSpan.Days;
+                    //TimeSpan appSpan = today - jan1970;
+                    //int appdays = appSpan.Days;
 
-                    string query = string.Format("SELECT rideID,date FROM rides where routeID = '{0}' and date > '{1}'", routeID, appdays);
+                    string query = string.Format("SELECT rideID,date FROM rides where routeID = {0} and date > {1}", routeID, appdays);
                     int count = 0;
 
                     string now = Logdata.TimeString(DateTime.Now);
@@ -366,8 +392,10 @@ namespace Routes
                     if (count > 0)
                     {
                         // convert app days back to c# date
-                        TimeSpan days = new TimeSpan(appdays, 0, 0, 0);
-                        DateTime when = jan1970 + days;
+                        
+                        //TimeSpan days = new TimeSpan(appdays, 0, 0, 0);
+                        //DateTime when = jan1970 + days;
+                        DateTime when = Logdata.JSDateToDateTime(appdays);
                         result = string.Format("There is at least one ride using this route in the future, on {0}. Please delete the ride first (if there are no riders signed up for it)", when.ToShortDateString());
                     }
                     else

@@ -50,9 +50,6 @@
         $('#deleteRoute').hide();
         $('#editRoute').hide();
         $("#form-signin").show();
-        $("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "DD M dd yyyy" });
-        $("#rideDate").datepicker({ todayBtn: true, autoclose: true, format: "DD M dd yyyy" });
-
 
         $('#home-tab').tab('show');
         rideData.setCurrentTab('home-tab');
@@ -153,7 +150,8 @@
             $(".navbar-nav a[href=#home]").tab('show');
 
         }
-
+        // get some preparory data from the DB
+        TCCrides.GetDatesOfRides();
 
     });
 
@@ -164,40 +162,33 @@ var bleApp = (function () {
     var bleApp = {},
         ismobile,
         lastClickTime = new Date(),
-        interval = 60;  // seconds
+        interval = 120;  // seconds
 
 
     function updateTime() {
         var d = new Date();
         //var timetext, string, username = login.User();
         if (d.getSeconds() < interval) {
-         //   $('#realtime').empty(); 
-        //    if ($(window).width() >= 800) {
-                //timetext = d.toDateString() + ' ' + bleTime.timeString(d);
-            //string = 'TCC Ride Planner <span style="color:black; font-size:small">'; // + timetext;
-            //    if (username !== undefined) {
-            //        string = string + ' Logged in as: </span> <button id="userName">' + username + '</button >';
-            //    }
-        //    }
-            //else {
-            //    timetext = d.toDateString();
-            //    string = 'TCC Rides <span style="color:black; font-size:small">' + timetext;
-            //    if (username !== undefined) {
-            //        string = string + '  </span> (' + username + ')';
-            //    }
-            //}
+
             var sinceLastClick = d.valueOf() - lastClickTime.valueOf();
-            if (sinceLastClick > 60000 && rideData.getCurrentTab()==='home-tab') {
-                // update rides list in case other users have modified it
-                TCCrides.clearPopovers(-1);
-                TCCrides.CreateRideList(d);
-                lastClickTime = d;
+            if (login.loggedIn()) {
+                if (sinceLastClick > 600000) {
+                    // after 10 minutes, log out
+                    TCCrides.clearPopovers(-1);
+                    login.LogOut();
+                    popup.Alert("No activity, you have been logged out");
+                    lastClickTime = d;
+                }
+                else if (rideData.getCurrentTab() === 'home-tab') {
+                    // update rides list in case other users have modified it
+                    TCCrides.clearPopovers(-1);
+                    TCCrides.CreateRideList(null);
+
+                }
             }
 
-            //$("#realtime").html(string);
-            //$('#userName').click(function () {
-            //    console.log('username clicked');
-            //});
+
+
         }
         if (ismobile) {
             // every few seconds, update connected status of devices

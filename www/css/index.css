@@ -90,3 +90,7 @@ h4 {
     display: inline;
     
 }
+.highlight {
+    border-color: #ebccd1;
+    background-color: #cecef2;
+}

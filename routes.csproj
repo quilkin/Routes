@@ -127,7 +127,6 @@
     <Content Include="www\css\bootstrap-timepicker.min.css" />
     <Content Include="www\css\bootstrap.css.map" />
     <Content Include="www\css\gpx.css" />
-    <Content Include="www\css\leaflet-distance-marker.css" />
     <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="www\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="www\fonts\glyphicons-halflings-regular.woff" />
@@ -204,6 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connections.cs" />
+    <Compile Include="GarminTrack.cs" />
     <Compile Include="IRoutes.cs" />
     <Compile Include="logdata.cs" />
     <Compile Include="Logins.cs" />

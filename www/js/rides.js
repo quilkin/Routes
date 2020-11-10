@@ -31,6 +31,8 @@ var TCCrides = (function ($) {
         //array of lists of reserve participants, each member will be a string of paticipants for that ride
         reserves = [],
 
+        // a lit of all recent and future dates that have rides attached
+        datesWithRides = [],
         // will be used to break up participant strings into 2D arrays
         pp,
         rs,
@@ -56,7 +58,7 @@ var TCCrides = (function ($) {
                 rides = response;
                 if (rides.length === 0) {
                     $('#ridelist').empty();  // this will also remove any handlers
-                    popup.Alert("No rides found for " + bleTime.dateString(date));
+                    popup.Alert("No rides found for " + bleTime.DateString(date));
 
                     return null;
                 }
@@ -345,6 +347,14 @@ var TCCrides = (function ($) {
 
 
     };
+    TCCrides.DatesWithRides = [];
+
+    TCCrides.GetDatesOfRides = function()
+    {
+        rideData.myJson("GetDatesWithRides", "POST", null, function (response) {
+            TCCrides.DatesWithRides = response;
+        }, true, null);
+    };
 
     TCCrides.Ride = function (r_id, leader, date, time, meeting, id) {
         this.leaderName = leader;
@@ -368,14 +378,20 @@ var TCCrides = (function ($) {
 
     TCCrides.leadRide = function () {
         $('#convertToRide').show();
-        $('#route-url-label').hide();
-        $('#route-url').hide();
+      //  $('#route-url-label').hide();
+      //  $('#route-url').hide();
         $('#start-time').timepicker('setTime', '08:00 AM');
 
         //$("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "dd M yyyy" });
         
         var thisRideDate = new Date();
-        $("#rideDate1").datepicker('setDate', thisRideDate);
+        $("#rideDate1").datepicker({
+            beforeShowDay: function (date) { return bleTime.datepickerDates(date); },
+            todayBtn: false,
+            autoclose: true,
+            format: "DD M dd yyyy",
+            'setDate': thisRideDate
+        });
         $("#rideDate1").change(function () {
             thisRideDate = new Date($("#rideDate1").val());
         });
@@ -411,16 +427,23 @@ var TCCrides = (function ($) {
         });
     };
 
-    TCCrides.findRide = function (id) {
-        var found = $.grep(foundRides, function (e, i) {
-            return e.id === id;
+    //TCCrides.findRide = function (id) {
+    //    var found = $.grep(foundRides, function (e, i) {
+    //        return e.id === id;
+    //    });
+    //    if (found.length > 0) {
+    //        return found[0];
+    //    }
+    //    return null;
+    //};
+    TCCrides.findRides = function (date) {
+        var found = $.grep(TCCrides.DatesWithRides, function (e, i) {
+            return e.date === date;
         });
         if (found.length > 0) {
-            return found[0];
+            return found;
         }
-
         return null;
-
     };
     TCCrides.Add = function (ride) {
         rides.push(ride);
@@ -439,6 +462,9 @@ var TCCrides = (function ($) {
     TCCrides.displayedrides = function () {
         return displayedrides;
     };
+
+
+
 
     TCCrides.DisplayedrideNames = function () {
         var index, nameStr = '';

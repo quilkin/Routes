@@ -9,8 +9,9 @@ var TCCroutes = (function () {
         //[DataMember(Name = "distance")]//             public string Descrip { get; set; }
         //[DataMember(Name = "description")]//          public int Distance { get; set; }
         //[DataMember(Name = "climbing")]//             public int Climbing { get; set; }
-        //[DataMember(Name = "owner")]//                public int Owner { get; set; }
+        /////[DataMember(Name = "owner")]//                public int Owner { get; set; }
         //[DataMember(Name = "id")]//                   public int ID{ get; set; }
+        //[DataMember(Name = "owner")]//                public string Owner { get; set; }
 
         // list of routes downloaded from database
         routes = [],
@@ -94,6 +95,7 @@ var TCCroutes = (function () {
             popup.Confirm("Save edited route", "Are you sure?", function () {
                 currentRoute.dest = dest;
                 currentRoute.description = descrip;
+                currentRoute.distance = dist;
                 rideData.myJson("EditRoute", "POST", currentRoute, function (response) {
                     if (response === 'OK') {
                         showRouteList();
@@ -112,14 +114,15 @@ var TCCroutes = (function () {
             $.each(routes, function (index, route) {
 
                 var title = route.dest;
-                if (title[0] === '*')
-                    // don't display 'ghost' routes with no GPX file
-                    return;
+                //if (title[0] === '*')
+                //    // don't display 'ghost' routes with no GPX file
+                //    return;
                 if (route.distance === undefined || route.distance === 0) {
                     route.distance = '? ';
                 }
 
-                var htmlstr = '<a id="sen' + index + '" class="list-group-item"><button id="get' + index + '" type="button" class="btn btn-lifted btn-primary btn-sm">' + title +
+                var htmlstr = '<a id="sen' + index + '" class="list-group-item"><button id="get' + index
+                    + '" type="button" class="btn btn-lifted btn-primary btn-sm" data-toggle="button tooltip" title="Author: ' + route.owner + '">' + title +
                     '</button><span style="color:red; font-weight: bold">  ' + route.distance + 'km</span> ' + route.description + '</a>';
                 $('#routelist').append(htmlstr);
 
@@ -137,7 +140,7 @@ var TCCroutes = (function () {
                     if (login.loggedIn())
                         // allow user to plan a  ride from this route
                         $('#planRide').show();
-                    var user = login.ID();
+                    var user = login.User();
                     if (route.owner === user && login.loggedIn()) {
                         $('#editRoute').show();
                         $('#deleteRoute').show();
@@ -280,10 +283,13 @@ var TCCroutes = (function () {
         $("#edit-route-dest").attr("value", currentRoute.dest);
         $("#edit-route-distance").attr("value", currentRoute.distance);
 
-       // if (currentRoute.url.length > 10) {
+        if (currentRoute.url !== null && currentRoute.url.length > 10) {
             // cannot edit distance for routes wth GPX file
             $("#edit-route-distance").prop('disabled', true);
-       // }
+        }
+        else {
+            $("#edit-route-distance").prop('disabled', false);
+        }
        // $("#form-editroute").on("submit", handleRouteEdit);  // strange bug if this is used!
         $("#edit-ok").on("click", handleRouteEdit);
         $("#edit-cancel").on('click', function () {

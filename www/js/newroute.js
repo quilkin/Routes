@@ -5,14 +5,15 @@ var newRoute = (function ($) {
     "use strict";
 
     var newRoute = {},
-        saveRoute = function (route) {
-            rideData.myJson("SaveRoute", "POST", route, function (response) {
+        temproute,
+        saveRoute = function () {
+            rideData.myJson("SaveRoute", "POST", temproute, function (response) {
                 // if successful, response should be just a new ID
                 if (response.length < 5) {
-                    route.id =  parseInt(response);
-                    TCCroutes.SetRoute(route);
-                    TCCroutes.Add(route);
-                    if (route.url === 'none')  {
+                    temproute.id =  parseInt(response);
+                    TCCroutes.SetRoute(temproute);
+                    TCCroutes.Add(temproute);
+                    if (temproute.url === 'none')  {
                         $('#manual-leadRide').show();
                     }
                     else {
@@ -102,9 +103,9 @@ var newRoute = (function ($) {
         var dest = $("#route-dest").val();
         var dist = $("#route-distance").val();
         if (dist === '') dist = 0;
-            dist = Number(dist);
-            dist = dist.toFixed(0);
-        var owner = login.ID();
+        dist = Number(dist);
+      //  dist = dist.toFixed(0);
+        var owner = login.User();
 
         if (dest.length < 2 || dist === '' || dist === 0) {
             popup.Alert("Destination and distance needed");
@@ -116,15 +117,15 @@ var newRoute = (function ($) {
         }
         //route.url = 'none';
         // prevent this route showing in routes listing
-        dest = '*' + dest;
+       // dest = '*' + dest;
 
-        var route = new TCCroutes.Route('none', dest, descrip,dist, 0, owner, 0);
+        temproute = new TCCroutes.Route('none', dest, descrip,dist, 0, owner, 0);
         var existing = TCCroutes.findDest(dest);
         if (existing === dest) {
-            popup.Confirm("There is already a route with this destination.", "Do you want to use the same destination?", saveRoute(route), null, -10);
+            popup.Confirm("There is already a route with this destination.", "Do you want to use the same destination?", saveRoute, null, -10);
         }
         else {
-            popup.Confirm("Save new route", "Are you sure?", saveRoute(route), null, -10);
+            popup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
         }
 
     });
@@ -137,19 +138,20 @@ var newRoute = (function ($) {
         }
         var descrip = $("#route-descrip").val();
         var url = $("#route-url").val();
-        var owner = login.ID();
+        var owner = login.User();
         var dest = '';
-        var route = new TCCroutes.Route(url, dest, descrip, 0, 0, owner, 0);
+
+        temproute = new TCCroutes.Route(url, dest, descrip, 0, 0, owner, 0);
 
         if (myXML.length > 1000) {
             // user has complete data on PC
-            route.url = myXML;
-            route.dist = 0;
-            popup.Confirm("Save new route", "Are you sure?", saveRoute(route), null, -10);
+            temproute.url = myXML;
+            temproute.dist = 0;
+            popup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
         }
         else if (validURL(url)) {
-            route.url = url;
-            popup.Confirm("Save new route", "Are you sure?", saveRoute(route), null, -10);
+            temproute.url = url;
+            popup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
         }
         else {
             popup.Alert("Invalid URL, sorry!");

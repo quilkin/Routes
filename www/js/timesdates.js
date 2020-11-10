@@ -22,14 +22,10 @@ var bleTime = (function () {
         };
 
     return {
-        dateString: function (time) {
-            // toLocaleTimeString() is no good for different platforms
-            //return [time.getFullYear(), pad2(time.getMonth() + 1), pad2(time.getDate())].join('-');
+        DateString: function (time) {
             return dateString(time);
         },
-        timeString: function (time) {
-            // toLocaleTimeString() is no good for different platforms
-            //return [pad2(time.getHours()), pad2(time.getMinutes())].join(':');
+        TimeString: function (time) {
             return timeString(time);
         },
         dateTimeString: function (time) {
@@ -44,7 +40,7 @@ var bleTime = (function () {
             // return number of whole days since 01/01/1970
             var value = time.valueOf();
             value /= 86400000;
-            return value.toFixed(0);  
+            return parseInt(value.toFixed(0));  
         },
         fromIntDays: function (intdays) {
             // return normal date from number of whole days since 01/01/1970
@@ -58,18 +54,26 @@ var bleTime = (function () {
             var mins = intTime % 60;
             return pad2(hours) + ':' +pad2(mins);
         },
-        //toIntTime: function (stringTime) {
-        //    try {
-        //        var time = stringTime.split(':');
-        //        var hours = time[0];
-        //        var mns = time[1];
-        //        return hours * 60 + mns;
-        //    }
-        //    catch (e) {
-        //        console.log(e.message);
-        //        return (8 * 60 + 15);
-        //    }
-        //},
+        datepickerDates: function (date) {
+            var search = this.toIntDays(date);
+            var popupString = '';
+            var rides = TCCrides.findRides(search);
+            if (rides === null) {
+                return { tooltip: 'No rides' };
+            }
+            $.each(rides, function (index, ride) {
+                if (ride !== null) {
+                    var route = TCCroutes.findRoute(ride.routeID);
+                    if (route !== null) {
+                        popupString += route.dest + ' (' + ride.leaderName + '), ';
+                    }
+                    else
+                        popupString += 'id '+ ride.routeID + '?,'
+                }
+            });
+            return { classes: 'highlight', tooltip: popupString };
+         },
+
         log: function (string) {
             var d, timestr;
             d = new Date();

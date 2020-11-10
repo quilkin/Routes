@@ -6,12 +6,7 @@ var popup = (function () {
 
     var popup = {},
         popupCount = 0,
-        yesfunc = function () {
-            console.log("popup yes");
-        },
-        nofunc = function () {
-            console.log("popup no");
-        },
+
         checkpopups = function () {
             if (popupCount > 5) {
                 window.alert("Too many popups?");
@@ -42,21 +37,22 @@ var popup = (function () {
     popup.Confirm = function (message, question, yesfunc, nofunc, timeout) {
         var confirm, timer = null;
         checkpopups();
-        confirm = bootbox.dialog({
+        confirm = bootbox.confirm({
             message: message,
             title: question,
             buttons: {
-                yes: {
+                confirm: {
                     label: "Yes",
                     className: "btn-success",
                     callback: yesfunc
                 },
-                no: {
+                cancel: {
                     label: "No",
                     className: "btn-default",
                     callback: nofunc
                 }
-            }
+            },
+            callback: yesfunc
         });
         if (timeout !== null) {
             if (timeout > 0) {
