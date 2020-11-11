@@ -12,6 +12,7 @@ var TCCroutes = (function () {
         /////[DataMember(Name = "owner")]//                public int Owner { get; set; }
         //[DataMember(Name = "id")]//                   public int ID{ get; set; }
         //[DataMember(Name = "owner")]//                public string Owner { get; set; }
+       // [DataMember(Name = "hasGPX")]                public bool HasGPX {    get; set; }
 
         // list of routes downloaded from database
         routes = [],
@@ -113,17 +114,25 @@ var TCCroutes = (function () {
             //$('#setuplist').empty();
             $.each(routes, function (index, route) {
 
+                var distance = 0;
                 var title = route.dest;
+                if (route.distance !== undefined) {
+                    distance = route.distance;
+                }
                 //if (title[0] === '*')
                 //    // don't display 'ghost' routes with no GPX file
                 //    return;
-                if (route.distance === undefined || route.distance === 0) {
-                    route.distance = '? ';
+   
+                var units = ' km ';
+                if (login.Units() === 'm') {
+                    units = ' m ';
+                    distance = Math.round(distance * 0.62137);
                 }
+
 
                 var htmlstr = '<a id="sen' + index + '" class="list-group-item"><button id="get' + index
                     + '" type="button" class="btn btn-lifted btn-primary btn-sm" data-toggle="button tooltip" title="Author: ' + route.owner + '">' + title +
-                    '</button><span style="color:red; font-weight: bold">  ' + route.distance + 'km</span> ' + route.description + '</a>';
+                    '</button><span style="color:red; font-weight: bold">  ' + distance + units + '</span> ' + route.description + '</a>';
                 $('#routelist').append(htmlstr);
 
 
@@ -165,6 +174,7 @@ var TCCroutes = (function () {
         this.description = descrip;
         this.id = id;
         this.owner = owner;
+        this.hasGPX = url.length > 0;
 
     };
 
@@ -283,7 +293,7 @@ var TCCroutes = (function () {
         $("#edit-route-dest").attr("value", currentRoute.dest);
         $("#edit-route-distance").attr("value", currentRoute.distance);
 
-        if (currentRoute.url !== null && currentRoute.url.length > 10) {
+        if (currentRoute.hasGPX) {
             // cannot edit distance for routes wth GPX file
             $("#edit-route-distance").prop('disabled', true);
         }

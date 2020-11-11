@@ -83,14 +83,21 @@ h4 {
 /*button {
     margin:3px;
 }*/
-.tccicon {
+/*.tccicon {
     background: url('../icons/favicon-16x16.png');
     height: 16px;
     width: 16px;
     display: inline;
     
-}
+}*/
 .highlight {
     border-color: #ebccd1;
     background-color: #cecef2;
+}
+
+.myunits1 {
+    background-color: #eeeef2;
+}
+.myunits2 {
+    background-color: #eeeef2;
 }

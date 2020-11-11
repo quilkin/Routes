@@ -56,6 +56,7 @@
         };
 
 
+
         TCCMap.showRouteStage2 = function (gpxdata,listedRoute) {
             // listedRoute is true only if teh route has already been added to the list of routes
         var tab = rideData.getCurrentTab();
@@ -75,26 +76,25 @@
         if (gpxdata === null ||  gpxdata === 'none' || gpxdata.length < 100) {
             $("#" + mapid).hide();
             $("#" + elevid).hide();
-            _t('h4').textContent = "No route map available";
-
+            _t('h4').textContent = TCCroutes.currentRoute().dest + ": No route map provided";
             $('.info').hide();
-
             return;
-
         }
-        else {
+        else
+        {
             $("#" + mapid).show();
             $("#" + elevid).show();
             $('.info').show();
 
         }
 
-
-
         _t('h4').textContent = "please wait...";
 
         function _t(t) { return demo.getElementsByTagName(t)[0]; }
-        function _c(c) { return demo.getElementsByClassName(c)[0]; }
+            function _c(c) {
+                var elems = demo.getElementsByClassName(c);
+                return demo.getElementsByClassName(c)[0];
+            }
 
         if (map !== undefined) { map.remove(); }
         map = L.map(mapid);
@@ -151,7 +151,18 @@
                 a.download = name + '.gpx';
                 _t('h4').appendChild(a);
 
+                if (login.Units() === 'k') {
+                    _c('myunits1').textContent = 'km';
+                    _c('myunits2').textContent = 'm';
+                }
+                else {
+                    _c('myunits1').textContent = 'miles';
+                    _c('myunits2').textContent = 'ft';
+                    distance = Math.round(distance * 0.62137);
+                    elev_gain = Math.round(elev_gain * 3.28);
+                    elev_loss = Math.round(elev_loss * 3.28);
 
+                }
                 _c('distance').textContent = distance;
                 _c('elevation-gain').textContent = elev_gain;
                 _c('elevation-loss').textContent = elev_loss;
@@ -180,31 +191,32 @@
 
     TCCMap.showRoute = function () {
 
-        //rideData.getGPX();
-        //var gpxdata = TCCroutes.currentGPX();
-    //    getGPX();
         // will call stage 2 when ready
 
         var currentroute = TCCroutes.currentRoute();
         if (currentroute === null) {
-            popup.Alert("No GPX data found!");
+            popup.Alert("No route found!");
             return null;
         }
+        if (currentroute.hasGPX === false) {
+            TCCMap.showRouteStage2(null, false);
+            return null;
+        }
+
         var routeID = currentroute.id;
         var gpxdata = null;
 
         rideData.myJson("GetGPXforRoute", "POST", routeID, function (response) {
             gpxdata = response;
             if (gpxdata.length === 0) {
-                popup.Alert("No GPX data found!");
+                TCCMap.showRouteStage2(null, false);
                 return null;
             }
             TCCMap.showRouteStage2(gpxdata,true);
-            // TCCroutes.SetGPX(gpxdata);
             currentroute.url = gpxdata;
             return gpxdata;
         }, true, null);
-        //return gpxdata;
+
     };
     
 

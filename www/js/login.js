@@ -10,6 +10,7 @@ var login = (function () {
         id,
         username,
         email,
+        units,
 
         UserRoles = { None: 0, Viewer: 1, SiteAdmin: 2, FullAdmin: 3 };
 
@@ -20,7 +21,8 @@ var login = (function () {
     login.User = function () { return username; };
     login.Email = function () { return email; };
     login.setUser = function (u) { username = u; };
-    login.LogOut = function () { logout();}
+    login.LogOut = function () { logout(); };
+    login.Units = function () { return units; };
 
 
     function checkPreAuth() {
@@ -99,6 +101,7 @@ var login = (function () {
                     id = res.id;
                     username = res.name;
                     email = res.email;
+                    units = res.units;
                     //if (userRole < 2)
                     //    $(".adminonly").prop("disabled", true);
                     //store
@@ -192,7 +195,7 @@ var login = (function () {
         p1 = $("#password3", form).val();
         p2 = $("#password4", form).val();
         e = $("#email2", form).val();
-
+        var km = $('input[name="units"]:checked').val();
 
         if (checkdetails(u, p1, p2, true) === false)
             return false;
@@ -200,7 +203,7 @@ var login = (function () {
             e = '';
         }
         var myid = id;
-        creds = { id: myid, name: u, pw: p1, email: e };
+        creds = { id: myid, name: u, pw: p1, email: e, units: km };
         var success = false;
         rideData.myJson('ChangeAccount', "POST", creds, function (res) {
            
@@ -342,6 +345,8 @@ var login = (function () {
             email = dummyEmail;
         $("#username2").attr("value", username);
         $("#email2").attr("value", email);
+        $("#radioKm").prop('checked', units === 'k');
+        $("#radioMile").prop('checked', units === 'm');
         $("#form-account").on("submit", handleAccount);
         $("#account-cancel").on('click', cancelAccount);
 

@@ -23,6 +23,8 @@ namespace Routes
         public int ID { get; set; }
         [DataMember(Name = "role")]
         public int Role { get; set; }
+        [DataMember(Name = "units")]
+        public char Units { get; set; }
 
         public Login(string name, string pw)
         {
@@ -54,7 +56,7 @@ namespace Routes
             LogEntry log = new LogEntry("Login", login.Name);
 
 
-            string query = string.Format("SELECT Id, name, pw, email, role FROM logins where name = '{0}'", login.Name);
+            string query = string.Format("SELECT Id, name, pw, email, role, units FROM logins where name = '{0}'", login.Name);
             if (gpxConnection.IsConnect())
             {
                 using (MySqlDataAdapter loginAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
@@ -78,6 +80,7 @@ namespace Routes
                             login.Role = (int)dr["role"];
                             login.ID = (int)dr["id"];
                             login.Email = (string)dr["email"];
+                            login.Units = ((string)dr["units"])[0];
                             break;
                         }
                     }
@@ -190,8 +193,7 @@ namespace Routes
                     // create a code based on data
                     login.EmailCode = Logdata.GetHash(login.Name+login.Name);
 
-                    //string URLstr = string.Format("https://quilkin.co.uk/tccrides?username={0}&regcode={1}&m1={2}&m2={3}", login.Name, login.Code, emailparts[0], emailparts[1]);
-                    string URLstr = string.Format("https://quilkin.co.uk/tccrides?user={0}&regcode={1}", login.Name, login.EmailCode);
+                    string URLstr = string.Format(Connections.serviceURL + "?user={0}&regcode={1}", login.Name, login.EmailCode);
                     //string URLstr = string.Format("http://localhost/routes/www?user={0}&regcode={1}",login.Name, login.EmailCode);
 
                     EmailConnection ec = new EmailConnection();
@@ -286,11 +288,18 @@ namespace Routes
                         var cmd = new MySqlCommand(query, gpxConnection.Connection);
                         cmd.ExecuteNonQuery();
                     }
+                    if (true)
+                    {
+                        query = string.Format("update logins set units = '{0}' where id = {1}", login.Units, login.ID);
+                        var cmd = new MySqlCommand(query, gpxConnection.Connection);
+                        cmd.ExecuteNonQuery();
+                    }
+
 
                 }
                 catch (Exception ex2)
                 {
-                    return "There is a database error, sme details not changed, please try again: " + ex2.Message;
+                    return "There is a database error, some details not changed, please try again: " + ex2.Message;
                 }
             }
             else
@@ -356,7 +365,7 @@ namespace Routes
                     string emailCode = Logdata.GetHash(username + username);
 
                    // string URLstr = string.Format("https://quilkin.co.uk/tccrides?pwuser={0}&regcode={1}", username, emailCode);
-                    string URLstr = string.Format("http://localhost/routes/www?pwuser={0}&regcode={1}",username, emailCode);
+                    string URLstr = string.Format(Connections.serviceURL + "?pwuser={0}&regcode={1}",username, emailCode);
 
                     EmailConnection ec = new EmailConnection();
                     MailAddress from = new MailAddress("admin@quilkin.co.uk");

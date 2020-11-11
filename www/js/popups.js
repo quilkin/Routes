@@ -37,22 +37,22 @@ var popup = (function () {
     popup.Confirm = function (message, question, yesfunc, nofunc, timeout) {
         var confirm, timer = null;
         checkpopups();
-        confirm = bootbox.confirm({
+        confirm = bootbox.dialog({
             message: message,
             title: question,
             buttons: {
-                confirm: {
+                yes: {
                     label: "Yes",
                     className: "btn-success",
                     callback: yesfunc
                 },
-                cancel: {
+                no: {
                     label: "No",
                     className: "btn-default",
                     callback: nofunc
                 }
-            },
-            callback: yesfunc
+            }
+           // callback: yesfunc
         });
         if (timeout !== null) {
             if (timeout > 0) {

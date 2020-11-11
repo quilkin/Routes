@@ -13,7 +13,7 @@ var newRoute = (function ($) {
                     temproute.id =  parseInt(response);
                     TCCroutes.SetRoute(temproute);
                     TCCroutes.Add(temproute);
-                    if (temproute.url === 'none')  {
+                    if (temproute.hasGPX === false)  {
                         $('#manual-leadRide').show();
                     }
                     else {
@@ -115,11 +115,11 @@ var newRoute = (function ($) {
             popup.Alert("Description needed");
             return;
         }
-        //route.url = 'none';
+
         // prevent this route showing in routes listing
        // dest = '*' + dest;
 
-        temproute = new TCCroutes.Route('none', dest, descrip,dist, 0, owner, 0);
+        temproute = new TCCroutes.Route('', dest, descrip,dist, 0, owner, 0);
         var existing = TCCroutes.findDest(dest);
         if (existing === dest) {
             popup.Confirm("There is already a route with this destination.", "Do you want to use the same destination?", saveRoute, null, -10);

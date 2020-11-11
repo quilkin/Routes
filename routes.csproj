@@ -189,6 +189,7 @@
     <Content Include="www\js-lib\platformOverrides.js" />
     <Content Include="www\js-lib\gpx.js" />
     <Content Include="www\js\map.js" />
+    <Content Include="www\js\mousePos.js" />
     <Content Include="www\js\rides.js" />
     <Content Include="www\js\serial.js" />
     <Content Include="www\index.html" />
@@ -198,6 +199,7 @@
     <Content Include="www\js\popups.js" />
     <Content Include="www\js\routes.js" />
     <Content Include="www\js\newroute.js" />
+    <Content Include="www\js\server.js" />
     <Content Include="www\js\timesdates.js" />
     <Content Include="www\js\TTdata.js" />
   </ItemGroup>

@@ -29,9 +29,11 @@ namespace Routes
         public string Owner { get; set; }
         [DataMember(Name = "id")]
         public int ID { get; set; }
+        [DataMember(Name = "hasGPX")]
+        public bool HasGPX { get; set; }
 
 
-        public Route(string url, string dest, string descrip, int d, int climb, string ow, int id)
+        public Route(bool hasGPX, string url, string dest, string descrip, int d, int climb, string ow, int id)
         {
             URL = url;
             Dest = dest;
@@ -39,10 +41,11 @@ namespace Routes
             Distance = d;
             Climbing = climb;
             Owner = ow;
-            //Date = date;
-            //Time = time;
-            //Place = place;
             ID = id;
+            HasGPX = hasGPX;
+            //if (url != null)
+            //    HasGPX = (url.Length > 0);
+
         }
 
     }
@@ -93,7 +96,7 @@ namespace Routes
                     {
                         using (System.Net.WebClient client = new System.Net.WebClient())
                         {
-                            if (route.URL == "none" || route.URL.Length > 1000)
+                            if (route.HasGPX == false|| route.URL.Length > 1000)
                             {
                                 // either no GPX available, or full GPX has been uploaded
                                 if (route.URL.Contains("TrainingCenterDatabase"))
@@ -122,7 +125,7 @@ namespace Routes
                                 fullText = client.DownloadString(route.URL);
                             }
 
-                            if (fullText != "none") {
+                            if (route.HasGPX) {
                                 XmlDocument xmldoc = new XmlDocument();
                                 // will catch if not valid XML
                                 xmldoc.LoadXml(fullText);
@@ -185,7 +188,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT id,dest,description,distance,climbing,ownername FROM routes ");
+                    string query = string.Format("SELECT hasGPX,id,dest,description,distance,climbing,ownername FROM routes ");
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -196,17 +199,20 @@ namespace Routes
                         {
                             string dest = "", descrip = "", owner = "";
                             int id,  climbing = 0, distance = 0;
+                            bool hasGPX = false;
                             try
                             {
                                 DataRow dr = dataRoutes.Rows[row];
                                 id = (int)dr["id"];
-                                try { dest = (string)dr["dest"]; } catch { }
-                                try { descrip = (string)dr["description"]; } catch { }
-                                try { climbing = (int)dr["climbing"]; } catch { }
-                                try { distance = (int)dr["distance"]; } catch { }
-                                try { owner = (string)dr["ownername"]; } catch { }
+                                dest = (string)dr["dest"]; 
+                                descrip = (string)dr["description"]; 
+                                climbing = (int)dr["climbing"]; 
+                                distance = (int)dr["distance"]; 
+                                owner = (string)dr["ownername"]; 
+                                Int32 h = Convert.ToInt32(dr["hasGPX"]);
+                                    hasGPX = (h > 0); 
 
-                                routes.Add(new Route(null, dest, descrip, distance, climbing, owner, id));
+                                routes.Add(new Route(hasGPX, null, dest, descrip, distance, climbing, owner, id));
                             }
                             catch (Exception ex)
                             {
