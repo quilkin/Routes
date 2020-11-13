@@ -38,7 +38,7 @@ var login = (function () {
 
     function checkRole() {
         if (role < UserRoles.SiteAdmin) {
-            popup.Alert("To access this function, please request site-level authorisation by emailing 'admin@quilkin.co.uk'");
+            qPopup.Alert("To access this function, please request site-level authorisation by emailing 'admin@quilkin.co.uk'");
             return false;
         }
         return true;
@@ -51,8 +51,8 @@ var login = (function () {
 
         rideData.CreateLists();
         $('#loginModal').modal('hide');
-        // switch to home tab
-        $(".navbar-nav a[href=#home]").tab('show');
+        // switch to rides tab
+        $(".navbar-nav a[href=#rides-tab]").tab('show');
         //add username to account dropdown button
         if (username !== undefined) {
             $("#userName").html(username + ' <span class="caret"></span>');
@@ -76,7 +76,7 @@ var login = (function () {
                 return false;
             }
         });
-        popup.Alert("You are not logged in. Rides are still visible but you cannot join or create rides");
+        qPopup.Alert("You are not logged in. Rides are still visible but you cannot join or create rides");
 
     }
 
@@ -110,20 +110,20 @@ var login = (function () {
                         window.localStorage.password = p;
                     }
                     if (role === 0) {
-                        popup.Alert("You need to reply to your email to complete registration");
+                        qPopup.Alert("You need to reply to your email to complete registration");
                     }
                     else
                         loggedInOK();
 
                 } else {
-                    popup.Alert("Invalid username or password");
+                    qPopup.Alert("Invalid username or password");
                 }
                 $("#button-signin").removeAttr("disabled");
 
             }, true, null);
 
         } else {
-            popup.Alert("You must enter a username and password");
+            qPopup.Alert("You must enter a username and password");
             $("#button-signin").removeAttr("disabled");
         }
         return false;
@@ -131,17 +131,17 @@ var login = (function () {
 
     function checkdetails(u, p1, p2, blanksOK) {
         if (p1 !== p2) {
-            popup.Alert("Passwords do not match");
+            qPopup.Alert("Passwords do not match");
             return false;
         }
         if (u.length > 10 || u.includes(' ')) {
-            popup.Alert("User name must be 10 characters or less, and no spaces");
+            qPopup.Alert("User name must be 10 characters or less, and no spaces");
             return false;
         }
         if (blanksOK)
             return true;
         if (p1.length < 4 || p1.length > 10 || p1.includes(' ')) {
-            popup.Alert("Password must be 4-10 characters and no spaces");
+            qPopup.Alert("Password must be 4-10 characters and no spaces");
             return false;
         }
 
@@ -170,7 +170,7 @@ var login = (function () {
         if (u !== '' && p1 === p2 && p1 !== ''  && e !== '') {
             creds = { name: u, pw: p1, email: e, code: c };
             rideData.myJson('Signup', "POST", creds, function (res) {
-                popup.Alert(res);
+                qPopup.Alert(res);
                 $("#button-register").removeAttr("disabled");
                 if (res.substring(0, 2) === "OK") {
                     $("#code").show();
@@ -180,7 +180,7 @@ var login = (function () {
             }, true, null);
 
         } else {
-            popup.Alert("You must enter a usernameand valid email address");
+            qPopup.Alert("You must enter a usernameand valid email address");
             $("#button-register").removeAttr("disabled");
         }
         return false;
@@ -209,7 +209,7 @@ var login = (function () {
            
             if (res.substring(0, 2) === "OK") {
                 success = true;
-                popup.Alert("Your details have been saved");
+                qPopup.Alert("Your details have been saved");
                 cancelAccount();
                 username = u;
                 if (e !== '')
@@ -218,7 +218,7 @@ var login = (function () {
 
             }
             else 
-                popup.Alert(res);
+                qPopup.Alert(res);
 
         }, true, null);
 
@@ -230,7 +230,7 @@ var login = (function () {
         $('#loginModal').modal('hide');
         rideData.CreateLists();
         // switch to 'all routes' tab
-        $(".navbar-nav a[href=#webdata-tab]").tab('show');
+        $(".navbar-nav a[href=#routes-tab]").tab('show');
         $("#userName").html('Log In <span class="caret"></span>');
         logout();
 
@@ -256,7 +256,7 @@ var login = (function () {
             rideData.myJson('ForgetPassword', "POST", email, function (res) {
                 success = true;
                 $('#passwordModal').modal('hide');
-                popup.Alert(res);
+                qPopup.Alert(res);
 
             }, true, null);
         }
@@ -276,9 +276,9 @@ var login = (function () {
             if (res.substring(0, 9) === "Thank you")           //"Thank you, you have now registered"
             {
                 success = true;
-                popup.Alert("Thank you, you can now log in");
+                qPopup.Alert("Thank you, you can now log in");
              } else {
-                popup.Alert("Invalid username , code or email");
+                qPopup.Alert("Invalid username , code or email");
             }
 
         }, true, null);
@@ -298,7 +298,7 @@ var login = (function () {
                 id = parseInt(userID);
                 $('#accountModal').modal();
             } else {
-                popup.Alert(res);
+                qPopup.Alert(res);
             }
 
         }, true, null);
@@ -356,7 +356,7 @@ var login = (function () {
         $('#accountModal').modal();
     });
     $("#settings").click(function () {
-        popup.Alert("not yet implemented, sorry");
+        qPopup.Alert("not yet implemented, sorry");
     });
     $("#signin-pw").click(function () {
         $('#passwordModal').modal();

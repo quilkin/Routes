@@ -61,7 +61,7 @@ var TCCrides = (function ($) {
                 rides = response;
                 if (rides.length === 0) {
                     $('#ridelist').empty();  // this will also remove any handlers
-                    popup.Alert("No rides found for " + bleTime.DateString(date));
+                    qPopup.Alert("No rides found for " + bleTime.DateString(date));
 
                     return null;
                 }
@@ -88,7 +88,7 @@ var TCCrides = (function ($) {
                 // console.log("GetParticipants ajax return");
                 $.each(rideIDs, function (index, ride) {
                     if (index >= maxridesperday) {
-                        popup.Alert('too many rides for this date');
+                        qPopup.Alert('too many rides for this date');
                         return false;
                     }
                     // get a list of all participants and reserves for the ride, split into two lists
@@ -133,19 +133,19 @@ var TCCrides = (function ($) {
 
         OK2Join = function (ride) {
             if (ride.leaderName === login.User()) {
-                popup.Alert("You cannot join your own ride!!");
+                qPopup.Alert("You cannot join your own ride!!");
                 return false;
             }
             else if (alreadyReservedToday.length > 0) {
-                popup.Alert("You are aleady reserved for " + alreadyReservedToday + message);
+                qPopup.Alert("You are aleady reserved for " + alreadyReservedToday + message);
                 return false;
             }
             else if (alreadyRidingToday.length > 0) {
-                popup.Alert("You are aleady listed for " + alreadyRidingToday + message);
+                qPopup.Alert("You are aleady listed for " + alreadyRidingToday + message);
                 return false;
             }
             else if (alreadyLeadingToday.length > 0) {
-                popup.Alert("You are aleady leading " + alreadyLeadingToday + message);
+                qPopup.Alert("You are aleady leading " + alreadyLeadingToday + message);
                 return false;
             }
             return true;
@@ -182,7 +182,7 @@ var TCCrides = (function ($) {
                 currentride = ride;
                 var user = login.User();
                 if (login.loggedOut()) {
-                    popup.Alert("Not logged in");
+                    qPopup.Alert("Not logged in");
                     return false;
                 }
                 var buttontext = $('#join' + index).text();
@@ -353,11 +353,11 @@ var TCCrides = (function ($) {
             var dist = $("#edit-ride-distance").val();
 
             if (dest.length < 2 || dist === '' || dist === 0) {
-                popup.Alert("Destination and distance needed");
+                qPopup.Alert("Destination and distance needed");
                 return;
             }
 
-            popup.Confirm("Save edited ride", "Are you sure?", function () {
+            qPopup.Confirm("Save edited ride", "Are you sure?", function () {
                 var thisRoute = TCCroutes.findRoute(currentride.routeID);
                 thisRoute.dest = dest;
                 thisRoute.description = descrip;
@@ -368,7 +368,7 @@ var TCCrides = (function ($) {
                         $('#editRideModal').modal('hide');
                     }
                     else {
-                        popup.Alert(response);
+                        qPopup.Alert(response);
                     }
                 }, true, null);
             }, null, -10);
@@ -448,7 +448,7 @@ var TCCrides = (function ($) {
             //var dest = route.dest;
             var date = bleTime.toIntDays(thisRideDate);
             var ride = new TCCrides.Ride(route.id, leader, date, time, startPlace, 0);
-            popup.Confirm("Save this ride", "Are you sure?", function () {
+            qPopup.Confirm("Save this ride", "Are you sure?", function () {
                 rideData.myJson("SaveRide", "POST", ride, function (response) {
                     // if successful, response should be just a new ID
                     if (response.length < 5) {
@@ -456,15 +456,15 @@ var TCCrides = (function ($) {
                         TCCroutes.SetRoute(route);
                         TCCrides.Add(ride);
                         $('#convertToRide').hide();
-                        $('#home-tab').tab('show');
-                        rideData.setCurrentTab('home-tab');
+                        $('#rides-tab').tab('show');
+                        rideData.setCurrentTab('rides-tab');
                         rideData.setDate(thisRideDate);
                         rideData.setDateChooser('View other dates');
                         TCCrides.CreateRideList(thisRideDate);
                         
                     }
                     else {
-                        popup.Alert(response);
+                        qPopup.Alert(response);
                     }
 
                 }, true, null);

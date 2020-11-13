@@ -127,24 +127,14 @@
     <Content Include="www\css\bootstrap-timepicker.min.css" />
     <Content Include="www\css\bootstrap.css.map" />
     <Content Include="www\css\gpx.css" />
-    <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="www\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="www\fonts\glyphicons-halflings-regular.woff" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
-    <Content Include="www\css\bootstrap-theme.css" />
     <Content Include="www\css\bootstrap-theme.min.css" />
-    <Content Include="www\css\bootstrap.css" />
     <Content Include="www\css\bootstrap.min.css" />
-    <Content Include="www\css\dataTables.bootstrap.css" />
     <Content Include="www\css\datepicker3.css" />
     <Content Include="www\css\index.css" />
-    <Content Include="www\css\jquery.bootstrap-touchspin.css" />
-    <Content Include="www\css\jquery.bootstrap-touchspin.min.css" />
-    <Content Include="www\css\jquery.dataTables.min.css" />
     <Content Include="www\css\normalize.css" />
-    <Content Include="www\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="www\icons\android-icon-144x144.png" />
     <Content Include="www\icons\android-icon-192x192.png" />
     <Content Include="www\icons\android-icon-36x36.png" />
@@ -179,15 +169,15 @@
     <Content Include="www\js-lib\bootstrap-orig.min.js" />
     <Content Include="www\js-lib\bootstrap-timepicker.min.js" />
     <Content Include="www\js-lib\bootstrap.min.js" />
-    <Content Include="www\js-lib\dataTables.bootstrap.min.js.js" />
-    <Content Include="www\js-lib\dataTables.responsive.min.js" />
     <Content Include="www\js-lib\ie10-viewport-bug-workaround.js" />
     <Content Include="www\js-lib\ion.rangeSlider.js" />
     <Content Include="www\js-lib\jquery-1.11.1.min.js" />
     <Content Include="www\js-lib\jquery.dataTables.min.js" />
     <Content Include="www\js-lib\leaflet-distance-marker.js" />
+    <Content Include="www\js-lib\leaflet.js" />
     <Content Include="www\js-lib\platformOverrides.js" />
     <Content Include="www\js-lib\gpx.js" />
+    <Content Include="www\js\cafeMap.js" />
     <Content Include="www\js\map.js" />
     <Content Include="www\js\mousePos.js" />
     <Content Include="www\js\rides.js" />
@@ -195,7 +185,6 @@
     <Content Include="www\index.html" />
     <Content Include="www\js\index.js" />
     <Content Include="www\js\login.js" />
-    <Content Include="www\js\myTable.js" />
     <Content Include="www\js\popups.js" />
     <Content Include="www\js\routes.js" />
     <Content Include="www\js\newroute.js" />
@@ -204,6 +193,7 @@
     <Content Include="www\js\TTdata.js" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cafes.cs" />
     <Compile Include="Connections.cs" />
     <Compile Include="GarminTrack.cs" />
     <Compile Include="IRoutes.cs" />
@@ -215,7 +205,9 @@
       <DependentUpon>Routes.svc</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="www\fonts\" />
+  </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>

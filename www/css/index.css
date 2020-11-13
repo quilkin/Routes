@@ -101,3 +101,9 @@ h4 {
 .myunits2 {
     background-color: #eeeef2;
 }
+.myIcon {
+    text-align: center;
+    /* Horizontally center the text (icon) */
+    line-height: 20px;
+    /* Vertically center the text (icon) */
+}

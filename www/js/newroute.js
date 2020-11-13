@@ -25,7 +25,7 @@ var newRoute = (function ($) {
 
                 }
                 else {
-                    popup.Alert(response);
+                    qPopup.Alert(response);
                 }
 
             }, true, null);
@@ -56,10 +56,10 @@ var newRoute = (function ($) {
         readSuccess = function (event) {
             myXML = event.target.result;
             if (checkXML(myXML) === false) {
-                popup.Alert("Invalid route file");
+                qPopup.Alert("Invalid route file");
             }
             else {
-                //   popup.Alert("Route file OK");
+                //   qPopup.Alert("Route file OK");
                 $("#route-url").html('Route file OK! ' + myXML.length + ' bytes');
                 //console.log('Route file OK! ' + myXML.length + ' bytes');
                 TCCMap.showRouteStage2(myXML,false);
@@ -95,7 +95,7 @@ var newRoute = (function ($) {
         $("#saveRoute").prop("disabled", true);
 
         if (login.Role < 1) {
-            popup.Alert("You need to register for this");
+            qPopup.Alert("You need to register for this");
             return;
         }
        
@@ -108,11 +108,11 @@ var newRoute = (function ($) {
         var owner = login.User();
 
         if (dest.length < 2 || dist === '' || dist === 0) {
-            popup.Alert("Destination and distance needed");
+            qPopup.Alert("Destination and distance needed");
             return;
         }
         if (descrip.length < 2) {
-            popup.Alert("Description needed");
+            qPopup.Alert("Description needed");
             return;
         }
 
@@ -122,10 +122,10 @@ var newRoute = (function ($) {
         temproute = new TCCroutes.Route('', dest, descrip,dist, 0, owner, 0);
         var existing = TCCroutes.findDest(dest);
         if (existing === dest) {
-            popup.Confirm("There is already a route with this destination.", "Do you want to use the same destination?", saveRoute, null, -10);
+            qPopup.Confirm("There is already a route with this destination.", "Do you want to use the same destination?", saveRoute, null, -10);
         }
         else {
-            popup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
+            qPopup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
         }
 
     });
@@ -133,7 +133,7 @@ var newRoute = (function ($) {
         $("#saveRoute").prop("disabled", true);
 
         if (login.Role < 1) {
-            popup.Alert("You need to register for this");
+            qPopup.Alert("You need to register for this");
             return;
         }
         var descrip = $("#route-descrip").val();
@@ -147,31 +147,31 @@ var newRoute = (function ($) {
             // user has complete data on PC
             temproute.url = myXML;
             temproute.dist = 0;
-            popup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
+            qPopup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
         }
         else if (validURL(url)) {
             temproute.url = url;
-            popup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
+            qPopup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
         }
         else {
-            popup.Alert("Invalid URL, sorry!");
+            qPopup.Alert("Invalid URL, sorry!");
         }
 
     });
     
     $("#cancelNewRoute").on('click', function () {
    
-        $(".navbar-nav a[href=#home]").tab('show');
+        $(".navbar-nav a[href=#rides-tab]").tab('show');
 
     });
     $("#manual-cancelNewRoute").on('click', function () {
 
-        $(".navbar-nav a[href=#home]").tab('show');
+        $(".navbar-nav a[href=#rides-tab]").tab('show');
 
     });
     $("#cancelLeadRide").on('click', function () {
 
-        $(".navbar-nav a[href=#home]").tab('show');
+        $(".navbar-nav a[href=#rides-tab]").tab('show');
 
     });
  

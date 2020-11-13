@@ -4,33 +4,7 @@
 (function () {
     "use strict";
 
-    //function onPause() {
-    //    // TODO: This application has been suspended. Save application state here.
-    //}
-
-    //function onResume() {
-    //    // TODO: This application has been reactivated. Restore application state here.
-    //}
-    //function onDeviceReady() {
-    //    // Handle the Cordova pause and resume events
-    //    document.addEventListener('pause', onPause.bind(this), false);
-    //    document.addEventListener('resume', onResume.bind(this), false);
-    //    window.addEventListener('load', function () { FastClick.attach(document.body); }, false);
-
-    //    bleTime.log(device.platform + ": " + device.model);
-    //    bleApp.setMobile(true);
-    //    // needs doing again
-    //    //bleApp.detectScreenHeight();
-    //    // don't always need login for mobile use (login may not be possible when downloading devices)
-    //    $('#loginModal').modal('hide');
-    //    // go straight to connection page
-    //    $(".navbar-nav a[href=#home]").tab('show');
-    //    tagConnect.initialize();
-    //    bleApp.SetPlatform(device.platform);
-    //}
-
-    //document.addEventListener( 'deviceready', onDeviceReady.bind( this ), false );
-    
+   
 
     $(document).ready(function () {
         $(".navbar-nav li a").click(function (event) {
@@ -51,8 +25,8 @@
         $('#editRoute').hide();
         $("#form-signin").show();
 
-        $('#home-tab').tab('show');
-        rideData.setCurrentTab('home-tab');
+        $('#rides-tab').tab('show');
+        rideData.setCurrentTab('rides-tab');
 
         var today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -77,7 +51,7 @@
         $(document).ajaxStop(function()  {
             $('.loader').remove();
         });
-        var lasttab = 'home-tab';
+        var lasttab = 'rides-tab';
         // need to know which tab is in use so we know where to place map etc
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             //show selected tab / active
@@ -90,8 +64,11 @@
                     $('#manualRoute').show();
                 }
             }
-            if (tab === 'webdata-tab') {
+            if (tab === 'routes-tab') {
                 TCCroutes.ShowStartLocation();
+            }
+            if (tab === 'cafes-tab') {
+                mapOfCafes.createMap();
             }
         });
         $(function () {
@@ -134,8 +111,8 @@
             if (success === true) {
                 // always need to login, 
                 $('#loginModal').modal();
-                // switch straight to home tab
-                $(".navbar-nav a[href=#home]").tab('show');
+                // switch straight to ridestab
+                $(".navbar-nav a[href=#rides-tab]").tab('show');
             }
         }
         else if (forgotPW !== null && regcode !== null) {
@@ -146,8 +123,8 @@
         else if (bleApp.isMobile() === false) {
             // always need to login, 
             $('#loginModal').modal();
-            // switch straight to home tab
-            $(".navbar-nav a[href=#home]").tab('show');
+            // switch straight to rides tab
+            $(".navbar-nav a[href=#rides-tab]").tab('show');
 
         }
         // get some preparory data from the DB
@@ -176,10 +153,10 @@ var bleApp = (function () {
                     // after 10 minutes, log out
                     TCCrides.clearPopovers(-1);
                     login.LogOut();
-                    popup.Alert("No activity, you have been logged out");
+                    qPopup.Alert("No activity, you have been logged out");
                     lastClickTime = d;
                 }
-                else if (rideData.getCurrentTab() === 'home-tab') {
+                else if (rideData.getCurrentTab() === 'rides-tab') {
                     // update rides list in case other users have modified it
                     TCCrides.clearPopovers(-1);
                     TCCrides.CreateRideList(null);

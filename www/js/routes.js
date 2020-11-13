@@ -30,7 +30,7 @@ var TCCroutes = (function () {
             rideData.myJson("GetRouteSummaries", "POST", null, function (response) {
                 routes = response;
                 if (routes.length === 0) {
-                    popup.Alert("No data found!");
+                    qPopup.Alert("No data found!");
                     return null;
                 }
                 if (alsoGetRides) {
@@ -89,11 +89,11 @@ var TCCroutes = (function () {
 
 
             if (dest.length < 2 || dist === '' || dist === 0) {
-                popup.Alert("Destination and distance needed");
+                qPopup.Alert("Destination and distance needed");
                 return;
             }
 
-            popup.Confirm("Save edited route", "Are you sure?", function () {
+            qPopup.Confirm("Save edited route", "Are you sure?", function () {
                 currentRoute.dest = dest;
                 currentRoute.description = descrip;
                 currentRoute.distance = dist;
@@ -103,7 +103,7 @@ var TCCroutes = (function () {
                         $('#editRouteModal').modal('hide');
                     }
                     else {
-                        popup.Alert(response);
+                        qPopup.Alert(response);
                     }
                 }, true, null);
             }, null, -10);
@@ -274,15 +274,15 @@ var TCCroutes = (function () {
     $('#deleteRoute').click(function () {
         var id = currentRoute.id;
         
-        popup.Confirm("Delete this route", "Are you sure?", function () {
+        qPopup.Confirm("Delete this route", "Are you sure?", function () {
             rideData.myJson("DeleteRoute", "POST", id, function (response) {
                 if (response === 'OK') {
-                    popup.Alert("You have deleted this route");
+                    qPopup.Alert("You have deleted this route");
                     routes = routes.filter(function (e) { return e.id !== id;});
                     TCCroutes.CreateRouteList(false);
                 }
                 else {
-                    popup.Alert(response);
+                    qPopup.Alert(response);
                 }
             }, true, null);
         }, null, -10);

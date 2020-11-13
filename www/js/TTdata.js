@@ -44,7 +44,7 @@ var rideData = (function ($) {
 
 
         webRequestFailed = function (handle, status, error) {
-            popup.Alert("Error with web request: " + handle.responseText + ' ' + handle.statusText);
+            qPopup.Alert("Error with web request: " + handle.responseText + ' ' + handle.statusText);
             if ($jsonBtn !== null) {
                 $jsonBtn.button('reset');
             }
@@ -107,7 +107,7 @@ var rideData = (function ($) {
     //rideData.getGPX = function () {
     //    var currentroute = TCCroutes.currentRoute();
     //    if (currentroute === null) {
-    //        popup.Alert("No GPX data found!");
+    //        qPopup.Alert("No GPX data found!");
     //        return null;
     //    }
     //    var routeID = currentroute.id;
@@ -116,7 +116,7 @@ var rideData = (function ($) {
     //    rideData.myJson("GetGPXforRoute", "POST", routeID, function (response) {
     //        gpxdata = response;
     //        if (gpxdata.length === 0) {
-    //            popup.Alert("No GPX data found!");
+    //            qPopup.Alert("No GPX data found!");
     //            return null;
     //        }
     //        TCCMap.showRouteStage2(gpxdata);
@@ -129,17 +129,17 @@ var rideData = (function ($) {
 
     rideData.saveParticipant = function (rideID, rider) {
         var list = "";
-        popup.Confirm("Join this ride", "Are you sure?", function () {
+        qPopup.Confirm("Join this ride", "Are you sure?", function () {
             var pp = new TCCrides.Participant(rider, rideID);
             rideData.myJson("SaveParticipant", "POST", pp, function (response) {
                 if (response[0] === '*') {
                     // a list of riders entered
                     list = response.substr(1);
-                    popup.Alert("You have been added to this ride");
+                    qPopup.Alert("You have been added to this ride");
                     TCCrides.CreateRideList(null);
                 }
                 else {
-                    popup.Alert(response);
+                    qPopup.Alert(response);
                 }
             }, true, null);
         }, null, -10);
@@ -147,48 +147,48 @@ var rideData = (function ($) {
     };
     rideData.saveReserveParticipant = function (rideID, rider) {
         var list = "";
-        popup.Confirm("Ride is full", "Would you like to be on a  reserve list?", function () {
+        qPopup.Confirm("Ride is full", "Would you like to be on a  reserve list?", function () {
             var reserve = '+' + rider;
             var pp = new TCCrides.Participant(reserve, rideID);
             rideData.myJson("SaveParticipant", "POST", pp, function (response) {
                 if (response[0] === '*') {
                     // a list of riders entered
                     list = response.substr(1);
-                    popup.Alert("You have been added to reserve list for this ride");
+                    qPopup.Alert("You have been added to reserve list for this ride");
                     TCCrides.CreateRideList(null);
                 }
                 else {
-                    popup.Alert(response);
+                    qPopup.Alert(response);
                 }
             }, true, null);
         }, null, -10);
         return list;
     };
     rideData.leaveParticipant = function (rideID, rider) {
-        popup.Confirm("Leave this ride", "Are you sure?", function () {
+        qPopup.Confirm("Leave this ride", "Are you sure?", function () {
             var pp = new TCCrides.Participant(rider, rideID);
             rideData.myJson("LeaveParticipant", "POST", pp, function (response) {
                 if (response === 'OK') {
-                    popup.Alert("You have left this ride");
+                    qPopup.Alert("You have left this ride");
                     // recursively create a new list
                     TCCrides.CreateRideList(null);
                 }
                 else {
-                    popup.Alert(response);
+                    qPopup.Alert(response);
                 }
             }, true, null);
         }, null, -10);
     };
     rideData.deleteRide = function (rideID) {
-        popup.Confirm("Delete this ride", "Are you sure?", function () {
+        qPopup.Confirm("Delete this ride", "Are you sure?", function () {
             rideData.myJson("DeleteRide", "POST", rideID, function (response) {
                 if (response === 'OK') {
-                    popup.Alert("You have deleted this ride");
+                    qPopup.Alert("You have deleted this ride");
                     // recursively create a new list
                     TCCrides.CreateRideList(null);
                 }
                 else {
-                    popup.Alert(response);
+                    qPopup.Alert(response);
                 }
             }, true, null);
         }, null, -10);

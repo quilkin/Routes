@@ -1,57 +1,28 @@
-﻿/// <reference path="~\openlayers\OpenLayers.js" />
-
-
-
-
-var CafeMap = (function ($) {
+﻿
+var mapOfCafes = (function ($) {
     "use strict";
 
+    //[DataMember(Name = "id")]        public int ID { get; set; }
+    //[DataMember(Name = "name")]        public string Name { get; set; }
+    //[DataMember(Name = "placename")]        public string PlaceName { get; set; }
+    //[DataMember(Name = "lat")]        public double Lat{ get; set; }
+    //[DataMember(Name = "lng")]        public double Lng { get; set; }
+    //[DataMember(Name = "daysopen")]        public int DaysOpen { get; set; }
+    //[DataMember(Name = "timesopen")]        public String TimesOpen { get; set; }
+    //[DataMember(Name = "notes")]        public String Notes { get; set; }
 
-    aggressiveEnabled: false;
-    var userID = 0;
-    // distance to check if on track or not (approx 20 m)
-    var near = 0.0002;
-    // distance to check if too far from track (appox 500m)
-    var far = 0.05;
-    // message when off track
-    var offTrack1 = "Attention! You are "
-    var offTrack2 = " metres off course. Correct course is to the "
-    var user = "none";
-
-    var CafeMap = {},
-        map = null,
-        location,
-        path,
-        aggressiveEnabled,
-        locations = [],
-        iconCentre1,
-        messageBox,
-        routeLine = null,
-        routes = [],
-        markers=[],
-        legs = [],
+    var mapOfCafes = {},
+        cafemap = null,
+        latlng,
+        cafes = [],
+        cafe,
+        popup,
+        markers = [],
         wayPoints = [],
-        routePoints = [],
-        followedPoints = [],
-        nearestPoint = null,
-        lastNearestPoint = null,
-        onTrack = false,
         lastLine1, lastLine2, lastDem,
-        bikeType,
-        useRoads = 2,
-        useHills = 2,
-        nearest,nextNearest,
-        dialog,dialogContents;
+        dialog;
 
 
-    var redIcon = new L.Icon({
-        iconUrl: 'scripts/images/marker-icon-red.png',
-        shadowUrl: 'scripts/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
 
     var greenIcon = new L.Icon({
         iconUrl: 'scripts/images/marker-icon-green.png',
@@ -62,32 +33,13 @@ var CafeMap = (function ($) {
         shadowSize: [41, 41]
     });
 
-    var orangeIcon = new L.Icon({
-        iconUrl: 'scripts/images/marker-icon-orange.png',
-        shadowUrl: 'scripts/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
+    const coffeeIcon = L.divIcon({
+        html: '<i class="fa fa-coffee fa-lg"></i>',
+        iconSize: [12, 12],
+        className: 'myIcon'
     });
 
-    var yellowIcon = new L.Icon({
-        iconUrl: 'scripts/images/marker-icon-yellow.png',
-        shadowUrl: 'scripts/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
 
-    var user = window.localStorage.username;
-    var pw = window.localStorage.password;
-    if (user != undefined && user.length > 0) {
-        $("#username").val(user);
-    }
-    if (pw != undefined && pw.length > 0) {
-        $("#password").val(pw) ;
-    }
     // Create additional Control placeholders
     function addControlPlaceholders(map) {
         var corners = map._controlCorners,
@@ -106,260 +58,226 @@ var CafeMap = (function ($) {
         createCorner('center', 'right');
 
     }
-    $("#newpw").click(function() {
-        //alert("Please ensure your phone has web access, then login with password 'NewPassword'");
-        alert("Please ensure your phone has web access");
-        $("#password").val('NewPassword');
-        $("#login").click();
-    })
 
-    $("#login").click(function() {
-        var u, p, creds, form = $("#login");
-        //disable the button so we can't resubmit while we wait
-        $("#login").attr("disabled", "disabled");
-        u = $("#username").val();
-        p = $("#password").val();
-        //userRole = 0;
-        user = u;
-
-
-        if (u !== '' && p !== '') {
-            creds = { name: u, pw: p, email: "", code: 0 };
-            CafeMap.json('Login', "POST", creds, function (res) {
-                if (res.pw == "NewPassword") {
-                    alert("See your phone for more instructions, which should arrive within 10 minutes");
-
-                }
-                else if (res.pw == "" && res.name=="") {
-                    alert("Invalid username");
-                }
-                else if (res.pw == "") {
-                        alert("Invalid password");
-                    }
-
-                else {
-                    window.localStorage.username = u;
-                    window.localStorage.password = p;
-                    userID = res.id;
-
-                    createMap(userID,true);
-                    // refresh map every 5 minutes
-                    setInterval(function () {
-                        updateMap(userID,false);
-                    }, 300000);
- 
-                }
-                $("#login").removeAttr("disabled");
-            });
-
-        } else {
-            alert("You must enter a username and password");
-            $("#login").removeAttr("disabled");
-        }
-
-        //userID =1;
-
-        //createMap(userID,true);
-        //// refresh map every 5 minutes
-        //setTimeout(function () {
-        //    updateMap(userID,false);
-        //}, 300000);
-
-        return false;
-    })
-
-    function updateMap(userid, firstUpdate) {
-        // get the list of points to map
-        var tempID = userid;
-        if (!firstUpdate) {
-            tempID = -tempID;
-        }
-        CafeMap.json('GetLocations', "POST", tempID, function (locs) {
-        //CafeMap.json('GetLocationsGet', "GET", null, function (locs) {
-
-            // first point will be the latest one recorded, use this to centre the map
-            location = locs[0];
-          
-
-            var index, count = locs.length;
-            var now = new Date();
-            var reggie = /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/;
-            var dateArray, dateObj;
-            for (index = count - 1; index >= 0; index--) {
-
-                var loc = locs[index];
-                if (loc.latitude != 0) {
-                    var dt = now;
-                    // convert SQL date string to EU format
-                    dateArray = reggie.exec(loc.recorded_at);
-                    dt = new Date(
-                    (+dateArray[3]),
-                    (+dateArray[2]) - 1, // Careful, month starts at 0!
-                    (+dateArray[1]),
-                    (+dateArray[4]),
-                    (+dateArray[5]),
-                    (+dateArray[6])
-                );
-                    var timediff = now.valueOf() - dt.valueOf();
-                    var colour = 'blue';
-                    if (index === 0) {
-                        colour = 'purple';
-                        if (timediff < 60 * 60000) {
-                            // newer than one hour
-                            colour = 'red';
-                            if (userid == 3) // van
-                            {
-                                colour = 'orange';
-                            }
-                        }
-                    }
-                    else {
-                        if (timediff > 24 * 60 * 60000)
-                            colour = 'gray';
-                    }
-
-                    var circle = L.circle([loc.latitude, loc.longitude], (index === 0) ? 60 : 15, {
-                        color: colour,
-                        fillColor: colour,
-                        fillOpacity: 0.5
-                    }).addTo(map);
-                    var popupname = user;
-                    if (userid == 3) {
-                        popupname = 'Van';
-                    }
-                    circle.bindPopup(popupname  + ': ' + loc.recorded_at);
-                }
-            }
-            if (userid != 3)  // van
-            {
-                // also add van's location
-                updateMap(3, false);
-                // but centre map on me
-                map.setView([location.latitude, location.longitude], 14);
-            }
-           
-
-
+    function getCafes() {
+              // get the list of cafes to map
+        rideData.myJson('GetCafes', "POST", null, function (response) {
+            cafes = response;
+            updateMap();
         }, true, null);
+    }
+    
 
+    function updateMap() {
+        $.each(cafes, function (index, cafe) {
+
+            var coffee = L.marker([cafe.lat, cafe.lng], {
+                icon: coffeeIcon
+            }).addTo(cafemap);
+            var popupname = cafe.name;
+            var popupplace = cafe.placename;
+
+            coffee.bindPopup('<b>' + popupname + '</b><br />' + popupplace);
+                
+        });
+        popup = L.popup();
+        cafemap.setView([cafes[0].lat, cafes[0].lng], 10);
+       
+    }
+    function Cafe(id, lat, lng, name, place, opendays, opentimes, notes) {
+        this.id = id;
+        this.timesopen = opentimes;
+        this.daysopen = opendays;
+        this.lat = lat;
+        this.lng = lng;
+        this.placename = place;
+        this.name = name;
+        this.notes = notes;
+    }
+    function showCafeList() {
+        // to do
     }
 
-    function createMap(userid) {
+    function handleCafeEdit() {
+      
+        cafe.notes = $("#edit-cafe-notes").val();
+        cafe.name = $("#edit-cafe-name").val();
+        cafe.placename = $("#edit-cafe-place").val();
+        cafe.daysopen = $("#edit-cafe-days").val();
+        cafe.timesopen = $("#edit-cafe-times").val();
 
-        map = L.map('map', { messagebox: true });
+        if (cafe.name.length < 2 ) {
+            qPopup.Alert("Cafe name needed");
+            return;
+        }
+
+        qPopup.Confirm("Save edited cafe", "Are you sure?", function () {
+            rideData.myJson("SaveCafe", "POST", cafe, function (response) {
+                // if successful, response should be just a new ID
+                if (response.length < 5) {
+                    cafe.id = response;
+                    cafes.push(cafe);
+                    showCafeList();
+                    $('#editCafeModal').modal('hide');
+                }
+                else {
+                    qPopup.Alert(response);
+                }
+            }, true, null);
+        }, null, -10);
+    }
+
+    function findCafeFromLoc(lat,lng)  {
+        var found = $.grep(cafes, function (e, i) {
+            return e.lat === lat && e.lng === lng;
+        });
+        if (found.length > 0) {
+            return found[0];
+        }
+        return null;
+    }
+
+    $("#edit-cafe-ok").on("click", handleCafeEdit);
+    $("#edit-cafe-cancel").on('click', function () {
+        $('#editCafeModal').modal('hide');
+    });
+
+    $('#editCafeModal').on('shown.bs.modal', function (e) {
+        var lat = latlng.lat;
+        var lng = latlng.lng;
+        cafe = findCafeFromLoc(lat, lng);
+        if (cafe === null) {
+            cafe = new Cafe(0, lat, lng, 'name', 'where', 'every day', '', '');
+        }
+
+        $("#edit-cafe-notes").attr("value", cafe.notes);
+        $("#edit-cafe-name").attr("value", cafe.name);
+        $("#edit-cafe-place").attr("value", cafe.placename);
+        $("#edit-cafe-days").attr("value", cafe.daysopen);
+        $("#edit-cafe-times").attr("value", cafe.timesopen);
+ 
+
+    });
+
+
+
+    function onMapDblClick(e) {
+        latlng = e.latlng;
+        console.log("cafe click @ " + e.latlng.lat + ',' + e.latlng.lng);
+
+
+        // todo:  mustn't be too near an existing cafe
+
+
+        $('#editCafeModal').modal();
+    }
+
+    mapOfCafes.createMap = function () {
+        if (cafemap !== undefined && cafemap !== null) {
+            cafemap.remove();
+        }
+        cafemap = L.map('cafe-map', { messagebox: true });
         L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 18
+            zoom: 13
 
-        }).addTo(map);
-        updateMap(userID, 300);
-        //AddControls();
-    }
-      
+        }).addTo(cafemap);
 
-  
+        getCafes();
+        AddControls();
+        cafemap.on('dblclick', onMapDblClick);
+        cafemap.doubleClickZoom.disable();
+    };
+
+    mapOfCafes.checkForCafe = function (lat, lng) {
+        var found = '';
+        $.each(cafes, function (index, cafe) {
+            var lat_cafe = cafe.lat;
+            var lng_cafe = cafe.lng;
+            var lat_diff = Math.abs(lat - lat_cafe);
+            var lng_diff = Math.abs(lng - lng_cafe);
+            if (lat_diff < 0.0005 && lng_diff < 0.0005) {
+                found = cafe.name;
+                return false;
+            }
+        });
+        return found;
+    };
+
 
     function AddControls() {
 
-        addControlPlaceholders(map);
+        addControlPlaceholders(cafemap);
 
-        L.control.mousePosition().addTo(map);
+        L.control.mousePosition().addTo(cafemap);
+        
 
-        // a cross-hair for choosing points
-        iconCentre1 = L.control({ position: 'centerleft' });
-        iconCentre1.onAdd = function (map) {
-            this._div = L.DomUtil.create('div', 'myControl');
-            var img_log = "<div><img src=\"images/crosshair.png\"></img></div>";
-            this._div.innerHTML = img_log;
-            return this._div;
+        //// a cross-hair for choosing points
+        //iconCentre1 = L.control({ position: 'centerleft' });
+        //iconCentre1.onAdd = function (map) {
+        //    this._div = L.DomUtil.create('div', 'myControl');
+        //    var img_log = "<div><img src=\"images/crosshair.png\"></img></div>";
+        //    this._div.innerHTML = img_log;
+        //    return this._div;
 
-        }
-        iconCentre1.addTo(map);
+        //};
+        //iconCentre1.addTo(cafemap);
 
-        dialogContents = [
-         "<p>Quilkin cycle router: Options</p>",
-         "<button class='btn btn-primary' onclick='CafeMap.changeBike()'>Bike Type: Hybrid</button><br/><br/>",
-          "<button class='btn btn-primary' onclick='CafeMap.changeHills()'>Use of hills (0-9): 2</button><br/><br/>",
-          "<button class='btn btn-primary' onclick='CafeMap.changeMainRoads()'>Use of main roads (0-9): 2</button><br/><br/>",
-        ].join('');
+        //dialogContents = [
+        //    "<p>Truro CC cafe stops: Options</p>",
+        //    "<button class='btn btn-primary' onclick='CafeMap.changeBike()'>Bike Type: Hybrid</button><br/><br/>",
+        //    "<button class='btn btn-primary' onclick='CafeMap.changeHills()'>Use of hills (0-9): 2</button><br/><br/>",
+        //    "<button class='btn btn-primary' onclick='CafeMap.changeMainRoads()'>Use of main roads (0-9): 2</button><br/><br/>",
+        //].join('');
 
-        dialog = L.control.dialog()
-                  .setContent(dialogContents)
-                  .addTo(map);
+        //dialog = L.control.dialog()
+        //    .setContent(dialogContents)
+        //    .addTo(cafeMap);
 
-        //L.easyButton('<span class="bigfont">&rarr;</span>', createRoute).addTo(map);
-        L.easyButton('<span class="bigfont">&check;</span>', addPoint).addTo(map);
-        L.easyButton('<span class="bigfont">&cross;</span>', deletePoint).addTo(map);
-        L.easyButton('<span class="bigfont">&odot;</span>', openDialog).addTo(map);
-        bikeType = "Hybrid";
-        map.messagebox.options.timeout = 5000;
-        map.messagebox.setPosition('bottomleft');
-        map.messagebox.show('');
+        ////L.easyButton('<span class="bigfont">&rarr;</span>', createRoute).addTo(map);
+        //L.easyButton('<span class="bigfont">&check;</span>', addPoint).addTo(cafemap);
+        //L.easyButton('<span class="bigfont">&cross;</span>', deletePoint).addTo(cafemap);
+        //L.easyButton('<span class="bigfont">&odot;</span>', openDialog).addTo(cafemap);
+ 
+        //cafeMap.messagebox.options.timeout = 5000;
+        //cafeMap.messagebox.setPosition('bottomleft');
+        //cafeMap.messagebox.show('');
 
 
     }
 
     function addPoint() {
 
-        var centre = map.getCenter();
+        var centre = cafemap.getCenter();
         wayPoints.push(L.latLng(centre.lat, centre.lng));
         //if (route == undefined) {
         //if (routes.length == 0)
-        var marker = L.marker([centre.lat, centre.lng]).addTo(map);
-       // responsiveVoice.speak("Added a point");
+        var marker = L.marker([centre.lat, centre.lng]).addTo(cafemap);
+        // responsiveVoice.speak("Added a point");
         if (wayPoints.length === 1) {
-            marker = L.marker([centre.lat, centre.lng], { icon: greenIcon }).addTo(map);
+            marker = L.marker([centre.lat, centre.lng], { icon: greenIcon }).addTo(cafemap);
             markers.push(marker);
             // this is first (starting) point. Need more points!
             return;
         }
-        
+
         markers.push(marker);
         createRoute();
     }
-    function deletePoint()
-    {
+    function deletePoint() {
         if (wayPoints.length < 2) {
-            alert("No waypoints to delete!")
+            alert("No waypoints to delete!");
             return;
         }
         var marker = markers.pop();
-        map.removeLayer(marker);
+        cafemap.removeLayer(marker);
         wayPoints.pop();
         createRoute();
     }
     function openDialog() {
         dialog.open();
     }
-    CafeMap.changeBike = function()
-    {
-        switch (bikeType) {
-            case 'Hybrid': bikeType = 'Cross'; dialogContents = dialogContents.replace("Hybrid", "Cross"); break;
-            case 'Cross': bikeType = 'Mountain'; dialogContents = dialogContents.replace("Cross", "Mountain"); break;
-            case 'Mountain': bikeType = 'Road'; dialogContents = dialogContents.replace("Mountain", "Road"); break;
-            case "Road": bikeType = 'Hybrid'; dialogContents = dialogContents.replace("Road", "Hybrid"); break;
-        }
-        dialog.setContent(dialogContents);
-        dialog.update();
-        if (wayPoints.length >= 2)
-            createRoute();
-    }
-    CafeMap.changeMainRoads = function () {
-        useRoads = (useRoads + 1) % 10;
-        dialogContents = dialogContents.replace(/roads \(0-9\): [0-9]/, "roads (0-9): " + useRoads);
-        dialog.setContent(dialogContents);
-        dialog.update();
-        if (wayPoints.length >= 2)
-            createRoute();
-    }
-    CafeMap.changeHills = function () {
-        useHills = (useHills + 1) % 10;
-        dialogContents = dialogContents.replace(/hills \(0-9\): [0-9]/, "hills (0-9): " + useHills);
-        dialog.setContent(dialogContents);
-        dialog.update();
-        if (wayPoints.length >= 2)
-            createRoute();
-    }
+
     // Code from Mapzen site
     function polyLineDecode(str, precision) {
         var index = 0,
@@ -410,101 +328,15 @@ var CafeMap = (function ($) {
         return coordinates;
     };
 
-    function createRoute()
-    {
-        if (wayPoints.length < 2)
-        {
-            alert("No waypoints added!")
-            return;
-        }
-        //if (route != undefined)
-        //    map.removeLayer(route);
-        while (routes.length > 0)
-        {
-            var route = routes.pop();
-            map.removeLayer(route);
-        }
-        //var polyline = L.polyline(wayPoints, { color: 'red' }).addTo(map);
-        var p, points=[];
-        for (p = 0; p < wayPoints.length; p++) {
-            points.push({ lat: wayPoints[p].lat, lon: wayPoints[p].lng })
-        }
-        var data = {
-            //locations: [{ lat: wayPoints[0].lat, lon: wayPoints[0].lng }, { lat: wayPoints[1].lat, lon: wayPoints[1].lng }],
-            locations: points,
-            costing: "bicycle",
-            costing_options: {
-                bicycle: {
-                    bicycle_type: bikeType,
-                    use_roads: useRoads / 10,
-                    use_hills: useHills / 10
-                }
-            }
-        }
-        CafeMap.jsonMapzen(data,getRoute);
-       
-    }
 
-    function getRoute(response) {
-
-        
-        routePoints = [];
-        followedPoints = [];
-        nearestPoint = null;
-        onTrack = false;
-
-        for (var i = 0; i < response.trip.legs.length; i++) {
-            var leg = response.trip.legs[i];
-            var legPoints= [];
-            var index = 0;
-            for (var j = 0; j < leg.maneuvers.length; j++) {
-                var maneuver = leg.maneuvers[j];
-                var instruction = maneuver.verbal_pre_transition_instruction;
-                var shapeIndex = maneuver.begin_shape_index;
-                while (index++ < shapeIndex)
-                {
-                    // no instructions at these points
-                    legPoints.push('');
-                }
-                legPoints.push(instruction);
-            }
-            // now get coordinates of all points
-            var pline = leg.shape;
-            var locations = polyLineDecode(pline, 6);
-
-            var colour = 'red';
-            if (wayPoints.length > 2) colour = 'blue';
-            if (wayPoints.length > 3) colour = 'green';
-            var route = new L.Polyline(locations, {
-                color: colour,
-                opacity: 1,
-                weight: 2,
-                clickable: false
-            }).addTo(map);
-            //var id = L.stamp(route);
-            routes.push(route);
-            for (var loc = 0; loc < locations.length; loc++) {
-                // save points passed through, and store any instruction for each point 
-                var p1 = locations[loc][0], p2 = locations[loc][1];
-                var instr = legPoints[loc];
-                routePoints.push([p1, p2, instr]);
-
-            }
-        }
-        // add dummy final points to help with array indexing later
-        var lastPoint = routePoints[routePoints.length - 1];
-        routePoints.push(lastPoint);
-        routePoints.push(lastPoint);
-
-    }
-    function pointToLine(point0,line1,line2) {
+    function pointToLine(point0, line1, line2) {
         // find min distance from point0 to line defined by points line1 and line2
         // equation from Wikipedia
-        var numer,dem;
+        var numer, dem;
         var x1 = line1[0], x2 = line2[0], x0 = point0[0];
         var y1 = line1[1], y2 = line2[1], y0 = point0[1];
-        
-        if (line1===lastLine1 && line2 === lastLine2) {
+
+        if (line1 === lastLine1 && line2 === lastLine2) {
             // same line as we checked before, can save time by not recalculating sqaure root on demoninator
             dem = lastDem;
         }
@@ -514,12 +346,11 @@ var CafeMap = (function ($) {
             lastLine2 = line2;
             lastDem = dem;
         }
-        numer =  Math.abs((y2-y1)*x0 - (x2-x1)*y0 + x2*y1 - y2*x1);
+        numer = Math.abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1);
         return numer / dem;
 
     }
-    function distanceBetweenCoordinates(point0, point1)
-    {
+    function distanceBetweenCoordinates(point0, point1) {
         var x1 = point0[0], x2 = point1[0];
         var y1 = point0[1], y2 = point1[1];
         var R = 6371e3; // metres
@@ -529,108 +360,14 @@ var CafeMap = (function ($) {
         var Δλ = (y2 - y1) / 57.2958;
 
         var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
         var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         var d = R * c;
         return d;
 
     }
-    function bearingFromCoordinate(point0, point1) {
 
-        var x1 = point0[0], x2 = point1[0];
-        var y1 = point0[1], y2 = point1[1];
-        var dLon = (y2 - y1);
-        var y = Math.sin(dLon) * Math.cos(x2);
-        var x = Math.cos(x1) * Math.sin(x2) - Math.sin(x1)
-                * Math.cos(x2) * Math.cos(dLon);
-        var brng = Math.atan2(y, x);
-        brng = brng * 57.2958;
-        brng = (brng + 360) % 360;
-
-        if (brng < 22.5)
-            return 'North';
-        if (brng < 67.5)
-            return 'North East';
-        if (brng < 112.5)
-            return 'East';
-        if (brng < 157.5)
-            return 'South East';
-        if (brng < 202.5)
-            return 'South';
-        if (brng < 247.5)
-            return 'South West';
-        if (brng < 292.5)
-            return 'West';
-        if (brng < 337.5)
-            return 'North West';
-        return 'North';
-    }
-
-    CafeMap.planRouteLine = function (lat, lon) {
-        //var thisPoint = [lat, lon];
-        //var centre = map.getCenter();
-        //if (routeLine != null)
-        //{
-        //    map.removeLayer(routeLine);
-        //}
-        //routeLine = L.polyline([thisPoint,centre], { color: 'red' }).addTo(map);
-    }
-
-    CafeMap.checkInstructions = function (lat, lon) {
-        var thisPoint = [lat, lon];
-
-        followedPoints.push(thisPoint);
-        if (nearestPoint === null && onTrack === false) {
-            // Nowhere near?. Check point against all points in the route
-            for (var loc = 0; loc < routePoints.length; loc++) {
-                var point = routePoints[loc];
-                // within 20 metres (approx)?
-                if (Math.abs(point[0] - lat) < near) {
-                    if (Math.abs(point[1] - lon) < near) {
-                        nearestPoint = loc;
-                        onTrack = true;
-                        break;
-                    }
-                }
-            }
-        }
-        else {
-            // we are (or were) on track, see how far we are from the nearest route segment (line)
-            lastNearestPoint = nearestPoint;
-            nearest = pointToLine(thisPoint, routePoints[nearestPoint], routePoints[nearestPoint + 1]);
-            nextNearest = pointToLine(thisPoint, routePoints[nearestPoint + 1], routePoints[nearestPoint + 2]);
-            onTrack = (nearest < near);
-            if (nextNearest < near) {
-                // we have moved on nearer to the next point
-                ++nearestPoint;
-                onTrack = (nextNearest < near);
-            }
-            if (!onTrack) {
-                // need to start looking from scratch again
-                
-                nearestPoint = null;
-            }
-        }
-        
-        if (onTrack) {
-            map.messagebox.show(nearestPoint);
-            // find the appropriate instruction to provide
-            var instruction = routePoints[nearestPoint][2];
-            //if (instruction.length > 2)
-            //    responsiveVoice.speak(instruction);
-        }
-        else if (lastNearestPoint) {
-            if (lastNearestPoint >= routePoints.length) {
-                lastNearestPoint = routePoints.length - 1;
-            }
-             // convert offset to multiples of ten metres
-            var dist = Math.floor(distanceBetweenCoordinates(thisPoint, routePoints[lastNearestPoint])/10)*10;
-            var bearing = bearingFromCoordinate(thisPoint, routePoints[lastNearestPoint]);
-            //responsiveVoice.speak(offTrack1 + dist + offTrack2 + bearing);
-        }
-        return (onTrack);
-    }
-    return CafeMap
-})(jQuery)
+    return mapOfCafes;
+})(jQuery);

@@ -1,10 +1,10 @@
 ﻿/*global bootbox*/
 
-var popup = (function () {
+var qPopup = (function () {
 
     "use strict";
 
-    var popup = {},
+    var qPopup = {},
         popupCount = 0,
 
         checkpopups = function () {
@@ -16,7 +16,7 @@ var popup = (function () {
         };
 
 
-    popup.Alert = function (alertstr, timeout) {
+    qPopup.Alert = function (alertstr, timeout) {
         var alert, timer = null;
 
         checkpopups();
@@ -34,7 +34,7 @@ var popup = (function () {
 
     };
 
-    popup.Confirm = function (message, question, yesfunc, nofunc, timeout) {
+    qPopup.Confirm = function (message, question, yesfunc, nofunc, timeout) {
         var confirm, timer = null;
         checkpopups();
         confirm = bootbox.dialog({
@@ -75,7 +75,7 @@ var popup = (function () {
         });
     };
 
-    return popup;
+    return qPopup;
 }());
 
 

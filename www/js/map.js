@@ -15,8 +15,10 @@
             this.Distance = dist_t;
             this.Height = height_t;
         },
-        drawProfile = function (elevid, elev_data) {
+        drawProfile = function (elevid, elev_data, maxheight, metric) {
 
+            var dist = metric ? 'km' : 'miles';
+            var height = metric ? 'm' : 'ft';
             chart = AmCharts.makeChart(elevid, {
                 "type": "serial",
                 "theme": "light",
@@ -25,15 +27,15 @@
                 "valueAxes": [{
                     "gridColor": "#FFFFFF",
                     "gridAlpha": 0.2,
-                    "title": "metres",
-                    "maximum": 300,
+                    "title": metric? "metres": "feet",
+                    "maximum": maxheight,
                     "minimum": 0,
                     "dashLength": 0
                 }],
                 "gridAboveGraphs": true,
                 "startDuration": 1,
                 "graphs": [{
-                    "balloonText": "[[category]]km<br><b>[[value]]m</b>",
+                    "balloonText": "[[category]]"+dist+"<br><b>[[value]]"+height+"</b>",
                     "fillAlphas": 0.8,
                     "lineAlpha": 0.2,
                     "type": "line",
@@ -50,6 +52,7 @@
                     "gridAlpha": 0,
                     "tickPosition": "start",
                     "tickLength": 20,
+                    //"title": metric ? "km" : "miles",
                     "precision": 0
                 }
             });
@@ -60,18 +63,18 @@
         TCCMap.showRouteStage2 = function (gpxdata,listedRoute) {
             // listedRoute is true only if teh route has already been added to the list of routes
         var tab = rideData.getCurrentTab();
-        var mapid = "demo-map";
-        var elevid = "demo-elev";
-        var demo = document.getElementById('demo');
+        var mapid = "routes-map";
+        var elevid = "routes-elev";
+        var map_pane = document.getElementById('routes');
         if (tab === 'setup-tab') {
             mapid = "setup-map";
             elevid = "setup-elev";
-            demo = document.getElementById('setup');
+            map_pane = document.getElementById('setup');
         }
-        else if (tab === 'home-tab') {
-            mapid = "home-map";
-            elevid = "home-elev";
-            demo = document.getElementById('home');
+        else if (tab === 'rides-tab') {
+            mapid = "rides-map";
+            elevid = "rides-elev";
+            map_pane = document.getElementById('rides');
         }
         if (gpxdata === null ||  gpxdata === 'none' || gpxdata.length < 100) {
             $("#" + mapid).hide();
@@ -90,11 +93,8 @@
 
         _t('h4').textContent = "please wait...";
 
-        function _t(t) { return demo.getElementsByTagName(t)[0]; }
-            function _c(c) {
-                var elems = demo.getElementsByClassName(c);
-                return demo.getElementsByClassName(c)[0];
-            }
+            function _t(t) { return map_pane.getElementsByTagName(t)[0]; }
+            function _c(c) { return map_pane.getElementsByClassName(c)[0];  }
 
         if (map !== undefined) { map.remove(); }
         map = L.map(mapid);
@@ -128,13 +128,13 @@
             }
 
             if (listedRoute === true) {
+                // get soem deatils from the GPX to hand back to the app
                 var route = TCCroutes.currentRoute();
                 if (route.distance === 0 || isNaN(route.distance) || route.dest === '') {
                     route.distance = distance;
                     route.dest = name;
                     rideData.myJson("UpdateRoute", "POST", route, function (response) {
                         var reply = response;
-
                     }, true, null);
                 }
             }
@@ -151,7 +151,9 @@
                 a.download = name + '.gpx';
                 _t('h4').appendChild(a);
 
-                if (login.Units() === 'k') {
+                // prepare a profile chart
+                var metric = (login.Units() === 'k');
+                if (metric) {
                     _c('myunits1').textContent = 'km';
                     _c('myunits2').textContent = 'm';
                 }
@@ -168,8 +170,16 @@
                 _c('elevation-loss').textContent = elev_loss;
 
                 if (gpx.get_elevation_gain() > 0 && gpx.get_elevation_loss() > 0) {
-                    elev_data = gpx.get_elevation_data();
-                    // convert array to json for profile graph
+                    var maxheight = 0;
+                    if (metric) {
+                        elev_data = gpx.get_elevation_data();
+                        maxheight = gpx.get_elevation_max();
+                    }
+                    else {
+                        elev_data = gpx.get_elevation_data_imp();
+                        maxheight = gpx.get_elevation_max_imp();
+                    }
+                    // convert array to json for profile 
                     var i, n = elev_data.length;
                     var json_elev = new Array();
                     for (i = 0; i < n; i++) {
@@ -177,7 +187,7 @@
 
                     }
                     _c('elevation-none').textContent = "";
-                    drawProfile(elevid, json_elev);
+                    drawProfile(elevid, json_elev,maxheight,metric);
                 }
                 else {
                     clearChart();
@@ -195,7 +205,7 @@
 
         var currentroute = TCCroutes.currentRoute();
         if (currentroute === null) {
-            popup.Alert("No route found!");
+            qPopup.Alert("No route found!");
             return null;
         }
         if (currentroute.hasGPX === false) {

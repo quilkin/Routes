@@ -160,7 +160,9 @@ L.GPX = L.FeatureGroup.extend({
         return this._info.elevation._points.map(
           function (p) {
               return _this._prepare_data_point(p, _this.m_to_km, null,
-                function (a, b) { return a.toFixed(2) + ' km, ' + b.toFixed(0) + ' m'; });
+                  function (a, b) {
+                      return a.toFixed(2) + ' km, ' + b.toFixed(0) + ' m';
+                  });
           });
     },
     get_elevation_data_imp: function () {
@@ -168,7 +170,9 @@ L.GPX = L.FeatureGroup.extend({
         return this._info.elevation._points.map(
           function (p) {
               return _this._prepare_data_point(p, _this.m_to_mi, _this.to_ft,
-                function (a, b) { return a.toFixed(2) + ' mi, ' + b.toFixed(0) + ' ft'; });
+                  function (a, b) {
+                      return a.toFixed(2) + ' mi, ' + b.toFixed(0) + ' ft';
+                  });
           });
     },
     get_elevation_max: function () { return this._info.elevation.max; },

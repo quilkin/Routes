@@ -17,7 +17,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <link href="css/bootstrap-timepicker.min.css" />
-    <!--<link href="css/leaflet-distance-marker.css"/>-->
+    <!--<link rel="stylesheet" href="css/font-awesome.min.css">-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="apple-touch-icon" sizes="57x57" href="icons/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="icons/apple-icon-60x60.png">
@@ -48,6 +49,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" style="color:blue" id="realtime">TCC Ride Planner<span style="color:black; font-size:small"></span></a>
 
@@ -55,9 +57,11 @@
 
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right" role="tablist" id="mytabs">
-                    <li class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><span class="glyphicon glyphicon-calendar"></span><span style="color:blue; font-size:medium">Planned rides</span></a></li>
-                    <li><a href="#webdata" id="webdata-tab" role="tab" data-toggle="tab" aria-controls="webdata"><span class="glyphicon glyphicon-globe"></span><span style="color:blue; font-size:medium">View all routes</span></a></li>
-                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup"><span class="glyphicon glyphicon-wrench"></span><span style="color:blue; font-size:medium">Set Up new ride/route</span></a></li>
+                    <li class="active"><a href="#panel-rides" id="rides-tab" role="tab" data-toggle="tab" aria-controls="rides-tab" aria-expanded="true"><i class="fa fa-calendar"></i><span style="color:blue; font-size:medium"> Planned rides</span></a></li>
+                    <li><a href="#panel-routes" id="routes-tab" role="tab" data-toggle="tab" aria-controls="routes-tab"><i class="fa fa-map-signs"></i><span style="color:blue; font-size:medium"> View all routes</span></a></li>
+                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup-tab"><i class="fa fa-wrench"></i><span style="color:blue; font-size:medium"> Set Up new ride/route</span></a></li>
+                    <li><a href="#panel-cafes" id="cafes-tab" role="tab" data-toggle="tab" aria-controls="cafe-tab"><i class="fa fa-coffee"></i><span style="color:blue; font-size:medium"> Coffee &amp; cake</span></a></li>
+
                     <li class="dropdown">
                         <button class="btn btn-dropped" type="button" data-toggle="dropdown" id="userName">Username<span class="caret"></span></button>
                         <ul class="dropdown-menu">
@@ -76,7 +80,7 @@
 
         <!--tab for listing rides for a chosen date-->
 
-        <div role="tabpanel" class="tab-pane active" id="home" aria-labelledby="home-tab">
+        <div role="tabpanel" class="tab-pane active" id="panel-rides" aria-labelledby="rides-tab">
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
@@ -92,15 +96,15 @@
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
-                            <div id="home" class="panel-body gpx" data-map-target="home-map" data-elev-target="home-elev">
+                            <div id="rides" class="panel-body gpx" data-map-target="rides-map" data-elev-target="rides-elev">
                                 <header>
                                     <h4>Truro cycling club weekly rides</h4>
                                 </header>
                                 <article>
-                                    <div class="map" id="home-map"></div>
+                                    <div class="map" id="rides-map"></div>
                                 </article>
                                 <article>
-                                    <div class="elev" id="home-elev"></div>
+                                    <div class="elev" id="rides-elev"></div>
                                 </article>
                                 <footer>
                                     <ul class="info">
@@ -120,11 +124,11 @@
         </div> <!-- /tab-pane -->
         <!--tab for listing all routes-->
 
-        <div role="tabpanel" class="tab-pane fade" id="webdata" aria-labelledby="webdata-tab">
+        <div role="tabpanel" class="tab-pane fade" id="panel-routes" aria-labelledby="routes-tab">
 
             <div class="container">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="list-group" id="chooseRoutes">
                             <div id="allRoutesTitle" class="list-group-item list-group-item-info">
                                 Suggested routes
@@ -144,19 +148,19 @@
                             <button type="button" class="btn btn-primary" id="planRide" data-dismiss="modal">Lead a ride using this route</button>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="panel panel-primary">
-                            <div id="demo" class="panel-body gpx" data-map-target="demo-map" data-elev-target="demo-elev">
+                            <div id="routes" class="panel-body gpx" data-map-target="routes-map" data-elev-target="routes-elev">
                                 <header>
                                     <h4>Trurocycling.org routes</h4>
                                 </header>
 
                                 <article>
-                                    <div class="map" id="demo-map"></div>
+                                    <div class="map" id="routes-map"></div>
                                 </article>
 
                                 <article>
-                                    <div class="elev" id="demo-elev"></div>
+                                    <div class="elev" id="routes-elev"></div>
                                 </article>
 
                                 <footer>
@@ -302,6 +306,48 @@
                 </div>  <!-- /row -->
             </div>  <!-- /container -->
         </div> <!-- /tab-pane -->
+        <!--tab for showing cafes-->
+
+        <div role="tabpanel" class="tab-pane fade" id="panel-cafes" aria-labelledby="cafe-tab">
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <!--<div class="list-group" id="chooseRoutes">
+                            <div id="allRoutesTitle" class="list-group-item list-group-item-info">
+                                Suggested routes
+                                <button class="btn btn-info btn-lifted pull-right" type="button" data-toggle="dropdown" id="userName">Sort <span class="caret"></span></button>
+                                <ul class="dropdown-menu  dropdown-menu-right">
+                                    <li><a id="btnSortabc">alphabetically</a></li>
+                                    <li><a id="btnSort123">by distance</a></li>
+                                </ul>
+                            </div>
+                        </div>-->
+                        <div class="list-group scrollable-list" id="cafelist">
+                            <a id="cafeTitle" class="list-group-item list-group-item-info">Choose cafe</a>
+                        </div>
+                        <div class="panel-footer">
+                            <button type="button" class="btn btn-info" id="deleteCafe" data-dismiss="modal">Delete</button>
+                            <button type="button" class="btn btn-info" id="editCafe" data-dismiss="modal">Edit</button>
+                            <button type="button" class="btn btn-primary" id="planRideCafe" data-dismiss="modal">Lead a ride to this cafe</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-primary">
+                            <div id="cafe" class="panel-body gpx" data-map-target="cafe-map">
+                                <header>
+                                    <h4>Suggested Coffee Stops</h4>
+                                </header>
+                                <article>
+                                    <div class="map" id="cafe-map"></div>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+                </div>  <!-- /row -->
+            </div> <!-- /container -->
+        </div>
+
     </div> <!-- /tab-content -->
 
     <div id="loginModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -371,8 +417,8 @@
                             <input type="email" id="email2" class="form-control" required>
                             <div class="radio">
                                 <label> <input id="radioKm" type="radio" name="units" value="k">Distances in Km</label>
-                            <!--</div>
-                            <div class="radio-inline">-->
+                                <!--</div>
+                                <div class="radio-inline">-->
                                 <label> <input id="radioMile" type="radio" name="units" value="m">Distances in miles</label>
                             </div>
                             <p></p>
@@ -450,14 +496,43 @@
                             <input type="number" class="form-control side-input detectChange" id="edit-ride-distance">
                             <label for="edit-ride-description" class="control-label side-label">Description / Notes:</label>
                             <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="Easy? Hard? Any useful info :)" id="edit-ride-description">
-                            
-                  
+
+
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-info" id="edit-ride-cancel" type="button">Cancel editing</button>
                     <button class="btn btn-primary pull-right" type="submit" id="edit-ride-ok" data-loading-text="Checking...">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="editCafeModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="edit-cafe-title">Add (or edit) cafe details</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form-editcafe">
+                        <div class="form-group">
+                            <label for="edit-cafe-name" class="control-label side-label">Cafe name:</label>
+                            <input type="text" class="form-control  side-input detectChange" id="edit-cafe-name" required>
+                            <label for="edit-cafe-place" class="control-label side-label" >Placename:</label>
+                            <input type="text" class="form-control side-input detectChange" id="edit-cafe-place" required>
+                            <label for="edit-cafe-notes" class="control-label side-label">Description / Notes:</label>
+                            <input type="text" class="form-control side-input detectChange" id="edit-cafe-notes">
+                            <label for="edit-cafe-days" class="control-label side-label">Days open:</label>
+                            <input type="text" class="form-control side-input detectChange" id="edit-cafe-days" data-toggle="tooltip" title="List days or just 'every day'">
+                            <label for="edit-cafe-times" class="control-label side-label">Times open:</label>
+                            <input type="text" class="form-control side-input detectChange" id="edit-cafe-times" data-toggle="tooltip" title="List times e.g. '10-4'">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-info" id="edit-cafe-cancel" type="button">Cancel</button>
+                    <button class="btn btn-primary pull-right" type="submit" id="edit-cafe-ok" data-loading-text="Checking...">Submit</button>
                 </div>
             </div>
         </div>
@@ -470,8 +545,8 @@
 
     <script src="js-lib/jquery-1.11.1.min.js"></script>
     <script src="js-lib/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
-
+    <script src="js-lib/leaflet.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>-->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<script src="js-lib/ie10-viewport-bug-workaround.js"></script>-->
     <script src="js-lib/bootbox.min.js"></script>
@@ -482,6 +557,8 @@
 
     <script src="js/timesdates.js"></script>
     <script src="js/popups.js"></script>
+    <script src="js/mousePos.js"></script>"
+    <script src="js/cafeMap.js"></script>
     <script src="js/login.js"></script>
     <script src="js/index.js"></script>
     <script src="js/serial.js"></script>
@@ -498,6 +575,7 @@
     <script src="js/map.js"></script>
     <!--<script src="js-lib/leaflet-distance-marker.js"></script>-->
     <script src="js/newroute.js"></script>
+
 
 </body>
 </html>

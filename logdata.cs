@@ -167,7 +167,8 @@ namespace Routes
         }
         public void Save(DBConnection conn)
         {
-
+            // prevet char ' messing up the query
+            Result = Result.Replace("'", "''");
             string query = string.Format("insert into log (time,ip,func,args,result,error) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
                 Logdata.TimeString(DateTime.Now), GetIP(), this.Function, this.Args, this.Result, this.Error);
 

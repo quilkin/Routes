@@ -28,13 +28,14 @@
         var value = this.options.lngFirst ? lng + this.options.separator + lat : lat + this.options.separator + lng;
         var prefixAndValue = this.options.prefix + ' ' + value;
         this._container.innerHTML = prefixAndValue;
-        if (CafeMap.checkInstructions(lat, lng)) {
-            this._container.innerHTML = "on track!";
+        var foundCafe = mapOfCafes.checkForCafe(lat, lng);
+        if (foundCafe.length > 0) {
+            this._container.innerHTML = foundCafe + "!";
         }
         else {
             this._container.innerHTML = prefixAndValue;
         }
-        CafeMap.planRouteLine(lat, lng);
+
     }
 
 });

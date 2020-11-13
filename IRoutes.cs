@@ -44,6 +44,11 @@ namespace Routes
         string[] GetParticipants(int[] rideIDs);
 
         [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/GetCafes", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [ServiceKnownType(typeof(string[]))]
+        IEnumerable<Cafe> GetCafes();
+
+        [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/Login", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         Login Login(Login login);
 
@@ -101,6 +106,9 @@ namespace Routes
         [WebInvoke(Method = "POST", UriTemplate = "/CheckTimeout", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string CheckTimeout(string username);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/SaveCafe", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string SaveCafe(Cafe cafe);
         
     }
 }
