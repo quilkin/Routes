@@ -1,9 +1,9 @@
 ﻿upload route: 
 	length of route name needs limiting
-	route name from GPX?
+
 	route name no spaces for Wahoo?
 	different dialog for manual routes?
-	allow editing of route name etc
+
 
 
 login:

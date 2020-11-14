@@ -54,40 +54,51 @@ namespace Routes
 
             string hash = Logdata.GetHash(login.PW);
             LogEntry log = new LogEntry("Login", login.Name);
-
+            string result = "";
 
             string query = string.Format("SELECT Id, name, pw, email, role, units FROM logins where name = '{0}'", login.Name);
             if (gpxConnection.IsConnect())
             {
-                using (MySqlDataAdapter loginAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                try
                 {
-                    dataLogins = new DataTable();
-                    loginAdapter.Fill(dataLogins);
-
-                    int length = dataLogins.Rows.Count;
-                    for (int row = 0; row < length; row++)
+                    using (MySqlDataAdapter loginAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
-                        DataRow dr = dataLogins.Rows[row];
-                        string dbname = (string)dr["name"];
-                        dbname = dbname.Trim();
-                        string dbpw = (string)dr["pw"];
-                        dbpw = dbpw.Trim();
-                        string dbemail = (string)dr["email"];
-                        dbemail = dbemail.Trim();
+                        dataLogins = new DataTable();
+                        loginAdapter.Fill(dataLogins);
 
-                        if (dbname == login.Name && dbpw == hash)
+                        int length = dataLogins.Rows.Count;
+                        for (int row = 0; row < length; row++)
                         {
-                            login.Role = (int)dr["role"];
-                            login.ID = (int)dr["id"];
-                            login.Email = (string)dr["email"];
-                            login.Units = ((string)dr["units"])[0];
-                            break;
+                            DataRow dr = dataLogins.Rows[row];
+                            string dbname = (string)dr["name"];
+                            dbname = dbname.Trim();
+                            string dbpw = (string)dr["pw"];
+                            dbpw = dbpw.Trim();
+                            string dbemail = (string)dr["email"];
+                            dbemail = dbemail.Trim();
+
+                            if (dbname == login.Name && dbpw == hash)
+                            {
+                                login.Role = (int)dr["role"];
+                                login.ID = (int)dr["id"];
+                                login.Email = (string)dr["email"];
+                                login.Units = ((string)dr["units"])[0];
+                                break;
+                            }
                         }
                     }
                 }
-                log.Result = login.Name;
-                log.Save(gpxConnection);
-                gpxConnection.Close();
+                catch (Exception ex)
+                {
+                    result =  "There is a database error, please try again:" + ex.Message;
+                    log.Error = ex.Message;
+                }
+                finally
+                {
+                    log.Result = login.Name;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
                 return login;
             }
             return null;
@@ -112,15 +123,23 @@ namespace Routes
                     }
                     catch (Exception ex)
                     {
-                        result = result = "There is a database error, please try again:" + ex.Message;
+                        result = "There is a database error, please try again:" + ex.Message;
+                        log.Error = ex.Message;
+                    }
+                    finally
+                    {
+                        log.Result = login.Name;
+                        log.Save(gpxConnection);
+                        gpxConnection.Close();
                     }
                 }
-                log.Result = login.Name;
-                log.Save(gpxConnection);
-                gpxConnection.Close();
+                else
+                    return DBConnection.ErrStr;
+  
                 return result;
             }
-            return "Error with email or code, sorry";
+            else
+                return "Error with email or code, sorry";
         }
 
 
@@ -185,6 +204,7 @@ namespace Routes
                 catch (Exception ex)
                 {
                     return "DB error: " + ex.Message;
+                    log.Error = ex.Message;
                 }
                 
                 // create and send an email
@@ -238,22 +258,19 @@ namespace Routes
                 }
                 catch (Exception ex2)
                 {
-                    return "Error: " + ex2.Message;
+                    result = "Error: " + ex2.Message;
+                    log.Error = ex2.Message;
                 }
                 finally
                 {
                     log.Result = result;
                     log.Save(gpxConnection);
-
                     gpxConnection.Close();
-
-
                 }
                 return result;
             }
             else
-
-                return "No DB Connecton";
+                return DBConnection.ErrStr;
 
         }
 
@@ -262,6 +279,7 @@ namespace Routes
            
             LogEntry log = new LogEntry("ChangeAccount", login.Name);
             string query;
+            string result = "";
 
             if (gpxConnection.IsConnect())
             {
@@ -294,18 +312,25 @@ namespace Routes
                         var cmd = new MySqlCommand(query, gpxConnection.Connection);
                         cmd.ExecuteNonQuery();
                     }
-
+                    result = "OK";
 
                 }
                 catch (Exception ex2)
                 {
-                    return "There is a database error, some details not changed, please try again: " + ex2.Message;
+                    result = "There is a database error, some details not changed, please try again: " + ex2.Message;
+                    log.Error = ex2.Message;
+                }
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
                 }
             }
             else
-                return "No DB Connecton";
+                return DBConnection.ErrStr;
 
-            return "OK";
+            return result;
         }
 
 
@@ -356,6 +381,7 @@ namespace Routes
                 catch (Exception ex)
                 {
                     return "DB error: " + ex.Message;
+                    log.Error = ex.Message;
                 }
 
                 // create and send an email
@@ -395,7 +421,8 @@ namespace Routes
                         }
                         catch (Exception ex2)
                         {
-                            result = "There is a database error, please try again:" + ex2.Message; ;
+                            result = "There is a database error, please try again:" + ex2.Message;
+                            log.Error = ex2.Message;
                         }
                         result = "OK, now please wait for an email and click the link to set a new password";
                        
@@ -403,6 +430,7 @@ namespace Routes
                     catch (Exception ex)
                     {
                         result = "Sorry, there is an error with the email service: " + ex.Message;
+                        log.Error = ex.Message;
                     }
 
                 }
@@ -414,21 +442,18 @@ namespace Routes
                 {
                     log.Result = result;
                     log.Save(gpxConnection);
-
                     gpxConnection.Close();
-
-
                 }
                 return result;
             }
             else
-
-                return "No DB Connecton";
+                return DBConnection.ErrStr;
 
         }
         public string CheckTimeout(string username)
         {
             LogEntry log = new LogEntry("CheckTimeout", username);
+            string result = "";
 
             if (gpxConnection.IsConnect())
             {
@@ -452,27 +477,35 @@ namespace Routes
                             }
                             else
                             {
-                                return "OK" + id.ToString();
+                                result =  "OK" + id.ToString();
                             }
 
 
                         }
                         else
                         {
-                            return string.Format("DB Error: {0} users found ", dataLogins.Rows.Count);
+                            result = string.Format("DB Error: {0} users found ", dataLogins.Rows.Count);
+                            log.Error = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    return "DB error: " + ex.Message;
+                    result = "DB error: " + ex.Message;
+                    log.Error = ex.Message;
                 }
-
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
 
             }
             else
-
-                return "No DB Connecton";
+                return DBConnection.ErrStr;
+            return
+                result;
         }
 
     }

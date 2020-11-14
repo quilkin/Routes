@@ -108,7 +108,7 @@ namespace Routes
                     else
                     {
 
-                        using (System.Net.WebClient client = new System.Net.WebClient())
+                        //using (System.Net.WebClient client = new System.Net.WebClient())
                         {
 
                             query = string.Format("insert into rides (routeID,leaderName,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
@@ -130,6 +130,7 @@ namespace Routes
                 catch (Exception ex)
                 {
                     result = string.Format("Database error: ride \"{0}\" not saved: {1}", ride.ID, ex.Message);
+                    log.Error = ex.Message;
                 }
 
 
@@ -140,6 +141,8 @@ namespace Routes
                     gpxConnection.Close();
                 }
             }
+            else
+                return DBConnection.ErrStr;
             return result;
 
         }
@@ -194,10 +197,14 @@ namespace Routes
                     Trace.WriteLine(ex2.Message);
                     log.Error = ex2.Message;
                 }
+                finally
+                {
+                    log.Result = rides.Count.ToString() + " rides for " + Logdata.JSDateToDateTime(date).ToShortDateString();
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
             }
-            log.Result = rides.Count.ToString() + " rides for " + Logdata.JSDateToDateTime(date).ToShortDateString();
-            log.Save(gpxConnection);
-            gpxConnection.Close();
+
             return rides;
         }
 
@@ -217,7 +224,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT date,leaderName,routeID FROM rides where date > {0}",appdays);
+                    string query = string.Format("SELECT date,leaderName,routeID FROM rides where date > {0}", appdays);
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -227,7 +234,7 @@ namespace Routes
                         for (int row = 0; row < length; row++)
                         {
                             string leader = "";
-                            int   routeID=0, date = 0;
+                            int routeID = 0, date = 0;
                             try
                             {
                                 DataRow dr = dataRoutes.Rows[row];
@@ -251,10 +258,14 @@ namespace Routes
                     Trace.WriteLine(ex2.Message);
                     log.Error = ex2.Message;
                 }
+                finally
+                {
+
+                    log.Result = rides.Count.ToString() + " future and recent rides found ";
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
             }
-            log.Result = rides.Count.ToString() + " future and recent rides found ";
-            log.Save(gpxConnection);
-            gpxConnection.Close();
             return rides;
         }
 
@@ -296,10 +307,14 @@ namespace Routes
                     Trace.WriteLine(ex2.Message);
                     log.Error = ex2.Message;
                 }
+                finally
+                {
+
+                    log.Result = "got Participants for " + rideIDs.Length + "rides";
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
             }
-            log.Result = "got Participants for " + rideIDs.Length + "rides";
-            log.Save(gpxConnection);
-            gpxConnection.Close();
             return participants;
         }
 
@@ -338,7 +353,7 @@ namespace Routes
                         // todo: this string is now redundant
                         string riders = "*";
 
-                        using (System.Net.WebClient client = new System.Net.WebClient())
+                        //using (System.Net.WebClient client = new System.Net.WebClient())
                         {
 
                             query = string.Format("insert into Participants (rider, rideID) values ('{0}','{1}')", pp.Rider, pp.rideID);
@@ -356,6 +371,7 @@ namespace Routes
                 catch (Exception ex)
                 {
                     result = string.Format("Database error: {0}", ex.Message);
+                    log.Error = ex.Message;
                 }
 
 
@@ -366,6 +382,8 @@ namespace Routes
                     gpxConnection.Close();
                 }
             }
+            else
+                return DBConnection.ErrStr;
             return result;
 
         }
@@ -401,7 +419,7 @@ namespace Routes
                     }
                     else
                     {
-                        using (System.Net.WebClient client = new System.Net.WebClient())
+                        //using (System.Net.WebClient client = new System.Net.WebClient())
                         {
 
                             query = string.Format("delete from Participants where rider = '{0}'and rideID = {1}", pp.Rider, pp.rideID);
@@ -418,6 +436,7 @@ namespace Routes
                 catch (Exception ex)
                 {
                     result = string.Format("Database error: {0}", ex.Message);
+                    log.Error = ex.Message;
                 }
 
 
@@ -428,6 +447,8 @@ namespace Routes
                     gpxConnection.Close();
                 }
             }
+            else
+                return DBConnection.ErrStr;
             return result;
 
         }
@@ -442,7 +463,7 @@ namespace Routes
             {
                 try
                 {
-                    using (System.Net.WebClient client = new System.Net.WebClient())
+                    //using (System.Net.WebClient client = new System.Net.WebClient())
                     {
                         string query = string.Format("delete from rides where rideID = {0}", rideID);
                         using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
@@ -455,6 +476,7 @@ namespace Routes
                 catch (Exception ex)
                 {
                     result = string.Format("Database error: {0}", ex.Message);
+                    log.Error = ex.Message;
                 }
                 finally
                 {
@@ -463,6 +485,8 @@ namespace Routes
                     gpxConnection.Close();
                 }
             }
+            else
+                return DBConnection.ErrStr;
             return result;
         }
 

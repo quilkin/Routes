@@ -33,6 +33,8 @@ namespace Routes
         private const string user = Connections.user;
         private const string pw = Connections.pw;
 
+        public static string ErrStr { get; set; }
+
         private DBConnection()
         {
         }
@@ -55,15 +57,39 @@ namespace Routes
 
         public bool IsConnect()
         {
-            if (Connection == null)
+            string prevErr = ErrStr;
+            ErrStr = string.Empty;
+            try
             {
-                if (String.IsNullOrEmpty(dbName))
-                    return false;
-                string connstring = string.Format("Server={0}; port=3306; database={1}; UID={2}; password={3}", server, dbName, user, pw);
-                connection = new MySqlConnection(connstring);
-                connection.Open();
+                if (Connection == null)
+                {
+                    if (String.IsNullOrEmpty(dbName))
+                    {
+                        ErrStr = "unknown db name";
+                        return false;
+                    }
+                    string connstring = string.Format("Server={0}; port=3306; database={1}; UID={2}; password={3}", server, dbName, user, pw);
+                    connection = new MySqlConnection(connstring);
+                    connection.Open();
+                }
+                else if (connection.State == System.Data.ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
+                if (prevErr != string.Empty)
+                {
+                    // log the previos problem
+                    LogEntry log = new LogEntry("Connection error", "");
+                    log.Result = prevErr;
+                    log.Save(Instance());
+
+                }
             }
-            else if (connection.State == System.Data.ConnectionState.Closed) { connection.Open(); }
+            catch (Exception ex)
+            {
+                ErrStr = ex.Message;
+                return false;
+            }
 
             return true;
         }
@@ -71,7 +97,8 @@ namespace Routes
 
         public void Close()
         {
-            connection.Close();
+            if (Connection != null)
+                connection.Close();
         }
     }
 
@@ -173,7 +200,7 @@ namespace Routes
         }
         public void Save(DBConnection conn)
         {
-            // prevet char ' messing up the query
+            // prevent char ' messing up the query
             Result = Result.Replace("'", "''");
             string query = string.Format("insert into log (time,ip,func,args,result,error) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
                 Logdata.TimeString(DateTime.Now), GetIP(), this.Function, this.Args, this.Result, this.Error);

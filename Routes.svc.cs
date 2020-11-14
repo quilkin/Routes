@@ -94,9 +94,10 @@ namespace Routes
                     string fullText;
                     try
                     {
-                        using (System.Net.WebClient client = new System.Net.WebClient())
+                        System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls12;
+                        //using (System.Net.WebClient client = new System.Net.WebClient())
                         {
-                            if (route.HasGPX == false|| route.URL.Length > 1000)
+                            if (route.HasGPX == false || route.URL.Length > 1000)
                             {
                                 // either no GPX available, or full GPX has been uploaded
                                 if (route.URL.Contains("TrainingCenterDatabase"))
@@ -114,7 +115,7 @@ namespace Routes
                                 }
                             }
 
-                            else  if (route.URL.ToLower().Contains(".tcx"))
+                            else if (route.URL.ToLower().Contains(".tcx"))
                             {
                                 // convert TCX to GPX
                                 GarminTrack.SetRoot(route.URL);
@@ -122,19 +123,21 @@ namespace Routes
                             }
                             else
                             {
-                                fullText = client.DownloadString(route.URL);
+                                using (System.Net.WebClient client = new System.Net.WebClient())
+                                {
+                                      fullText = client.DownloadString(route.URL);
+                                }
                             }
 
-                            if (route.HasGPX) {
+                            if (route.HasGPX)
+                            {
                                 XmlDocument xmldoc = new XmlDocument();
                                 // will catch if not valid XML
                                 xmldoc.LoadXml(fullText);
                             }
 
-
-
-                            string query = string.Format("insert into routes (dest,distance,description,climbing,route,ownername) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
-                                route.Dest, route.Distance, route.Descrip, route.Climbing, fullText, route.Owner);
+                            string query = string.Format("insert into routes (dest,distance,description,climbing,route,ownername,hasGPX) values ('{0}','{1}','{2}','{3}','{4}','{5}',{6})",
+                                route.Dest, route.Distance, route.Descrip, route.Climbing, fullText, route.Owner, route.HasGPX? 1:0);
                             query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
                             object routeID = null;
 
@@ -163,7 +166,6 @@ namespace Routes
                     result = string.Format("Database error: {0}", ex.Message);
                 }
 
-
                 finally
                 {
                     log.Result = result;
@@ -171,6 +173,8 @@ namespace Routes
                     gpxConnection.Close();
                 }
             }
+            else
+                return DBConnection.ErrStr;
             return result;
 
         }
@@ -227,10 +231,17 @@ namespace Routes
                     Trace.WriteLine(ex2.Message);
                     log.Error = ex2.Message;
                 }
+
+                finally
+                {
+                    log.Result = routes.Count.ToString() + " routes altogether";
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
             }
-            log.Result = routes.Count.ToString() + " routes altogether";
-            log.Save(gpxConnection);
-            gpxConnection.Close();
+            //else
+            //    return DBConnection.ErrStr;
+
             return routes;
         }
         public string GetGPXforRoute(int routeID)
@@ -271,10 +282,14 @@ namespace Routes
                     Trace.WriteLine(ex2.Message);
                     log.Error = ex2.Message;
                 }
+
+                finally
+                {
+                    log.Result = "got gpx data for " + routeID;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
             }
-            log.Result = "got gpx data for " + routeID;
-            log.Save(gpxConnection);
-            gpxConnection.Close();
             return data;
         }
 
@@ -290,7 +305,7 @@ namespace Routes
                 try
                 {
 
-                    using (System.Net.WebClient client = new System.Net.WebClient())
+                    //using (System.Net.WebClient client = new System.Net.WebClient())
                     {
 
                         string query = string.Format("update routes set distance = {0}, dest = '{1}' where id = {2}", route.Distance, route.Dest, route.ID);
@@ -302,15 +317,11 @@ namespace Routes
                         }
                         result = "OK";
                     }
-
-
                 }
                 catch (Exception ex)
                 {
                     result = string.Format("Database error: {0}", ex.Message);
                 }
-
-
                 finally
                 {
                     log.Result = result;
@@ -318,6 +329,8 @@ namespace Routes
                     gpxConnection.Close();
                 }
             }
+            else
+                return DBConnection.ErrStr;
             return result;
         }
 
@@ -332,7 +345,7 @@ namespace Routes
 
                 try
                 {
-                    using (System.Net.WebClient client = new System.Net.WebClient())
+                    //using (System.Net.WebClient client = new System.Net.WebClient())
                     {
 
 
@@ -358,6 +371,9 @@ namespace Routes
                     gpxConnection.Close();
                 }
             }
+            else
+                return DBConnection.ErrStr;
+
             return result;
 
         }
@@ -406,7 +422,7 @@ namespace Routes
                     }
                     else
                     {
-                        using (System.Net.WebClient client = new System.Net.WebClient())
+                        //using (System.Net.WebClient client = new System.Net.WebClient())
                         {
                             query = string.Format("delete from routes where id = {0}", routeID);
                             using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
@@ -428,6 +444,9 @@ namespace Routes
                     gpxConnection.Close();
                 }
             }
+            else
+                return DBConnection.ErrStr;
+
             return result;
         }
 

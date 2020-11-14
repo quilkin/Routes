@@ -98,7 +98,7 @@ namespace Routes
                                 daysopen = (string)dr["daysopen"];
                                 updated = (DateTime)dr["updated"];
 
-                                cafes.Add(new Cafe(id, name, placename, lat, lng, daysopen, timesopen, notes, user,updated.ToString()));
+                                cafes.Add(new Cafe(id, name, placename, lat, lng, daysopen, timesopen, notes, user, updated.ToString()));
                             }
                             catch (Exception ex)
                             {
@@ -113,10 +113,13 @@ namespace Routes
                     Trace.WriteLine(ex2.Message);
                     log.Error = ex2.Message;
                 }
+                finally
+                {
+                    log.Result = cafes.Count.ToString() + " cafes found";
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
             }
-            log.Result = cafes.Count.ToString() + " cafes found";
-            log.Save(gpxConnection);
-            gpxConnection.Close();
             return cafes;
         }
         public string SaveCafe(Cafe cafe)
@@ -158,7 +161,8 @@ namespace Routes
                     //{
                     //    result = string.Format("There is already a ride with you as leader on the same date. Please choose another date.");
                     //}
-                    using (System.Net.WebClient client = new System.Net.WebClient())
+
+                   // using (System.Net.WebClient client = new System.Net.WebClient())
                     {
                         if (cafe.ID > 0)
                         {
@@ -188,13 +192,14 @@ namespace Routes
                                 cafeID = command.ExecuteScalar();
                             }
                             // return id of new cafe
-                                result = cafeID.ToString();
+                            result = cafeID.ToString();
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     result = string.Format("Database error: ride \"{0}\" not saved: {1}", cafe.Name, ex.Message);
+                    log.Error = ex.Message;
                 }
 
 
@@ -205,6 +210,8 @@ namespace Routes
                     gpxConnection.Close();
                 }
             }
+            else
+                return DBConnection.ErrStr;
             return result;
 
         }
