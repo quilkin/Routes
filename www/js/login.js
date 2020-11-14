@@ -58,7 +58,7 @@ var login = (function () {
             $("#userName").html(username + ' <span class="caret"></span>');
         }
         // may need to redo things done by logging out
-        $("#logOut").html('Log Out');
+        $("#logOut").html('<i class="fa fa-arrow-right"></i> Log Out');
         $("#account").prop('disabled', false);
         $("#setup-tab").attr('class', 'enabled');
 
@@ -68,7 +68,7 @@ var login = (function () {
         username = '';
         role = 0;
         TCCrides.CreateRideList(null);
-        $("#logOut").html('Log In');
+        $("#logOut").html('<i class="fa fa-arrow-right"></i> Log In');
         $("#account").prop('disabled', true);
         $("#setup-tab").attr('class', 'disabled');
         $('#setup-tab').click(function (event) {

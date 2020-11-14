@@ -70,6 +70,9 @@
             if (tab === 'cafes-tab') {
                 mapOfCafes.createMap();
             }
+            if (tab === 'rides-tab') {
+                TCCrides.CreateRideList(null);
+            }
         });
         $(function () {
             $('[data-toggle="tooltip"]').tooltip();

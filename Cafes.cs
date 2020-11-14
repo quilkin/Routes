@@ -36,7 +36,13 @@ namespace Routes
         [DataMember(Name = "notes")]
         public String Notes { get; set; }
 
-        public Cafe(int id, string name, string placename, double lat, double lng, string daysopen, string timesopen, string notes)
+        [DataMember(Name = "user")]
+        public string User { get; set; }
+
+        [DataMember(Name = "updated")]
+        public string Updated { get; set; }
+
+        public Cafe(int id, string name, string placename, double lat, double lng, string daysopen, string timesopen, string notes, string user, string updated)
         {
             ID = id;
             Name = name;
@@ -46,7 +52,8 @@ namespace Routes
             DaysOpen = daysopen;
             TimesOpen = timesopen;
             Notes = notes;
-
+            User = user;
+            Updated = updated;
         }
 
     }
@@ -64,7 +71,8 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT id,name,placename,lat,lng,daysopen,timesopen, notes FROM cafes");
+                    //string query = string.Format("SELECT id,name,placename,lat,lng,daysopen,timesopen, notes, user FROM cafes");
+                    string query = string.Format("SELECT * FROM cafes");
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -73,8 +81,9 @@ namespace Routes
                         int length = dataRoutes.Rows.Count;
                         for (int row = 0; row < length; row++)
                         {
-                            string timesopen = "", daysopen = "", notes = "", name = "", placename = "";
+                            string timesopen = "", daysopen = "", notes = "", name = "", placename = "", user = "";
                             int id; double lat, lng;
+                            DateTime updated;
                             try
                             {
                                 DataRow dr = dataRoutes.Rows[row];
@@ -83,11 +92,13 @@ namespace Routes
                                 placename = (string)dr["placename"];
                                 timesopen = (string)dr["timesopen"];
                                 notes = (string)dr["notes"];
+                                user = (string)dr["user"];
                                 lat = (double)dr["lat"];
                                 lng = (double)dr["lng"];
                                 daysopen = (string)dr["daysopen"];
+                                updated = (DateTime)dr["updated"];
 
-                                cafes.Add(new Cafe(id, name, placename, lat, lng, daysopen, timesopen, notes));
+                                cafes.Add(new Cafe(id, name, placename, lat, lng, daysopen, timesopen, notes, user,updated.ToString()));
                             }
                             catch (Exception ex)
                             {
@@ -110,7 +121,7 @@ namespace Routes
         }
         public string SaveCafe(Cafe cafe)
         {
-            LogEntry log = new LogEntry("SaveCafe", cafe.ID + " " + cafe.Name);
+            LogEntry log = new LogEntry("SaveCafe", cafe.ID + " " + cafe.Name + " " + cafe.User);
 
             cafe.Name = cafe.Name.Replace("'", "''");
             cafe.Notes = cafe.Notes.Replace("'", "''");
@@ -147,19 +158,27 @@ namespace Routes
                     //{
                     //    result = string.Format("There is already a ride with you as leader on the same date. Please choose another date.");
                     //}
-                    if (cafe.ID > 0)
+                    using (System.Net.WebClient client = new System.Net.WebClient())
                     {
-                        // already exists, just update
-
-                    }
-                    else
-                    {
-
-                        using (System.Net.WebClient client = new System.Net.WebClient())
+                        if (cafe.ID > 0)
                         {
+                            // already exists, just update
 
-                            query = string.Format("insert into cafes (lat,lng,name,placename,notes,daysopen,timesopen) values ({0},{1},'{2}','{3}','{4}','{5}','{6}')",
-                                cafe.Lat,cafe.Lng,cafe.Name,cafe.PlaceName,cafe.Notes,cafe.DaysOpen, cafe.TimesOpen);
+                            query = string.Format("update cafes set name = '{0}',placename = '{1}', notes = '{2}',daysopen = '{3}',timesopen ='{4}',user ='{5}', updated = '{6}' where id = {7} ",
+                                            cafe.Name, cafe.PlaceName, cafe.Notes, cafe.DaysOpen, cafe.TimesOpen, cafe.User, Logdata.DBTimeString(DateTime.Now), cafe.ID);
+
+                            using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                            {
+                                command.ExecuteNonQuery();
+                            }
+
+                            result = "0";
+
+                        }
+                        else
+                        {
+                            query = string.Format("insert into cafes (lat,lng,name,placename,notes,daysopen,timesopen,user,updated) values ({0},{1},'{2}','{3}','{4}','{5}','{6}','{7}','{8}')",
+                                cafe.Lat, cafe.Lng, cafe.Name, cafe.PlaceName, cafe.Notes, cafe.DaysOpen, cafe.TimesOpen, cafe.User, Logdata.DBTimeString(DateTime.Now));
                             // get new ride ID
                             query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
                             object cafeID = null;
@@ -169,9 +188,8 @@ namespace Routes
                                 cafeID = command.ExecuteScalar();
                             }
                             // return id of new cafe
-                            result = cafeID.ToString();
+                                result = cafeID.ToString();
                         }
-                        //}
                     }
                 }
                 catch (Exception ex)

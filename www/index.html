@@ -60,14 +60,14 @@
                     <li class="active"><a href="#panel-rides" id="rides-tab" role="tab" data-toggle="tab" aria-controls="rides-tab" aria-expanded="true"><i class="fa fa-calendar"></i><span style="color:blue; font-size:medium"> Planned rides</span></a></li>
                     <li><a href="#panel-routes" id="routes-tab" role="tab" data-toggle="tab" aria-controls="routes-tab"><i class="fa fa-map-signs"></i><span style="color:blue; font-size:medium"> View all routes</span></a></li>
                     <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup-tab"><i class="fa fa-wrench"></i><span style="color:blue; font-size:medium"> Set Up new ride/route</span></a></li>
-                    <li><a href="#panel-cafes" id="cafes-tab" role="tab" data-toggle="tab" aria-controls="cafe-tab"><i class="fa fa-coffee"></i><span style="color:blue; font-size:medium"> Coffee &amp; cake</span></a></li>
+                    <li><a href="#panel-cafes" id="cafes-tab" role="tab" data-toggle="tab" aria-controls="cafe-tab"><i class="fa fa-calendar"></i><span style="color:blue; font-size:medium"> Coffee &amp; cake</span></a></li>
 
                     <li class="dropdown">
-                        <button class="btn btn-dropped" type="button" data-toggle="dropdown" id="userName">Username<span class="caret"></span></button>
+                        <button class="btn btn-dropped btn-info" type="button" data-toggle="dropdown" id="userName"></i>Username</button>
                         <ul class="dropdown-menu">
-                            <li><a id="logOut">Log Out</a></li>
-                            <li><a id="account">Account</a></li>
-                            <li><a id="settings">Settings</a></li>
+                            <li><a id="account"><i class="fa fa-user"></i> Account</a></li>
+                            <li><a id="settings"><i class="fa fa-wrench"></i> Settings</a></li>
+                            <li><a id="logOut"><i class="fa fa-arrow-right"></i> Log Out</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -306,6 +306,7 @@
                 </div>  <!-- /row -->
             </div>  <!-- /container -->
         </div> <!-- /tab-pane -->
+
         <!--tab for showing cafes-->
 
         <div role="tabpanel" class="tab-pane fade" id="panel-cafes" aria-labelledby="cafe-tab">
@@ -313,23 +314,10 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
-                        <!--<div class="list-group" id="chooseRoutes">
-                            <div id="allRoutesTitle" class="list-group-item list-group-item-info">
-                                Suggested routes
-                                <button class="btn btn-info btn-lifted pull-right" type="button" data-toggle="dropdown" id="userName">Sort <span class="caret"></span></button>
-                                <ul class="dropdown-menu  dropdown-menu-right">
-                                    <li><a id="btnSortabc">alphabetically</a></li>
-                                    <li><a id="btnSort123">by distance</a></li>
-                                </ul>
-                            </div>
-                        </div>-->
-                        <div class="list-group scrollable-list" id="cafelist">
-                            <a id="cafeTitle" class="list-group-item list-group-item-info">Choose cafe</a>
-                        </div>
                         <div class="panel-footer">
-                            <button type="button" class="btn btn-info" id="deleteCafe" data-dismiss="modal">Delete</button>
-                            <button type="button" class="btn btn-info" id="editCafe" data-dismiss="modal">Edit</button>
-                            <button type="button" class="btn btn-primary" id="planRideCafe" data-dismiss="modal">Lead a ride to this cafe</button>
+                            <a id="cafeTitle" >No cafe selected</a>
+                            <button type="button" class="btn btn-info pull-right btn-lifted" id="deleteCafe" data-dismiss="modal">Delete</button>
+                            <button type="button" class="btn btn-info pull-right btn-lifted" id="editCafe" data-dismiss="modal">Edit</button>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -519,7 +507,7 @@
                         <div class="form-group">
                             <label for="edit-cafe-name" class="control-label side-label">Cafe name:</label>
                             <input type="text" class="form-control  side-input detectChange" id="edit-cafe-name" required>
-                            <label for="edit-cafe-place" class="control-label side-label" >Placename:</label>
+                            <label for="edit-cafe-place" class="control-label side-label">Placename:</label>
                             <input type="text" class="form-control side-input detectChange" id="edit-cafe-place" required>
                             <label for="edit-cafe-notes" class="control-label side-label">Description / Notes:</label>
                             <input type="text" class="form-control side-input detectChange" id="edit-cafe-notes">
@@ -527,6 +515,8 @@
                             <input type="text" class="form-control side-input detectChange" id="edit-cafe-days" data-toggle="tooltip" title="List days or just 'every day'">
                             <label for="edit-cafe-times" class="control-label side-label">Times open:</label>
                             <input type="text" class="form-control side-input detectChange" id="edit-cafe-times" data-toggle="tooltip" title="List times e.g. '10-4'">
+                            <p></p>
+                            <a>Last edited by: </a><a style="color:black; font-size:medium" id="edit-cafe-user">unknown</a><a>  date: </a><a style="color:black" id="edit-cafe-time">unknown</a>
                         </div>
                     </form>
                 </div>
@@ -557,7 +547,7 @@
 
     <script src="js/timesdates.js"></script>
     <script src="js/popups.js"></script>
-    <script src="js/mousePos.js"></script>"
+    <!--<script src="js/mousePos.js"></script>"-->
     <script src="js/cafeMap.js"></script>
     <script src="js/login.js"></script>
     <script src="js/index.js"></script>

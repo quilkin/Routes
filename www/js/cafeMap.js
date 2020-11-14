@@ -2,98 +2,118 @@
 var mapOfCafes = (function ($) {
     "use strict";
 
-    //[DataMember(Name = "id")]        public int ID { get; set; }
-    //[DataMember(Name = "name")]        public string Name { get; set; }
-    //[DataMember(Name = "placename")]        public string PlaceName { get; set; }
-    //[DataMember(Name = "lat")]        public double Lat{ get; set; }
-    //[DataMember(Name = "lng")]        public double Lng { get; set; }
-    //[DataMember(Name = "daysopen")]        public int DaysOpen { get; set; }
-    //[DataMember(Name = "timesopen")]        public String TimesOpen { get; set; }
-    //[DataMember(Name = "notes")]        public String Notes { get; set; }
-
-    var mapOfCafes = {},
-        cafemap = null,
-        latlng,
-        cafes = [],
-        cafe,
-        popup,
-        markers = [],
-        wayPoints = [],
-        lastLine1, lastLine2, lastDem,
-        dialog;
-
-
-
-    var greenIcon = new L.Icon({
-        iconUrl: 'scripts/images/marker-icon-green.png',
-        shadowUrl: 'scripts/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
 
     const coffeeIcon = L.divIcon({
         html: '<i class="fa fa-coffee fa-lg"></i>',
         iconSize: [12, 12],
         className: 'myIcon'
     });
+    const bikeIcon = L.divIcon({
+        html: '<i class="fa fa-bicycle fa-2x"></i>',
+        iconSize: [20, 20],
+        className: 'myIcon'
+    });
 
+    var mapOfCafes = {},
+        cafemap = null,
+        latlng,
+        cafes = [],
+        cafe,
+        markers = [],
+        wayPoints = [],
+        lastLine1, lastLine2, lastDem,
 
-    // Create additional Control placeholders
-    function addControlPlaceholders(map) {
-        var corners = map._controlCorners,
-            l = 'leaflet-',
-            container = map._controlContainer;
+        Cafe = function(id, lat, lng, name, place, opendays, opentimes, notes, user) {
+            this.id = id;
+            this.timesopen = opentimes;
+            this.daysopen = opendays;
+            this.lat = lat;
+            this.lng = lng;
+            this.placename = place;
+            this.name = name;
+            this.notes = notes;
+            this.user = user;
+        },
 
-        function createCorner(vSide, hSide) {
-            var className = l + vSide + ' ' + l + hSide;
+        checkForNearCafe = function (lat, lng) {
+            var found = null;
+            $.each(cafes, function (index, cafe) {
+                var lat_cafe = cafe.lat;
+                var lng_cafe = cafe.lng;
+                var lat_diff = Math.abs(lat - lat_cafe);
+                var lng_diff = Math.abs(lng - lng_cafe);
+                if (lat_diff < 0.005 && lng_diff < 0.005) {
+                    found = cafe;
+                    return false;
+                }
+            });
+            return found;
+        },
 
-            corners[vSide + hSide] = L.DomUtil.create('div', className, container);
-        }
+        // find exact match
+        findCafeFromLoc = function(lat, lng) {
+            var found = $.grep(cafes, function (e, i) {
+                return e.lat === lat && e.lng === lng;
+            });
+            if (found.length > 0) {
+                return found[0];
+            }
+            return null;
+        },
 
-        createCorner('verticalcenter', 'left');
-        createCorner('verticalcenter', 'right');
-        createCorner('center', 'left');
-        createCorner('center', 'right');
-
-    }
-
-    function getCafes() {
-              // get the list of cafes to map
-        rideData.myJson('GetCafes', "POST", null, function (response) {
-            cafes = response;
-            updateMap();
-        }, true, null);
-    }
+        getCafes = function () {
+            // get the list of cafes to map
+            rideData.myJson('GetCafes', "POST", null, function (response) {
+                cafes = response;
+                //$.each(cafes, function (index, cafe) {
+                //    //var dateParts = isoFormatDateString.split("-");
+                //    //var jsDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2].substr(0, 2));
+                //    var date = cafe.updated;
+                //});
+                updateMap();
+            }, true, null);
+        };
     
 
     function updateMap() {
-        $.each(cafes, function (index, cafe) {
+        $.each(cafes, function (index, thiscafe) {
 
-            var coffee = L.marker([cafe.lat, cafe.lng], {
-                icon: coffeeIcon
+            var myicon = index === 0 ? bikeIcon : coffeeIcon;
+            var coffee = L.marker([thiscafe.lat, thiscafe.lng], {
+                icon: myicon
             }).addTo(cafemap);
-            var popupname = cafe.name;
-            var popupplace = cafe.placename;
 
-            coffee.bindPopup('<b>' + popupname + '</b><br />' + popupplace);
+            var popupContent = '<b>' + thiscafe.name + '</b><br />' + thiscafe.placename + '<br />';
+            if (index > 0) {
+                popupContent += '-----------------<br />';
+                popupContent += 'days: ' + thiscafe.daysopen + '<br />';
+                popupContent += 'times: ' + thiscafe.timesopen + '<br />';
+                popupContent += '-----------------<br />';
+                popupContent += thiscafe.notes + '<br />';
+                popupContent += '-----------------<br />';
+                popupContent += 'updated: ' + thiscafe.updated;
+            }
+
+            coffee.bindPopup(popupContent);
+
+            if (index > 0) { 
+                coffee.on('click', function (e) {
+                    var latlng = e.latlng;
+                    cafe = findCafeFromLoc(latlng.lat, latlng.lng);
+                    if (cafe !== null) {
+                        $("#cafeTitle").html(cafe.name);
+
+                    }
+                });
+            }
                 
         });
-        popup = L.popup();
+        //popup = L.popup();
         cafemap.setView([cafes[0].lat, cafes[0].lng], 10);
+
        
     }
-    function Cafe(id, lat, lng, name, place, opendays, opentimes, notes) {
-        this.id = id;
-        this.timesopen = opentimes;
-        this.daysopen = opendays;
-        this.lat = lat;
-        this.lng = lng;
-        this.placename = place;
-        this.name = name;
-        this.notes = notes;
-    }
+
     function showCafeList() {
         // to do
     }
@@ -105,6 +125,7 @@ var mapOfCafes = (function ($) {
         cafe.placename = $("#edit-cafe-place").val();
         cafe.daysopen = $("#edit-cafe-days").val();
         cafe.timesopen = $("#edit-cafe-times").val();
+        cafe.user = login.User();
 
         if (cafe.name.length < 2 ) {
             qPopup.Alert("Cafe name needed");
@@ -115,8 +136,12 @@ var mapOfCafes = (function ($) {
             rideData.myJson("SaveCafe", "POST", cafe, function (response) {
                 // if successful, response should be just a new ID
                 if (response.length < 5) {
-                    cafe.id = response;
-                    cafes.push(cafe);
+                    if (response !== '0') {
+                        // new cafe
+                        cafe.id = response;
+                        cafes.push(cafe);
+                    }
+                    updateMap();
                     showCafeList();
                     $('#editCafeModal').modal('hide');
                 }
@@ -127,15 +152,15 @@ var mapOfCafes = (function ($) {
         }, null, -10);
     }
 
-    function findCafeFromLoc(lat,lng)  {
-        var found = $.grep(cafes, function (e, i) {
-            return e.lat === lat && e.lng === lng;
-        });
-        if (found.length > 0) {
-            return found[0];
-        }
-        return null;
-    }
+
+    $("#editCafe").on("click", function () {
+        
+        $('#editCafeModal').modal();
+    });
+    $("#deleteCafe").on("click", function () {
+
+        qPopup.Alert("Not yet implemented");
+    });
 
     $("#edit-cafe-ok").on("click", handleCafeEdit);
     $("#edit-cafe-cancel").on('click', function () {
@@ -143,20 +168,19 @@ var mapOfCafes = (function ($) {
     });
 
     $('#editCafeModal').on('shown.bs.modal', function (e) {
-        var lat = latlng.lat;
-        var lng = latlng.lng;
-        cafe = findCafeFromLoc(lat, lng);
+        
         if (cafe === null) {
-            cafe = new Cafe(0, lat, lng, 'name', 'where', 'every day', '', '');
+            cafe = new Cafe(0, latlng.lat, latlng.lng, 'new cafe', 'where', 'every day', '', '');
         }
-
+        $("#cafeTitle").attr("value",cafe.name);
         $("#edit-cafe-notes").attr("value", cafe.notes);
-        $("#edit-cafe-name").attr("value", cafe.name);
-        $("#edit-cafe-place").attr("value", cafe.placename);
-        $("#edit-cafe-days").attr("value", cafe.daysopen);
-        $("#edit-cafe-times").attr("value", cafe.timesopen);
+        $("#edit-cafe-name").attr("value",cafe.name);
+        $("#edit-cafe-place").attr("value",cafe.placename);
+        $("#edit-cafe-days").attr("value",cafe.daysopen);
+        $("#edit-cafe-times").attr("value",cafe.timesopen);
  
-
+        $("#edit-cafe-user").html(cafe.user);
+        $("#edit-cafe-time").html(cafe.updated);
     });
 
 
@@ -165,11 +189,24 @@ var mapOfCafes = (function ($) {
         latlng = e.latlng;
         console.log("cafe click @ " + e.latlng.lat + ',' + e.latlng.lng);
 
+          // is it too too near an existing cafe?
+        cafe = checkForNearCafe(latlng.lat, latlng.lng);
+        if (cafe !== null) {
+            qPopup.Confirm("This is very close to '" + cafe.name + "'", "Add a new cafe?",
+                function () {
+                    cafe = null; $('#editCafeModal').modal();
+                },
+                function () {
+                    qPopup.Confirm("'" + cafe.name + "'", "Edit this cafe?",
+                        function () {
+                            $('#editCafeModal').modal();
+                        }, null, -10);
+                }, -10);
+        }
+        else {
+            $('#editCafeModal').modal();
+        }
 
-        // todo:  mustn't be too near an existing cafe
-
-
-        $('#editCafeModal').modal();
     }
 
     mapOfCafes.createMap = function () {
@@ -184,32 +221,24 @@ var mapOfCafes = (function ($) {
         }).addTo(cafemap);
 
         getCafes();
-        AddControls();
+        //AddControls();
         cafemap.on('dblclick', onMapDblClick);
         cafemap.doubleClickZoom.disable();
+        if (login.loggedOut()) {
+            $("#editCafe").prop("disabled", true);
+            $("#deleteCafe").prop("disabled", true);
+        }
+
     };
 
-    mapOfCafes.checkForCafe = function (lat, lng) {
-        var found = '';
-        $.each(cafes, function (index, cafe) {
-            var lat_cafe = cafe.lat;
-            var lng_cafe = cafe.lng;
-            var lat_diff = Math.abs(lat - lat_cafe);
-            var lng_diff = Math.abs(lng - lng_cafe);
-            if (lat_diff < 0.0005 && lng_diff < 0.0005) {
-                found = cafe.name;
-                return false;
-            }
-        });
-        return found;
-    };
+
 
 
     function AddControls() {
 
-        addControlPlaceholders(cafemap);
+        //addControlPlaceholders(cafemap);
 
-        L.control.mousePosition().addTo(cafemap);
+        //L.control.mousePosition().addTo(cafemap);
         
 
         //// a cross-hair for choosing points
@@ -246,24 +275,7 @@ var mapOfCafes = (function ($) {
 
     }
 
-    function addPoint() {
 
-        var centre = cafemap.getCenter();
-        wayPoints.push(L.latLng(centre.lat, centre.lng));
-        //if (route == undefined) {
-        //if (routes.length == 0)
-        var marker = L.marker([centre.lat, centre.lng]).addTo(cafemap);
-        // responsiveVoice.speak("Added a point");
-        if (wayPoints.length === 1) {
-            marker = L.marker([centre.lat, centre.lng], { icon: greenIcon }).addTo(cafemap);
-            markers.push(marker);
-            // this is first (starting) point. Need more points!
-            return;
-        }
-
-        markers.push(marker);
-        createRoute();
-    }
     function deletePoint() {
         if (wayPoints.length < 2) {
             alert("No waypoints to delete!");
@@ -274,61 +286,7 @@ var mapOfCafes = (function ($) {
         wayPoints.pop();
         createRoute();
     }
-    function openDialog() {
-        dialog.open();
-    }
-
-    // Code from Mapzen site
-    function polyLineDecode(str, precision) {
-        var index = 0,
-            lat = 0,
-            lng = 0,
-            coordinates = [],
-            shift = 0,
-            result = 0,
-            byte = null,
-            latitude_change,
-            longitude_change,
-            factor = Math.pow(10, precision || 6);
-
-        // Coordinates have variable length when encoded, so just keep
-        // track of whether we've hit the end of the string. In each
-        // loop iteration, a single coordinate is decoded.
-        while (index < str.length) {
-
-            // Reset shift, result, and byte
-            byte = null;
-            shift = 0;
-            result = 0;
-
-            do {
-                byte = str.charCodeAt(index++) - 63;
-                result |= (byte & 0x1f) << shift;
-                shift += 5;
-            } while (byte >= 0x20);
-
-            latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-
-            shift = result = 0;
-
-            do {
-                byte = str.charCodeAt(index++) - 63;
-                result |= (byte & 0x1f) << shift;
-                shift += 5;
-            } while (byte >= 0x20);
-
-            longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-
-            lat += latitude_change;
-            lng += longitude_change;
-
-            coordinates.push([lat / factor, lng / factor]);
-        }
-
-        return coordinates;
-    };
-
-
+    
     function pointToLine(point0, line1, line2) {
         // find min distance from point0 to line defined by points line1 and line2
         // equation from Wikipedia

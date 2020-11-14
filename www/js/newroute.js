@@ -161,18 +161,24 @@ var newRoute = (function ($) {
     
     $("#cancelNewRoute").on('click', function () {
    
-        $(".navbar-nav a[href=#rides-tab]").tab('show');
+    //    $(".navbar-nav a[href=#rides-tab]").tab('show');
+        $('#rides-tab').tab('show');
+        rideData.setCurrentTab('rides-tab');
 
     });
     $("#manual-cancelNewRoute").on('click', function () {
 
-        $(".navbar-nav a[href=#rides-tab]").tab('show');
+    //    $(".navbar-nav a[href=#rides-tab]").tab('show');
+        $('#rides-tab').tab('show');
+        rideData.setCurrentTab('rides-tab');
 
     });
     $("#cancelLeadRide").on('click', function () {
 
-        $(".navbar-nav a[href=#rides-tab]").tab('show');
-
+ //       $(".navbar-nav a[href=#rides-tab]").tab('show');
+        $('#convertToRide').hide();
+        $('#rides-tab').tab('show');
+        rideData.setCurrentTab('rides-tab');
     });
  
 

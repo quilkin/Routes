@@ -117,6 +117,12 @@ namespace Routes
             TimeSpan appSpan = today - jan1970;
             return appSpan.Days;
         }
+        public static int toJSDate(DateTime date)
+        {
+             DateTime jan1970 = new DateTime(1970, 1, 1);
+            TimeSpan appSpan = date - jan1970;
+            return appSpan.Days;
+        }
 
         public static string TimeString(DateTime time)
         {

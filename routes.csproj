@@ -179,7 +179,6 @@
     <Content Include="www\js-lib\gpx.js" />
     <Content Include="www\js\cafeMap.js" />
     <Content Include="www\js\map.js" />
-    <Content Include="www\js\mousePos.js" />
     <Content Include="www\js\rides.js" />
     <Content Include="www\js\serial.js" />
     <Content Include="www\index.html" />
