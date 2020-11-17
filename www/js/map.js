@@ -133,9 +133,9 @@
                 if (route.distance === 0 || isNaN(route.distance) || route.dest === '') {
                     route.distance = distance;
                     route.dest = name;
-                    rideData.myJson("UpdateRoute", "POST", route, function (response) {
+                    rideData.myAjax("UpdateRoute", "POST", route, function (response) {
                         var reply = response;
-                    }, true, null);
+                    });
                 }
             }
             _t('h4').textContent = name + ":  ";
@@ -216,7 +216,7 @@
         var routeID = currentroute.id;
         var gpxdata = null;
 
-        rideData.myJson("GetGPXforRoute", "POST", routeID, function (response) {
+        rideData.myAjax("GetGPXforRoute", "POST", routeID, function (response) {
             gpxdata = response;
             if (gpxdata.length === 0) {
                 TCCMap.showRouteStage2(null, false);
@@ -225,7 +225,7 @@
             TCCMap.showRouteStage2(gpxdata,true);
             currentroute.url = gpxdata;
             return gpxdata;
-        }, true, null);
+        });
 
     };
     

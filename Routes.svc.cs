@@ -81,7 +81,11 @@ namespace Routes
 
         public string SaveRoute(Route route)
         {
+            route.Dest = route.Dest.Replace("'", "''");
+
             LogEntry log = new LogEntry("SaveRoute", route.ID + " " + route.Dest);
+
+
 
             //int successRows = 0;
             string result = "";
@@ -296,6 +300,8 @@ namespace Routes
         // update with distance and name extracted from GPX file
         public string UpdateRoute(Route route)
         {
+            route.Dest = route.Dest.Replace("'", "''");
+
             LogEntry log = new LogEntry("UpdateRoute ", route.ID.ToString());
 
             int successRows = 0;
@@ -337,6 +343,9 @@ namespace Routes
         // change destination or description
         public string EditRoute(Route route)
         {
+            route.Dest = route.Dest.Replace("'", "''");
+            route.Descrip = route.Descrip.Replace("'", "''");
+
             LogEntry log = new LogEntry("EditRoute", route.ID + " " + route.Dest);
 
             string result = "";

@@ -63,7 +63,7 @@ var mapOfCafes = (function ($) {
 
         getCafes = function () {
             // get the list of cafes to map
-            rideData.myJson('GetCafes', "POST", null, function (response) {
+            rideData.myAjax('GetCafes', "POST", null, function (response) {
                 cafes = response;
                 //$.each(cafes, function (index, cafe) {
                 //    //var dateParts = isoFormatDateString.split("-");
@@ -71,7 +71,7 @@ var mapOfCafes = (function ($) {
                 //    var date = cafe.updated;
                 //});
                 updateMap();
-            }, true, null);
+            });
         };
     
 
@@ -133,7 +133,7 @@ var mapOfCafes = (function ($) {
         }
 
         qPopup.Confirm("Save edited cafe", "Are you sure?", function () {
-            rideData.myJson("SaveCafe", "POST", cafe, function (response) {
+            rideData.myAjax("SaveCafe", "POST", cafe, function (response) {
                 // if successful, response should be just a new ID
                 if (response.length < 5) {
                     if (response !== '0') {
@@ -148,7 +148,7 @@ var mapOfCafes = (function ($) {
                 else {
                     qPopup.Alert(response);
                 }
-            }, true, null);
+            });
         }, null, -10);
     }
 

@@ -35,7 +35,7 @@
         border: 1px #888 solid;
         border-left: none;
         border-right: none;
-        width:inherit;
+        width: inherit;
         /*width: 600px;*/
         height: 500px;
         margin: 0;
@@ -91,7 +91,7 @@
     float: right;
 }
 
-#routes {
+/*#routes {
     border: 2px #aaa solid;
     border-radius: 5px;
     box-shadow: 0 0 3px 3px #ccc;
@@ -133,6 +133,6 @@
     font-family: Arial;
     font-weight: bold;
     background-color: #fcc50f;
-}
+}*/
 
 

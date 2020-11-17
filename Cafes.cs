@@ -124,11 +124,12 @@ namespace Routes
         }
         public string SaveCafe(Cafe cafe)
         {
-            LogEntry log = new LogEntry("SaveCafe", cafe.ID + " " + cafe.Name + " " + cafe.User);
 
             cafe.Name = cafe.Name.Replace("'", "''");
             cafe.Notes = cafe.Notes.Replace("'", "''");
             cafe.PlaceName = cafe.PlaceName.Replace("'", "''");
+
+            LogEntry log = new LogEntry("SaveCafe", cafe.ID + " " + cafe.Name + " " + cafe.User);
 
             string result = "";
             if (gpxConnection.IsConnect())

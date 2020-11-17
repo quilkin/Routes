@@ -27,7 +27,7 @@ var TCCroutes = (function () {
 
 
         getWebRoutes = function (alsoGetRides) {
-            rideData.myJson("GetRouteSummaries", "POST", null, function (response) {
+            rideData.myAjax("GetRouteSummaries", "POST", null, function (response) {
                 routes = response;
                 if (routes.length === 0) {
                     qPopup.Alert("No data found!");
@@ -45,7 +45,7 @@ var TCCroutes = (function () {
                     showRouteList();
                 }
                 return routes;
-            }, true, null);
+            });
 
             return routes;
         },
@@ -97,7 +97,7 @@ var TCCroutes = (function () {
                 currentRoute.dest = dest;
                 currentRoute.description = descrip;
                 currentRoute.distance = dist;
-                rideData.myJson("EditRoute", "POST", currentRoute, function (response) {
+                rideData.myAjax("EditRoute", "POST", currentRoute, function (response) {
                     if (response === 'OK') {
                         showRouteList();
                         $('#editRouteModal').modal('hide');
@@ -106,7 +106,7 @@ var TCCroutes = (function () {
                         qPopup.Alert(response);
                     }
                 }, true, null);
-            }, null, -10);
+            });
         },
 
         showRouteList = function () {
@@ -130,9 +130,15 @@ var TCCroutes = (function () {
                 }
 
 
-                var htmlstr = '<a id="sen' + index + '" class="list-group-item"><button id="get' + index
-                    + '" type="button" class="btn btn-lifted btn-primary btn-sm" data-toggle="button tooltip" title="Author: ' + route.owner + '">' + title +
-                    '</button><span style="color:red; font-weight: bold">  ' + distance + units + '</span> ' + route.description + '</a>';
+                var htmlstr = '<a id="sen' + index + '" class="list-group-item list-group-item-height"><button id="get' + index
+                    + '" type="button" class="btn btn-lifted btn-primary btn-responsive" data-toggle="button tooltip" title="Author: ' + route.owner + '">' + title +
+                    '</button><span style="color:red; font-weight: bold">  ' + distance + units + '</span> ' + route.description;
+ //                   + '<button type="button" class="btn btn-primary btn-responsive pull-right" id="planRide" data-toggle="button tooltip" title="lead a ride using this route">Lead</button>';
+                    
+                //if (route.owner === login.User()) {
+                //    htmlstr += '<button type="button" class="btn btn-info btn-responsive pull-right" id="editRoute" data-toggle="button tooltip" title="edit or delete this route" >Edit</button> ';
+                //}
+                htmlstr += '</a>';
                 $('#routelist').append(htmlstr);
 
 
@@ -146,9 +152,10 @@ var TCCroutes = (function () {
                     $('#planRide').hide();
                     $('#deleteRoute').hide();
                     $('#editRoute').hide();
-                    if (login.loggedIn())
+                    if (login.loggedIn()) {
                         // allow user to plan a  ride from this route
                         $('#planRide').show();
+                    }
                     var user = login.User();
                     if (route.owner === user && login.loggedIn()) {
                         $('#editRoute').show();
@@ -275,7 +282,7 @@ var TCCroutes = (function () {
         var id = currentRoute.id;
         
         qPopup.Confirm("Delete this route", "Are you sure?", function () {
-            rideData.myJson("DeleteRoute", "POST", id, function (response) {
+            rideData.myAjax("DeleteRoute", "POST", id, function (response) {
                 if (response === 'OK') {
                     qPopup.Alert("You have deleted this route");
                     routes = routes.filter(function (e) { return e.id !== id;});
@@ -285,7 +292,7 @@ var TCCroutes = (function () {
                     qPopup.Alert(response);
                 }
             }, true, null);
-        }, null, -10);
+        });
     });
 
     $('#editRouteModal').on('shown.bs.modal', function (e) {

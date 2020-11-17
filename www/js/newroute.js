@@ -7,7 +7,7 @@ var newRoute = (function ($) {
     var newRoute = {},
         temproute,
         saveRoute = function () {
-            rideData.myJson("SaveRoute", "POST", temproute, function (response) {
+            rideData.myAjax("SaveRoute", "POST", temproute, function (response) {
                 // if successful, response should be just a new ID
                 if (response.length < 5) {
                     temproute.id =  parseInt(response);
@@ -28,7 +28,7 @@ var newRoute = (function ($) {
                     qPopup.Alert(response);
                 }
 
-            }, true, null);
+            });
 
         },
 

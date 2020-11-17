@@ -71,6 +71,8 @@ namespace Routes
        
         public string SaveRide(Ride ride)
         {
+           // ride.MeetAt = ride.MeetAt.Replace("'", "''");
+
             LogEntry log = new LogEntry("SaveRide", ride.Date + " " + ride.routeID);
 
             //int successRows = 0;
@@ -214,7 +216,6 @@ namespace Routes
             // date represented by days since 01/01/1970
             LogEntry log = new LogEntry("GetDatesWithRides", "");
 
-            //List<int> dates = new List<int>();
             List<Ride> rides = new List<Ride>();
 
             // get JS date for a month ago

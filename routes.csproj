@@ -163,6 +163,7 @@
     <Content Include="www\icons\ms-icon-70x70.png" />
     <Content Include="www\images\page-loader.gif" />
     <Content Include="www\js-lib\amcharts.js" />
+    <Content Include="www\js-lib\blockui.js" />
     <Content Include="www\js-lib\bluetoothle.js" />
     <Content Include="www\js-lib\bootbox.min.js" />
     <Content Include="www\js-lib\bootstrap-datepicker.js" />

@@ -53,74 +53,69 @@ var TCCrides = (function ($) {
 
         getWebRides = function (date) {
             var rideIDs = [];
-            //    console.log("getWebRides start");
             var intdays = bleTime.toIntDays(date);
-            var success = false;
-            rideData.myJson("GetRidesForDate", "POST", intdays, function (response) {
-                //          console.log("getWebRides ajaxreturn");
+            console.log("getWebRides: ")
+            rideData.myAjax("GetRidesForDate", "POST", intdays, function (response) {
                 rides = response;
                 if (rides.length === 0) {
                     $('#ridelist').empty();  // this will also remove any handlers
                     qPopup.Alert("No rides found for " + bleTime.DateString(date));
-
                     return null;
                 }
                 $.each(rides, function (index) {
-                    rideIDs[index] = rides[index].rideID;
+                    rideIDs.push(rides[index].rideID);
                 });
                 GetParticipants(rideIDs);
 
-                success = true;
-            }, true, null);
-
-            return success;
+            });
         },
 
         GetParticipants = function (rideIDs) {
-            //console.log("GetParticipants start");
+
             pp = new Array(maxridesperday);
             rs = new Array(maxridesperday);
 
             var success = false;
             while (reserves.length > 0) { reserves.pop(); }
             while (participants.length > 0) { participants.pop(); }
-            rideData.myJson("GetParticipants", "POST", rideIDs, function (response) {
-                // console.log("GetParticipants ajax return");
-                $.each(rideIDs, function (index, ride) {
-                    if (index >= maxridesperday) {
-                        qPopup.Alert('too many rides for this date');
-                        return false;
-                    }
-                    // get a list of all participants and reserves for the ride, split into two lists
-                    var list = response[index].split(',');
-                    var reserveList = '';
-                    var ppList = '';
-                    $.each(list, function (index, pp) {
-                        if (pp.includes('+')) {
-                            reserveList += pp.substring(1);
-                            reserveList += ' ';
+            rideData.myAjax("GetParticipants", "POST", rideIDs, function (response) {
+                if (rideIDs.length > 0) {
+                    $.each(rideIDs, function (index, ride) {
+                        if (index >= maxridesperday) {
+                            qPopup.Alert('too many rides for this date');
+                            return false;
                         }
-                        else if (pp.length > 2) {
-                            ppList += pp;
-                            ppList += ' ';
+                        // get a list of all participants and reserves for the ride, split into two lists
+                        var list = response[index].split(',');
+                        var reserveList = '';
+                        var ppList = '';
+                        $.each(list, function (index, pp) {
+                            if (pp.includes('+')) {
+                                reserveList += pp.substring(1);
+                                reserveList += ' ';
+                            }
+                            else if (pp.length > 2) {
+                                ppList += pp;
+                                ppList += ' ';
+                            }
+                        });
+                        if (ppList.endsWith(' ')) {
+                            ppList = ppList.substring(0, ppList.length - 1);
                         }
+                        if (reserveList.endsWith(' ')) {
+                            reserveList = reserveList.substring(0, reserveList.length - 1);
+                        }
+                        //if (ppList.length > 0)
+                        participants.push(ppList);
+                        //if (reserveList.length > 0)
+                        reserves.push(reserveList);
                     });
-                    if (ppList.endsWith(' ')) {
-                        ppList = ppList.substring(0, ppList.length - 1);
-                    }
-                    if (reserveList.endsWith(' ')) {
-                        reserveList = reserveList.substring(0, reserveList.length - 1);
-                    }
-                    //if (ppList.length > 0)
-                    participants.push(ppList);
-                    //if (reserveList.length > 0)
-                    reserves.push(reserveList);
-                });
+                }
                 // all ready now to show the rides list??
                 createRideList();
                 success = true;
 
-            }, true, null);
+            });
             return success;
         },
 
@@ -244,12 +239,12 @@ var TCCrides = (function ($) {
                 }
 
                 htmlstringFirstbit[index] = '<a id="sen' + index + '" class="list-group-item">' +
-                    time + ' <button id="view' + index + '" type="button" class="btn btn-lifted btn-primary btn-sm " data-toggle="button tooltip" title="' + route.description + ', Starting at: ' +
+                    time + ' <button id="view' + index + '" type="button" class="btn btn-lifted btn-primary btn-responsive btn-fixed ellipsis" data-toggle="button tooltip" title="' + route.description + ', Starting at: ' +
                     start + '">' + route.dest + '</button>' +
-                    '<span style="color:red; font-weight: bold">  ' + distance + units + '</span>' +
-                    'Leader: <span style="color:blue; font-weight: bold">  ' + ride.leaderName + '  </span>';
-                htmlstringSecondbit[index] = '<button id="btnParticipants' + index + '" type="button" class="btn btn-lifted btn-info btn-sm  pull-right has-popover" >Rider List</button>   ';
-                htmlstringFourthbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info btn-sm pull-right" >' + joinButton[index] + '</button > </a>';
+                    '<span class="text-distance">  ' + distance + units + '</span>' +
+                    '<span class="text-leader"> Leader: ' + ride.leaderName + '  </span>';
+                htmlstringSecondbit[index] = '<button id="btnParticipants' + index + '" type="button" class="btn btn-lifted btn-info btn-responsive pull-right has-popover" >Rider List</button>   ';
+                htmlstringFourthbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info  btn-responsive pull-right" >' + joinButton[index] + '</button > </a>';
 
             });
 
@@ -329,7 +324,7 @@ var TCCrides = (function ($) {
                 }
 
             });
-
+            $('#rides-tab').tab('show');
             showRideList(rides);
             $.each(rides, function (index, ride) {
                 if (login.loggedOut()) {
@@ -362,7 +357,7 @@ var TCCrides = (function ($) {
                 thisRoute.dest = dest;
                 thisRoute.description = descrip;
                 thisRoute.distance = dist;
-                rideData.myJson("EditRoute", "POST", thisRoute, function (response) {
+                rideData.myAjax("EditRoute", "POST", thisRoute, function (response) {
                     if (response === 'OK') {
                         createRideList();
                         $('#editRideModal').modal('hide');
@@ -370,7 +365,7 @@ var TCCrides = (function ($) {
                     else {
                         qPopup.Alert(response);
                     }
-                }, true, null);
+                });
             }, null, -10);
         };
 
@@ -396,9 +391,10 @@ var TCCrides = (function ($) {
 
     TCCrides.GetDatesOfRides = function()
     {
-        rideData.myJson("GetDatesWithRides", "POST", null, function (response) {
+        rideData.myAjax("GetDatesWithRides", "POST", null, function (response) {
             TCCrides.DatesWithRides = response;
-        }, true, null);
+  //          rideData.CreateLists();
+        });
     };
 
     TCCrides.Ride = function (r_id, leader, date, time, meeting, id) {
@@ -449,14 +445,14 @@ var TCCrides = (function ($) {
             var date = bleTime.toIntDays(thisRideDate);
             var ride = new TCCrides.Ride(route.id, leader, date, time, startPlace, 0);
             qPopup.Confirm("Save this ride", "Are you sure?", function () {
-                rideData.myJson("SaveRide", "POST", ride, function (response) {
+                rideData.myAjax("SaveRide", "POST", ride, function (response) {
                     // if successful, response should be just a new ID
                     if (response.length < 5) {
                         ride.id = response;
                         TCCroutes.SetRoute(route);
                         TCCrides.Add(ride);
                         $('#convertToRide').hide();
-                        $('#rides-tab').tab('show');
+                        //$('#rides-tab').tab('show');
                         rideData.setCurrentTab('rides-tab');
                         rideData.setDate(thisRideDate);
                         rideData.setDateChooser('View other dates');
@@ -467,7 +463,7 @@ var TCCrides = (function ($) {
                         qPopup.Alert(response);
                     }
 
-                }, true, null);
+                });
             }, null, -10);
         });
     };

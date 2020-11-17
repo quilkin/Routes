@@ -43,14 +43,20 @@
             $("#saveRoute").prop("disabled", false);
         });
 
-        $(document).ajaxStart(function() {
-            $('<div class="loader" id="loading"><img id="loading-image" src="images/page-loader.gif" alt="waiting..." /></div>')
-        .prependTo('body');
-        });
+        //$(document).ajaxStart(function() {
+        //    $('<div class="loader" id="loading"><img id="loading-image" src="images/page-loader.gif" alt="waiting..." /></div>')
+        //.prependTo('body');
+        //});
 
-        $(document).ajaxStop(function()  {
-            $('.loader').remove();
-        });
+        //$(document).ajaxStop(function()  {
+        //    $('.loader').remove();
+        //});
+
+
+        // prevent clicks while timer is downloading new data
+        // see http://malsup.com/jquery/block/
+        $(document).ajaxStart($.blockUI({ message: '<h3><img src="images/page-loader.gif" /> Just a moment...</h3>' })).ajaxStop($.unblockUI);
+
         var lasttab = 'rides-tab';
         // need to know which tab is in use so we know where to place map etc
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -72,6 +78,9 @@
             }
             if (tab === 'rides-tab') {
                 TCCrides.CreateRideList(null);
+            }
+            if (tab === 'account-tab') {
+                login.setAccount();
             }
         });
         $(function () {
@@ -130,7 +139,7 @@
             $(".navbar-nav a[href=#rides-tab]").tab('show');
 
         }
-        // get some preparory data from the DB
+        //// get some preparory data from the DB
         TCCrides.GetDatesOfRides();
 
     });

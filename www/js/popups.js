@@ -58,13 +58,13 @@ var qPopup = (function () {
             if (timeout > 0) {
                 timer = window.setTimeout(function () {
                     confirm.modal('hide');
-                    yesfunc();
+                    yesfunc;
                 }, timeout * 1000);
             }
             else {
                 timer = window.setTimeout(function () {
                     confirm.modal('hide');
-                    nofunc();
+                    nofunc;
                 }, -timeout * 1000);
             }
 

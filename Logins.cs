@@ -203,8 +203,9 @@ namespace Routes
                 }
                 catch (Exception ex)
                 {
-                    return "DB error: " + ex.Message;
                     log.Error = ex.Message;
+                    return "DB error: " + ex.Message;
+
                 }
                 
                 // create and send an email
@@ -380,8 +381,9 @@ namespace Routes
                 }
                 catch (Exception ex)
                 {
-                    return "DB error: " + ex.Message;
                     log.Error = ex.Message;
+                    return "DB error: " + ex.Message;
+
                 }
 
                 // create and send an email

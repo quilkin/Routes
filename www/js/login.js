@@ -48,20 +48,22 @@ var login = (function () {
     // Logged in successfully
     ///
     function loggedInOK() {
-
+        // get some preparory data from the DB
+        //TCCrides.GetDatesOfRides();
         rideData.CreateLists();
         $('#loginModal').modal('hide');
         // switch to rides tab
         $(".navbar-nav a[href=#rides-tab]").tab('show');
         //add username to account dropdown button
-        if (username !== undefined) {
-            $("#userName").html(username + ' <span class="caret"></span>');
-        }
+        //if (username !== undefined) {
+        //    $("#userName").html(username + ' <span class="caret"></span>');
+        //}
         // may need to redo things done by logging out
         $("#logOut").html('<i class="fa fa-arrow-right"></i> Log Out');
         $("#account").prop('disabled', false);
         $("#setup-tab").attr('class', 'enabled');
-
+        $('#rides-tab').tab('show');
+        rideData.setCurrentTab('rides-tab');
     }
 
     function logout() {
@@ -95,7 +97,7 @@ var login = (function () {
         if (u !== '' && p !== '') {
             creds = { name: u, pw: p, email: "", code: 0 };
 
-            rideData.myJson('Login', "POST", creds, function (res) {
+            rideData.myAjax('Login', "POST", creds, function (res) {
                 if (res.id > 0) {
                     role = res.role;
                     id = res.id;
@@ -120,7 +122,7 @@ var login = (function () {
                 }
                 $("#button-signin").removeAttr("disabled");
 
-            }, true, null);
+            });
 
         } else {
             qPopup.Alert("You must enter a username and password");
@@ -169,7 +171,7 @@ var login = (function () {
 
         if (u !== '' && p1 === p2 && p1 !== ''  && e !== '') {
             creds = { name: u, pw: p1, email: e, code: c };
-            rideData.myJson('Signup', "POST", creds, function (res) {
+            rideData.myAjax('Signup', "POST", creds, function (res) {
                 qPopup.Alert(res);
                 $("#button-register").removeAttr("disabled");
                 if (res.substring(0, 2) === "OK") {
@@ -177,7 +179,7 @@ var login = (function () {
                     //$("#lblCode").show();
                 }
 
-            }, true, null);
+            });
 
         } else {
             qPopup.Alert("You must enter a usernameand valid email address");
@@ -205,12 +207,12 @@ var login = (function () {
         var myid = id;
         creds = { id: myid, name: u, pw: p1, email: e, units: km };
         var success = false;
-        rideData.myJson('ChangeAccount', "POST", creds, function (res) {
+        rideData.myAjax('ChangeAccount', "POST", creds, function (res) {
            
             if (res.substring(0, 2) === "OK") {
                 success = true;
                 qPopup.Alert("Your details have been saved");
-                cancelAccount();
+                //cancelAccount();
                 username = u;
                 if (e !== '')
                     email = e;
@@ -220,7 +222,7 @@ var login = (function () {
             else 
                 qPopup.Alert(res);
 
-        }, true, null);
+        });
 
 
         return success;
@@ -228,10 +230,13 @@ var login = (function () {
     function cancelSignIn() {
 
         $('#loginModal').modal('hide');
+        // get some preparory data from the DB
+        //TCCrides.GetDatesOfRides();
         rideData.CreateLists();
         // switch to 'all routes' tab
+
         $(".navbar-nav a[href=#routes-tab]").tab('show');
-        $("#userName").html('Log In <span class="caret"></span>');
+    //    $("#userName").html('Log In <span class="caret"></span>');
         logout();
 
     }
@@ -242,9 +247,9 @@ var login = (function () {
         $("#form-signin").show();
         cancelSignIn();
     }
-    function cancelAccount() {
-        $('#accountModal').modal('hide');
-    }
+    //function cancelAccount() {
+    //    $('#accountModal').modal('hide');
+    //}
     function handlePassword()
     {
         var form, email;
@@ -253,12 +258,12 @@ var login = (function () {
         email = $("#email3", form).val();
         if (email !== '') {
             var success = false;
-            rideData.myJson('ForgetPassword', "POST", email, function (res) {
+            rideData.myAjax('ForgetPassword', "POST", email, function (res) {
                 success = true;
                 $('#passwordModal').modal('hide');
                 qPopup.Alert(res);
 
-            }, true, null);
+            });
         }
         return success;
     }
@@ -272,7 +277,7 @@ var login = (function () {
 
         var creds = { name: user, code: regcode};
         var success = false;
-        rideData.myJson('Register', "POST", creds, function (res) {
+        rideData.myAjax('Register', "POST", creds, function (res) {
             if (res.substring(0, 9) === "Thank you")           //"Thank you, you have now registered"
             {
                 success = true;
@@ -281,14 +286,14 @@ var login = (function () {
                 qPopup.Alert("Invalid username , code or email");
             }
 
-        }, true, null);
+        });
         return success;
     };
     login.ResetAccount = function (user) {
         username = user;
         var success = false;
         // check that timeout hasn't expired
-        rideData.myJson('CheckTimeout', "POST", username, function (res) {
+        rideData.myAjax('CheckTimeout', "POST", username, function (res) {
             
             if (res.substring(0, 2) === "OK")           
             {
@@ -301,7 +306,7 @@ var login = (function () {
                 qPopup.Alert(res);
             }
 
-        }, true, null);
+        });
         return success;
     };
     login.Login = function () {
@@ -339,25 +344,44 @@ var login = (function () {
             $("#register-cancel").on('click', cancelRegister);
         });
     });
-    $('#accountModal').on('shown.bs.modal', function (e) {
 
-        if (email === '')
-            email = dummyEmail;
+    $("#form-account").on("submit", handleAccount);
+
+
+    $("#account-cancel").on('click', function () {
+        $('#routes-tab').tab('show');
+        rideData.setCurrentTab('routes-tab');
+    });
+
+    login.setAccount = function () {
+        //if (email === '')
+        //    email = dummyEmail;
         $("#username2").attr("value", username);
         $("#email2").attr("value", email);
+        $("#password3").attr("value", "");
+        $("#password4").attr("value", "");
         $("#radioKm").prop('checked', units === 'k');
         $("#radioMile").prop('checked', units === 'm');
-        $("#form-account").on("submit", handleAccount);
-        $("#account-cancel").on('click', cancelAccount);
 
-    });
-    $("#account").click(function () {
+    };
+    //$('#accountModal').on('shown.bs.modal', function (e) {
 
-        $('#accountModal').modal();
-    });
-    $("#settings").click(function () {
-        qPopup.Alert("not yet implemented, sorry");
-    });
+    //    if (email === '')
+    //        email = dummyEmail;
+    //    $("#username2").attr("value", username);
+    //    $("#email2").attr("value", email);
+    //    $("#radioKm").prop('checked', units === 'k');
+    //    $("#radioMile").prop('checked', units === 'm');
+
+
+    //});
+    //$("#account").click(function () {
+
+    //    $('#accountModal').modal();
+    //});
+    //$("#settings").click(function () {
+    //    qPopup.Alert("not yet implemented, sorry");
+    //});
     $("#signin-pw").click(function () {
         $('#passwordModal').modal();
     });

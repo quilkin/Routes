@@ -37,6 +37,7 @@ namespace Routes
 
         private DBConnection()
         {
+            ErrStr = string.Empty;
         }
 
 
@@ -183,7 +184,7 @@ namespace Routes
         {
             Args = args;
             Function = func;
-
+            Error = string.Empty;
         }
         private string GetIP()
         {
@@ -200,16 +201,19 @@ namespace Routes
         }
         public void Save(DBConnection conn)
         {
-            // prevent char ' messing up the query
-            Result = Result.Replace("'", "''");
-            string query = string.Format("insert into log (time,ip,func,args,result,error) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
-                Logdata.TimeString(DateTime.Now), GetIP(), this.Function, this.Args, this.Result, this.Error);
-
-            using (MySqlCommand command = new MySqlCommand(query, conn.Connection))
+            if (conn.Connection.State == System.Data.ConnectionState.Open)
             {
-                command.ExecuteNonQuery();
-            }
+                // prevent char ' messing up the query
+                Result = Result.Replace("'", "''");
+                Error = Error.Replace("'", "''");
+                string query = string.Format("insert into log (time,ip,func,args,result,error) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
+                    Logdata.TimeString(DateTime.Now), GetIP(), this.Function, this.Args, this.Result, this.Error);
 
+                using (MySqlCommand command = new MySqlCommand(query, conn.Connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
         }
     }
 }
