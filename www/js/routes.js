@@ -292,7 +292,7 @@ var TCCroutes = (function () {
                     qPopup.Alert(response);
                 }
             }, true, null);
-        });
+        }, null, -10);
     });
 
     $('#editRouteModal').on('shown.bs.modal', function (e) {

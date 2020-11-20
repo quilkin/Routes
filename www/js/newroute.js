@@ -147,10 +147,12 @@ var newRoute = (function ($) {
             // user has complete data on PC
             temproute.url = myXML;
             temproute.dist = 0;
+            temproute.hasGPX = true;
             qPopup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
         }
         else if (validURL(url)) {
             temproute.url = url;
+            temproute.hasGPX = true;
             qPopup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
         }
         else {
