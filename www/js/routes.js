@@ -106,7 +106,7 @@ var TCCroutes = (function () {
                         qPopup.Alert(response);
                     }
                 }, true, null);
-            });
+            }, null, -10);
         },
 
         showRouteList = function () {

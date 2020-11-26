@@ -71,7 +71,10 @@ namespace Routes
                 gpxConnection.Close();
         }
 
-
+        static string GetRidOfApostrophes(string data)
+        {
+            return data.Replace("'", "''");
+        }
 
         public string TestService()
         {
@@ -81,7 +84,8 @@ namespace Routes
 
         public string SaveRoute(Route route)
         {
-            route.Dest = route.Dest.Replace("'", "''");
+            GetRidOfApostrophes(route.Dest);
+            GetRidOfApostrophes(route.Descrip);
 
             LogEntry log = new LogEntry("SaveRoute", route.ID + " " + route.Dest);
 
@@ -300,7 +304,8 @@ namespace Routes
         // update with distance and name extracted from GPX file
         public string UpdateRoute(Route route)
         {
-            route.Dest = route.Dest.Replace("'", "''");
+            route.Dest = GetRidOfApostrophes(route.Dest);
+            route.Descrip = GetRidOfApostrophes(route.Descrip);
 
             LogEntry log = new LogEntry("UpdateRoute ", route.ID.ToString());
 
@@ -343,8 +348,8 @@ namespace Routes
         // change destination or description
         public string EditRoute(Route route)
         {
-            route.Dest = route.Dest.Replace("'", "''");
-            route.Descrip = route.Descrip.Replace("'", "''");
+            route.Dest = GetRidOfApostrophes(route.Dest);
+            route.Descrip = GetRidOfApostrophes(route.Descrip);
 
             LogEntry log = new LogEntry("EditRoute", route.ID + " " + route.Dest);
 

@@ -109,6 +109,9 @@ namespace Routes
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/SaveCafe", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string SaveCafe(Cafe cafe);
-        
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/DeleteCafe", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string DeleteCafe(int cafeID);
     }
 }

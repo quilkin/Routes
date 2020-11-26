@@ -124,10 +124,12 @@ namespace Routes
         }
         public string SaveCafe(Cafe cafe)
         {
+            cafe.Name = GetRidOfApostrophes(cafe.Name);
+            cafe.Notes = GetRidOfApostrophes(cafe.Notes);
+            cafe.PlaceName = GetRidOfApostrophes(cafe.PlaceName);
+            cafe.TimesOpen = GetRidOfApostrophes(cafe.TimesOpen);
+            cafe.DaysOpen = GetRidOfApostrophes(cafe.DaysOpen);
 
-            cafe.Name = cafe.Name.Replace("'", "''");
-            cafe.Notes = cafe.Notes.Replace("'", "''");
-            cafe.PlaceName = cafe.PlaceName.Replace("'", "''");
 
             LogEntry log = new LogEntry("SaveCafe", cafe.ID + " " + cafe.Name + " " + cafe.User);
 
@@ -217,6 +219,39 @@ namespace Routes
 
         }
 
+        public string DeleteCafe(int cafeID)
+        {
+            LogEntry log = new LogEntry("DeleteCafe ", cafeID.ToString());
+
+            int successRows = 0;
+            string result = "";
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    string query = string.Format("delete from cafes where id = {0}", cafeID);
+                    using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                    {
+                        successRows = command.ExecuteNonQuery();
+                    }
+                    result = "OK";
+                }
+                catch (Exception ex)
+                {
+                    result = string.Format("Database error: {0}", ex.Message);
+                }
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            else
+                return DBConnection.ErrStr;
+
+            return result;
+        }
 
 
     }

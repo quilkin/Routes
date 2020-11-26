@@ -71,7 +71,9 @@ namespace Routes
        
         public string SaveRide(Ride ride)
         {
-           // ride.MeetAt = ride.MeetAt.Replace("'", "''");
+            // ride.MeetAt = ride.MeetAt.Replace("'", "''");
+
+            GetRidOfApostrophes(ride.MeetAt);
 
             LogEntry log = new LogEntry("SaveRide", ride.Date + " " + ride.routeID);
 
