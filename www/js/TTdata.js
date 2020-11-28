@@ -158,7 +158,41 @@ var rideData = (function ($) {
             });
         }, null, -10);
     };
+    rideData.DistanceString = function (route) {
+        var distance = 0;
+        if (route.distance !== undefined) {
+            distance = route.distance;
+        }
 
+        var units = ' km ';
+        var distanceStr = '?';
+        if (login.Units() === 'm') {
+            units = ' m ';
+            distance = Math.round(distance * 0.62137);
+        }
+        if (distance > 0)
+            distanceStr = distance + units;
+        return distanceStr;
+    };
+    rideData.ClimbingString = function (route) {
+        if (login.Climbs() === 0)
+            return "";
+        var climbing = 0;
+        if (route.climbing !== undefined) {
+            climbing = route.climbing;
+        }
+
+        var units = 'm';
+        var climbingStr = '?';
+        if (login.Units() === 'm') {
+            units = 'ft';
+            climbing = Math.round(climbing * 3.3);
+        }
+        if (climbing > 0)
+            climbingStr = climbing + units;
+        climbingStr = '&uarr;' + climbingStr + '&darr;';
+        return climbingStr;
+    };
 
     rideData.setDateChooser = function (btntext) {
         $('#dateTitle').html(bleTime.DateString(rideDate) +  '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span>');

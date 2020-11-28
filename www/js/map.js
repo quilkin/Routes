@@ -128,11 +128,12 @@
             }
 
             if (listedRoute === true) {
-                // get soem deatils from the GPX to hand back to the app
+                // get some details from the GPX to hand back to the app
                 var route = TCCroutes.currentRoute();
-                if (route.distance === 0 || isNaN(route.distance) || route.dest === '') {
+                if (route.distance === 0 || isNaN(route.distance) || route.dest === '' || (route.climbing===0 && elev_gain > 0)) {
                     route.distance = distance;
                     route.dest = name;
+                    route.climbing = elev_gain;
                     rideData.myAjax("UpdateRoute", "POST", route, function (response) {
                         var reply = response;
                     });

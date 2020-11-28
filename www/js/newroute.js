@@ -19,7 +19,10 @@ var newRoute = (function ($) {
                     else {
                         TCCMap.showRoute();
                         TCCroutes.CreateRouteList(false);
-                        $('#leadRide').show();
+                        $('#uploadRoute').hide();
+                        $('#manualRoute').hide();
+                        TCCrides.leadRide();
+                        //$('#leadRide').show();
                     }
                     
 
@@ -78,7 +81,7 @@ var newRoute = (function ($) {
     $('#manualRoute').show();
     $("#manual-setupDone").show();
 
-    $('#leadRide').hide();
+  //  $('#leadRide').hide();
     $('#manual-leadRide').hide();
 
     $('#convertToRide').hide();
@@ -136,12 +139,12 @@ var newRoute = (function ($) {
             qPopup.Alert("You need to register for this");
             return;
         }
-        var descrip = $("#route-descrip").val();
+        //var descrip = $("#route-descrip").val();
         var url = $("#route-url").val();
         var owner = login.User();
         var dest = '';
 
-        temproute = new TCCroutes.Route(url, dest, descrip, 0, 0, owner, 0);
+        temproute = new TCCroutes.Route(url, dest, '', 0, 0, owner, 0);
 
         if (myXML.length > 1000) {
             // user has complete data on PC

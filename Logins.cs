@@ -25,6 +25,8 @@ namespace Routes
         public int Role { get; set; }
         [DataMember(Name = "units")]
         public char Units { get; set; }
+        [DataMember(Name = "climbs")]
+        public int Climbs { get; set; }
 
         public Login(string name, string pw)
         {
@@ -56,7 +58,7 @@ namespace Routes
             LogEntry log = new LogEntry("Login", login.Name);
             string result = "";
 
-            string query = string.Format("SELECT Id, name, pw, email, role, units FROM logins where name = '{0}'", login.Name);
+            string query = string.Format("SELECT Id, name, pw, email, role, units, climbs FROM logins where name = '{0}'", login.Name);
             if (gpxConnection.IsConnect())
             {
                 try
@@ -83,6 +85,7 @@ namespace Routes
                                 login.ID = (int)dr["id"];
                                 login.Email = (string)dr["email"];
                                 login.Units = ((string)dr["units"])[0];
+                                login.Climbs = (int)dr["climbs"];
                                 break;
                             }
                         }
@@ -235,8 +238,8 @@ namespace Routes
 
                         // save the login details but with role as zero so login won't yet work
                         log = new LogEntry("Register1", login.Name + " " + login.EmailCode);
-                        query = string.Format("insert into logins (name, pw, email,role,messagetime) values ('{0}','{1}','{2}',{3},'{4}')",
-                            login.Name, hash, login.Email, 0, Logdata.TimeString(DateTime.Now));
+                        query = string.Format("insert into logins (name, pw, email,role,messagetime,units,climbs) values ('{0}','{1}','{2}',{3},'{4}','{5}',{6})",
+                            login.Name, hash, login.Email, 0, Logdata.DBTimeString(DateTime.Now),login.Units,login.Climbs);
 
                         try
                         {
@@ -309,7 +312,7 @@ namespace Routes
                     }
                     if (true)
                     {
-                        query = string.Format("update logins set units = '{0}' where id = {1}", login.Units, login.ID);
+                        query = string.Format("update logins set units = '{0}', climbs={1} where id = {2}", login.Units, login.Climbs, login.ID);
                         var cmd = new MySqlCommand(query, gpxConnection.Connection);
                         cmd.ExecuteNonQuery();
                     }

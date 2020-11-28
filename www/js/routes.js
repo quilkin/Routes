@@ -113,31 +113,13 @@ var TCCroutes = (function () {
             $('#routelist').empty();  // this will also remove any handlers
             //$('#setuplist').empty();
             $.each(routes, function (index, route) {
-
-                var distance = 0;
                 var title = route.dest;
-                if (route.distance !== undefined) {
-                    distance = route.distance;
-                }
-                //if (title[0] === '*')
-                //    // don't display 'ghost' routes with no GPX file
-                //    return;
-   
-                var units = ' km ';
-                if (login.Units() === 'm') {
-                    units = ' m ';
-                    distance = Math.round(distance * 0.62137);
-                }
-
-
-                var htmlstr = '<a id="sen' + index + '" class="list-group-item list-group-item-height"><button id="get' + index
-                    + '" type="button" class="btn btn-lifted btn-primary btn-responsive" data-toggle="button tooltip" title="Author: ' + route.owner + '">' + title +
-                    '</button><span style="color:red; font-weight: bold">  ' + distance + units + '</span> ' + route.description;
- //                   + '<button type="button" class="btn btn-primary btn-responsive pull-right" id="planRide" data-toggle="button tooltip" title="lead a ride using this route">Lead</button>';
+               
+                var htmlstr = '<a id="sen' + index + '" class="list-group-item list-group-item-height"><button id="get' + index +
+                    '" type="button" class="btn btn-lifted btn-primary btn-responsive" data-toggle="button tooltip" title="Author: ' + route.owner + '">' + title +
+                    '</button><span style="color:red; font-weight: bold">  ' + rideData.DistanceString(route) + '</span> ' +
+                    '<span style="color:green; font-weight: bold"> ' + rideData.ClimbingString(route) + '</span> ' +   route.description;
                     
-                //if (route.owner === login.User()) {
-                //    htmlstr += '<button type="button" class="btn btn-info btn-responsive pull-right" id="editRoute" data-toggle="button tooltip" title="edit or delete this route" >Edit</button> ';
-                //}
                 htmlstr += '</a>';
                 $('#routelist').append(htmlstr);
 

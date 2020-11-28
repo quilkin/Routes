@@ -8,14 +8,9 @@ using System.Runtime.Serialization;
 namespace Routes
 {
 
-
-
     [DataContract]
     public class Ride
     {
-        //[DataMember(Name = "dest")]
-        //public string Dest { get; set; }
-
 
         [DataMember(Name = "rideID")]
         public int ID { get; set; }
@@ -35,13 +30,17 @@ namespace Routes
         [DataMember(Name = "meetingAt")]
         public string MeetAt { get; set; }
 
-        public Ride(int r_ID, string lead, int id, int date, int time, string meet)
+        [DataMember(Name = "description")]
+        public string Descrip { get; set; }
+
+        public Ride(int r_ID, string lead, int id, int date, int time, string meet, string descrip)
         {
             routeID = r_ID;
             LeaderName = lead;
             Date = date;
             Time = time;
             MeetAt = meet;
+            Descrip = descrip;
             ID = id;
         }
 
@@ -73,7 +72,8 @@ namespace Routes
         {
             // ride.MeetAt = ride.MeetAt.Replace("'", "''");
 
-            GetRidOfApostrophes(ride.MeetAt);
+            ride.MeetAt = GetRidOfApostrophes(ride.MeetAt);
+            ride.Descrip = GetRidOfApostrophes(ride.Descrip);
 
             LogEntry log = new LogEntry("SaveRide", ride.Date + " " + ride.routeID);
 
@@ -115,8 +115,8 @@ namespace Routes
                         //using (System.Net.WebClient client = new System.Net.WebClient())
                         {
 
-                            query = string.Format("insert into rides (routeID,leaderName,date,time,meetingAt) values ('{0}','{1}','{2}','{3}','{4}')",
-                                ride.routeID, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt);
+                            query = string.Format("insert into rides (routeID,leaderName,date,time,meetingAt,description) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
+                                ride.routeID, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt, ride.Descrip);
                             // get new ride ID
                             query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
                             object rideID = null;
@@ -165,7 +165,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT rideID,routeID,date,time,meetingAt,leaderName FROM rides where date= {0}", date);
+                    string query = string.Format("SELECT rideID,routeID,date,time,meetingAt,leaderName,description FROM rides where date= {0}", date);
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -174,7 +174,7 @@ namespace Routes
                         int length = dataRoutes.Rows.Count;
                         for (int row = 0; row < length; row++)
                         {
-                            string meet = "", leader = "";
+                            string meet = "", leader = "", descrip="";
                             int time = 0, id, routeID = 0;
                             try
                             {
@@ -185,8 +185,9 @@ namespace Routes
                                 try { date = (int)dr["date"]; } catch { }
                                 try { time = (int)dr["time"]; } catch { }
                                 try { leader = (string)dr["leadername"]; } catch { }
+                                try { descrip = (string)dr["description"]; } catch { }
 
-                                rides.Add(new Ride(routeID, leader, id, date, time, meet));
+                                rides.Add(new Ride(routeID, leader, id, date, time, meet,descrip));
                             }
                             catch (Exception ex)
                             {
@@ -244,9 +245,10 @@ namespace Routes
                                 routeID = (int)dr["routeID"];
                                 try { date = (int)dr["date"]; } catch { }
                                 try { leader = (string)dr["leadername"]; } catch { }
+                                
                                 //DateTime dt = Logdata.JSDateToDateTime(date);
-                                rides.Add(new Ride(routeID, leader, 0, date, 0, ""));
-                                //dates.Add(date);
+                                rides.Add(new Ride(routeID, leader, 0, date, 0, "",""));
+                                
                             }
                             catch (Exception ex)
                             {
@@ -492,7 +494,52 @@ namespace Routes
                 return DBConnection.ErrStr;
             return result;
         }
+        // change destination or description
+        public string EditRide(Ride ride)
+        {
+            ride.MeetAt = GetRidOfApostrophes(ride.MeetAt);
+            ride.Descrip = GetRidOfApostrophes(ride.Descrip);
 
+            LogEntry log = new LogEntry("EditRoute", ride.ID + " " + ride.Descrip);
+
+            string result = "";
+            if (gpxConnection.IsConnect())
+            {
+
+                try
+                {
+                    //using (System.Net.WebClient client = new System.Net.WebClient())
+                    {
+
+
+                        string query = string.Format("update rides set meetingAt = '{0}', description = '{1}' where rideID = {2}", ride.MeetAt, ride.Descrip, ride.ID);
+
+                        using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                        {
+                            command.ExecuteNonQuery();
+
+                        }
+                        result = "OK";
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    result = string.Format("Database error: ride \"{0}\" not saved: {1}", ride.Descrip, ex2.Message);
+                }
+
+                finally
+                {
+                    log.Result = result;
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            else
+                return DBConnection.ErrStr;
+
+            return result;
+
+        }
 
     }
 }

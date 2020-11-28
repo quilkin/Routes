@@ -84,8 +84,8 @@ namespace Routes
 
         public string SaveRoute(Route route)
         {
-            GetRidOfApostrophes(route.Dest);
-            GetRidOfApostrophes(route.Descrip);
+            route.Dest = GetRidOfApostrophes(route.Dest);
+            route.Descrip = GetRidOfApostrophes(route.Descrip);
 
             LogEntry log = new LogEntry("SaveRoute", route.ID + " " + route.Dest);
 
@@ -301,7 +301,7 @@ namespace Routes
             return data;
         }
 
-        // update with distance and name extracted from GPX file
+        // update with distance, climbing and name extracted from GPX file
         public string UpdateRoute(Route route)
         {
             route.Dest = GetRidOfApostrophes(route.Dest);
@@ -315,11 +315,8 @@ namespace Routes
             {
                 try
                 {
-
-                    //using (System.Net.WebClient client = new System.Net.WebClient())
-                    {
-
-                        string query = string.Format("update routes set distance = {0}, dest = '{1}' where id = {2}", route.Distance, route.Dest, route.ID);
+                        string query = string.Format("update routes set distance = {0}, climbing = {1}, dest = '{2}' where id = {3}", 
+                            route.Distance, route.Climbing, route.Dest, route.ID);
 
                         using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                         {
@@ -327,7 +324,7 @@ namespace Routes
 
                         }
                         result = "OK";
-                    }
+
                 }
                 catch (Exception ex)
                 {
