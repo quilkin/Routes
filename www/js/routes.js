@@ -117,8 +117,7 @@ var TCCroutes = (function () {
                
                 var htmlstr = '<a id="sen' + index + '" class="list-group-item list-group-item-height"><button id="get' + index +
                     '" type="button" class="btn btn-lifted btn-primary btn-responsive" data-toggle="button tooltip" title="Author: ' + route.owner + '">' + title +
-                    '</button><span style="color:red; font-weight: bold">  ' + rideData.DistanceString(route) + '</span> ' +
-                    '<span style="color:green; font-weight: bold"> ' + rideData.ClimbingString(route) + '</span> ' +   route.description;
+                    '</button>' + rideData.DistanceString(route) + rideData.ClimbingString(route) +  route.description;
                     
                 htmlstr += '</a>';
                 $('#routelist').append(htmlstr);

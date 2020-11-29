@@ -163,15 +163,14 @@ var rideData = (function ($) {
         if (route.distance !== undefined) {
             distance = route.distance;
         }
-
+        if (distance === 0)
+            return '?';
         var units = ' km ';
-        var distanceStr = '?';
         if (login.Units() === 'm') {
             units = ' m ';
             distance = Math.round(distance * 0.62137);
         }
-        if (distance > 0)
-            distanceStr = distance + units;
+        var distanceStr = '<span style="color:black; font-weight: bold"> ' + distance + units + '</span> ';
         return distanceStr;
     };
     rideData.ClimbingString = function (route) {
@@ -181,16 +180,24 @@ var rideData = (function ($) {
         if (route.climbing !== undefined) {
             climbing = route.climbing;
         }
+        if (climbing === 0)
+            return "";
+        
+        var style = '<span style="color:orange; ';
+        if (route.distance > 0) {
+            var climbRatio = climbing / route.distance;
+            if (climbRatio < 12)
+                style = '<span style="color:green; ';
+            else if (climbRatio > 17)
+                style = '<span style="color:red; ';
+        }
 
         var units = 'm';
-        var climbingStr = '?';
         if (login.Units() === 'm') {
             units = 'ft';
             climbing = Math.round(climbing * 3.3);
         }
-        if (climbing > 0)
-            climbingStr = climbing + units;
-        climbingStr = '&uarr;' + climbingStr + '&darr;';
+        var climbingStr = style + 'font-weight: bold">&uarr;' + climbing + units + '&darr;</span>';
         return climbingStr;
     };
 

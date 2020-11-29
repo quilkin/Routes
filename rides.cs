@@ -176,16 +176,17 @@ namespace Routes
                         {
                             string meet = "", leader = "", descrip="";
                             int time = 0, id, routeID = 0;
+                            DataRow dr = dataRoutes.Rows[row];
                             try
                             {
-                                DataRow dr = dataRoutes.Rows[row];
+                                
                                 id = (int)dr["rideID"];
-                                try { routeID = (int)dr["routeID"]; } catch { }
-                                try { meet = (string)dr["meetingAt"]; } catch { }
-                                try { date = (int)dr["date"]; } catch { }
-                                try { time = (int)dr["time"]; } catch { }
-                                try { leader = (string)dr["leadername"]; } catch { }
-                                try { descrip = (string)dr["description"]; } catch { }
+                                routeID = (int)dr["routeID"]; 
+                                meet = (string)dr["meetingAt"];
+                                date = (int)dr["date"];
+                                time = (int)dr["time"]; 
+                                leader = (string)dr["leadername"]; 
+                                descrip = (string)dr["description"]; 
 
                                 rides.Add(new Ride(routeID, leader, id, date, time, meet,descrip));
                             }

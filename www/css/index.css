@@ -110,7 +110,7 @@ h4 {
         margin-bottom: 5px;
         height: 25px;
     }
-    .text-leader {
+    /*.text-leader {
         color: blue;
         font-weight: bold;
         font-size: 90%;
@@ -119,7 +119,7 @@ h4 {
         color: red;
         font-weight: bold;
         font-size: 90%;
-    }
+    }*/
     .scroll-area {
         width: 100%;
         height: calc(100% - 600px);
@@ -155,16 +155,16 @@ h4 {
         font-size: 12px;
         width: 80%;
     }
-    .text-leader {
+    /*.text-leader {
         color: blue;
         font-weight: bold;
         font-size: 95%;
-    }
-    .text-distance {
+    }*/
+    /*.text-distance {
         color: red;
         font-weight: bold;
         font-size: 95%;
-    }
+    }*/
     .scroll-area {
         width: 100%;
         height: calc(100% - 600px);
@@ -197,14 +197,14 @@ h4 {
     .navbar-responsive {
         font-size: 100%;
     }
-    .text-leader {
+    /*.text-leader {
         color: blue;
         font-weight: bold;
-    }
-    .text-distance {
+    }*/
+    /*.text-distance {
         color: red;
         font-weight: bold;
-    }
+    }*/
 }
 .btn-dropped {
     /* to get buttons in correct place when in list title*/

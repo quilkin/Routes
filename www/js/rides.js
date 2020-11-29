@@ -235,10 +235,8 @@ var TCCrides = (function ($) {
 
                 htmlstringFirstbit[index] = '<a id="sen' + index + '" class="list-group-item">' +
                     time + ' <button id="view' + index + '" type="button" class="btn btn-lifted btn-primary btn-responsive btn-fixed ellipsis" data-toggle="button tooltip" title="' + descrip + ', Starting at: ' +
-                    start + '">' + route.dest + '</button>' +
-                    '<span class="text-distance">  ' + distanceStr + '</span>' +
-                    '<span style="color:green; font-weight: bold">  ' + climbingStr + '</span>' +
-                    '<span class="text-leader"> (' + ride.leaderName + ') </span>';
+                    start + '">' + route.dest + '</button>' + distanceStr + climbingStr + 
+                    '<span style="color: blue; font-weight: bold"> (' + ride.leaderName + ') </span>';
                 htmlstringSecondbit[index] = '<button id="btnParticipants' + index + '" type="button" class="btn btn-lifted btn-info btn-responsive pull-right has-popover" >Rider List</button>   ';
                 htmlstringFourthbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info  btn-responsive pull-right" >' + joinButton[index] + '</button > </a>';
 
@@ -399,13 +397,14 @@ var TCCrides = (function ($) {
         });
     };
 
-    TCCrides.Ride = function (r_id, leader, date, time, meeting, id) {
+    TCCrides.Ride = function (r_id, leader, date, time, meeting, id,descrip) {
         this.leaderName = leader;
         this.routeID= r_id;
         this.date = date;
         this.rideID = id;
         this.time = time;
         this.meetingAt = meeting;
+        this.description = descrip;
     };
     TCCrides.Participant = function (rider, rideID) {
         this.rider = rider;
@@ -446,7 +445,7 @@ var TCCrides = (function ($) {
             var time = starthours * 60 + startmins;
             //var dest = route.dest;
             var date = bleTime.toIntDays(thisRideDate);
-            var ride = new TCCrides.Ride(route.id, leader, date, time, startPlace, description, 0);
+            var ride = new TCCrides.Ride(route.id, leader, date, time, startPlace, 0, description);
             qPopup.Confirm("Save this ride", "Are you sure?", function () {
                 rideData.myAjax("SaveRide", "POST", ride, function (response) {
                     // if successful, response should be just a new ID
