@@ -13,8 +13,11 @@ var newRoute = (function ($) {
                     temproute.id =  parseInt(response);
                     TCCroutes.SetRoute(temproute);
                     TCCroutes.Add(temproute);
-                    if (temproute.hasGPX === false)  {
-                        $('#manual-leadRide').show();
+                    if (temproute.hasGPX === false) {
+                        $('#uploadRoute').hide();
+                        $('#manualRoute').hide();
+                        TCCrides.leadRide();
+                      //  $('#manual-leadRide').show();
                     }
                     else {
                         TCCMap.showRoute();
@@ -114,15 +117,15 @@ var newRoute = (function ($) {
             qPopup.Alert("Destination and distance needed");
             return;
         }
-        if (descrip.length < 2) {
-            qPopup.Alert("Description needed");
-            return;
-        }
+        //if (descrip.length < 2) {
+        //    qPopup.Alert("Description needed");
+        //    return;
+        //}
 
         // prevent this route showing in routes listing
        // dest = '*' + dest;
 
-        temproute = new TCCroutes.Route('', dest, descrip,dist, 0, owner, 0);
+        temproute = new TCCroutes.Route('', dest, '',dist, 0, owner, 0);
         var existing = TCCroutes.findDest(dest);
         if (existing === dest) {
             qPopup.Confirm("There is already a route with this destination.", "Do you want to use the same destination?", saveRoute, null, -10);

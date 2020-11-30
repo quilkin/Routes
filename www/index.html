@@ -186,13 +186,13 @@
                             <div class="panel-body">
                                 <form id="form-setup">
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="route-url" class="control-label side-label" id="route-url-label">URL (link) to GPX or TCX file:</label>
                                                 <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="a valid link to a file on the internet" id="route-url">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="route-file" class="control-label side-label" id="route-file-label">or file on your computer:</label>
                                                 <input type="file" id="route-file" name="file" enctype="multipart/form-data" />
@@ -218,30 +218,30 @@
                             <div class="panel-body">
                                 <form id="manual-form-setup">
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="route-dest" class="control-label side-label">Destination:</label>
                                                 <input type="text" class="form-control  side-input detectChange" data-toggle="tooltip" title="your coffee stop? " id="route-dest" required>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="route-distance" class="control-label side-label">Distance (km):</label>
                                                 <input type="number" class="form-control side-input detectChange" id="route-distance" required>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <!--<div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="route-descrip" class="control-label side-label">Description:</label>
                                                 <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="Required. Help others to know if they would like to ride this route" id="manual-route-descrip" required>
                                             </div>
-                                        </div>
+                                        </div>-->
                                     </div>
                                 </form>
                             </div> <!-- /panel-body-->
                             <div class="panel-footer">
                                 <button type="button" class="btn btn-primary" id="manual-cancelNewRoute" data-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-info pull-right " id="manual-leadRide" data-dismiss="modal">Lead a ride based on this route</button>
+                                <!--<button type="button" class="btn btn-info pull-right " id="manual-leadRide" data-dismiss="modal">Lead a ride based on this route</button>-->
                                 <button type="button" class="btn btn-info pull-right " id="manual-setupDone" data-dismiss="modal">Done</button>
                             </div>
                         </div> <!-- /panel-->
@@ -561,8 +561,7 @@
     <script src="js-lib/bootstrap.min.js"></script>
     <script src="js-lib/leaflet.js"></script>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>-->
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!--<script src="js-lib/ie10-viewport-bug-workaround.js"></script>-->
+
     <script src="js-lib/bootbox.min.js"></script>
 
     <script src="js-lib/amcharts.js"></script>
@@ -571,25 +570,21 @@
 
     <script src="js/timesdates.js"></script>
     <script src="js/popups.js"></script>
-    <!--<script src="js/mousePos.js"></script>"-->
-    <script src="js/cafeMap.js"></script>
-    <script src="js/login.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/cafeMap.js?version=4"></script>
+    <script src="js/login.js?version=4"></script>
+    <script src="js/index.js?version=4"></script>
     <script src="js/serial.js"></script>
     <script src="js-lib/gpx.js"></script>
     <script src="js-lib/blockui.js"></script>
 
-    <!--<script src="js-lib/jquery.dataTables.min.js"></script>-->
     <script src="js-lib/bootstrap-datepicker.js"></script>
     <script src="js-lib/bootstrap-timepicker.min.js"></script>
-    <!--<script src="js/myTable.js"></script>-->
-    <script src="js/routes.js"></script>
-    <script src="js/rides.js"></script>
+    <script src="js/routes.js?version=4"></script>
+    <script src="js/rides.js?version=4"></script>
     <script src="js/server.js"></script>
-    <script src="js/TTdata.js"></script>
-    <script src="js/map.js"></script>
-    <!--<script src="js-lib/leaflet-distance-marker.js"></script>-->
-    <script src="js/newroute.js"></script>
+    <script src="js/TTdata.js?version=4"></script>
+    <script src="js/map.js?version=4"></script>
+    <script src="js/newroute.js?version=4"></script>
 
 
 </body>
