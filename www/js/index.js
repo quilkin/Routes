@@ -28,6 +28,10 @@
         $('#rides-tab').tab('show');
         rideData.setCurrentTab('rides-tab');
 
+        $('#help').click(function () {
+            var win = window.open("Rides-signup.htm");
+            win.focus();
+        });
         var today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         // find next Sunday's date

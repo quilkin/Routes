@@ -350,6 +350,10 @@ var login = (function () {
             $("#form-signin").hide();
             $("#register-cancel").on('click', cancelRegister);
         });
+        $('#help2').click(function () {
+            var win = window.open("Rides-signup.htm");
+            win.focus();
+        });
     });
 
     $("#form-account").on("submit", handleAccount);

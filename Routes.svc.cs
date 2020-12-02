@@ -143,6 +143,7 @@ namespace Routes
                                 // will catch if not valid XML
                                 xmldoc.LoadXml(fullText);
                             }
+                            fullText = GetRidOfApostrophes(fullText);
 
                             string query = string.Format("insert into routes (dest,distance,description,climbing,route,ownername,hasGPX) values ('{0}','{1}','{2}','{3}','{4}','{5}',{6})",
                                 route.Dest, route.Distance, route.Descrip, route.Climbing, fullText, route.Owner, route.HasGPX? 1:0);
