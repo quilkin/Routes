@@ -202,7 +202,8 @@ var rideData = (function ($) {
     };
 
     rideData.setDateChooser = function (btntext) {
-        $('#dateTitle').html(bleTime.DateString(rideDate) +  '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span>');
+        $('#dateTitle').html(bleTime.DateString(rideDate) + '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span><span id="help" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">Help</span>');
+        
     };
           
     rideData.myAjax = function (url, type, data, successfunc) {

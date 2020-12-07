@@ -201,6 +201,8 @@ namespace Routes
         }
         public void Save(DBConnection conn)
         {
+            if (Error.Length < 2)
+                return;
             try
             {
                 if (conn.Connection.State == System.Data.ConnectionState.Open)

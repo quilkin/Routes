@@ -17,8 +17,8 @@ var TCCrides = (function ($) {
     const message = ", and cannot join more than one ride each day";
     const joinText = 'Join';
     const leaveText = 'Leave';
-    const reserveText = 'Ride full: Reserve';
-    const leaveReserveText = 'Leave Reserves';
+    const reserveText = 'Reserve';
+    const leaveReserveText = 'UnReserve';
     const editRideText = 'Edit/Cancel';
 
 
@@ -150,7 +150,7 @@ var TCCrides = (function ($) {
 
         today = bleTime.toIntDays(new Date()),
         showRideRow = function (index, ride) {
-            var htmlstr = htmlstringFirstbit[index] + htmlstringSecondbit[index] + htmlstringFourthbit[index];
+            var htmlstr = htmlstringFirstbit[index] + htmlstringSecondbit[index] + htmlstringThirdbit[index] + htmlstringFourthbit[index];
             $('#ridelist').append(htmlstr);
             $('#view' + index).click(function () {
                 currentride = ride;
@@ -170,6 +170,7 @@ var TCCrides = (function ($) {
             else {
                 $('#btnParticipants' + index).popover({ title: 'Riders: ', content: participants[index], container: 'body', placement: 'bottom' });
             }
+           
 
             if (ride.date < today) {
                 $('#join' + index).prop("disabled", true);
@@ -179,7 +180,7 @@ var TCCrides = (function ($) {
                 currentride = ride;
                 var user = login.User();
                 if (login.loggedOut()) {
-                    qPopup.Alert("Not logged in");
+                    qPopup.Alert("You are not logged in, please 'account' menu to log in again");
                     return false;
                 }
                 var buttontext = $('#join' + index).text();
@@ -239,7 +240,8 @@ var TCCrides = (function ($) {
                     start + '">' + route.dest + '</button>' + distanceStr + climbingStr +
                     '<span style="color: blue; font-weight: bold"> (' + ride.leaderName + ') </span>';
                 htmlstringSecondbit[index] = '<button id="btnParticipants' + index + '" type="button" class="btn btn-lifted btn-info btn-responsive pull-right has-popover" >Rider List</button>   ';
-                htmlstringFourthbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info  btn-responsive pull-right" >' + joinButton[index] + '</button > </a>';
+                htmlstringThirdbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info  btn-responsive pull-right" >' + joinButton[index] + '</button > </a>';
+                htmlstringFourthbit[index] = '<a>' + ride.description + ', <i>meeting at: </i>' + ride.meetingAt + '</a>';
 
             });
 
@@ -323,7 +325,7 @@ var TCCrides = (function ($) {
             showRideList(rides);
             $.each(rides, function (index, ride) {
                 if (login.loggedOut()) {
-                    $('#join' + index).prop("disabled", true);
+                 //   $('#join' + index).prop("disabled", true);
                     $('#btnParticipants' + index).prop("disabled", true);
                 }
             });
@@ -390,13 +392,13 @@ var TCCrides = (function ($) {
     };
     TCCrides.DatesWithRides = [];
 
-    TCCrides.GetDatesOfRides = function()
-    {
-        rideData.myAjax("GetDatesWithRides", "POST", null, function (response) {
-            TCCrides.DatesWithRides = response;
-  //          rideData.CreateLists();
-        });
-    };
+  //  TCCrides.GetDatesOfRides = function()
+  //  {
+  //      rideData.myAjax("GetDatesWithRides", "POST", null, function (response) {
+  //          TCCrides.DatesWithRides = response;
+  ////          rideData.CreateLists();
+  //      });
+  //  };
 
     TCCrides.Ride = function (r_id, leader, date, time, meeting, id,descrip) {
         this.leaderName = leader;
@@ -419,13 +421,25 @@ var TCCrides = (function ($) {
         }
     });
 
+    TCCrides.setMeeting = function () {
+        var text = $("input[name='meet']:checked").parent('label').text();
+        $('#ride-meeting').val(text);
+    };
+    TCCrides.setMeetingEdit = function () {
+        var text = $("input[name='meet']:checked").parent('label').text();
+        $('#edit-ride-start').val(text);
+    };
+
     TCCrides.leadRide = function () {
         $('#convertToRide').show();
-      //  $('#route-url-label').hide();
-      //  $('#route-url').hide();
+        $("#meet2").prop('checked', true);
         $('#start-time').timepicker('setTime', '08:00 AM');
+        $("#meet1").click(TCCrides.setMeeting);
+        $("#meet2").click(TCCrides.setMeeting);
+        $("#meet3").click(TCCrides.setMeeting);
+        $("#meetOther").click(function () { $('#ride-meeting').val(''); });
 
-        //$("#rideDate1").datepicker({ todayBtn: false, autoclose: true, format: "dd M yyyy" });
+        
         
         thisRideDate = new Date();
         $("#rideDate1").datepicker({
@@ -532,6 +546,11 @@ var TCCrides = (function ($) {
         $("#edit-ride-distance").attr("value", thisRoute.distance);
         $("#edit-ride-start").attr("value", currentride.meetingAt);
         $("#edit-cancelRide").prop('disabled', true);
+
+        $("#meet11").click(TCCrides.setMeetingEdit);
+        $("#meet12").click(TCCrides.setMeetingEdit);
+        $("#meet13").click(TCCrides.setMeetingEdit);
+        $("#meet1Other").click(function () { $('#edit-ride-start').val(''); });
 
         if (thisRoute.hasGPX) {
             // cannot edit distance for routes wth GPX file

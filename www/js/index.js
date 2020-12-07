@@ -57,9 +57,6 @@
         //});
 
 
-        // prevent clicks while timer is downloading new data
-        // see http://malsup.com/jquery/block/
-        $(document).ajaxStart($.blockUI({ message: '<h3><img src="images/page-loader.gif" /> Just a moment...</h3>' })).ajaxStop($.unblockUI);
 
         var lasttab = 'rides-tab';
         // need to know which tab is in use so we know where to place map etc
@@ -144,7 +141,7 @@
 
         }
         //// get some preparory data from the DB
-        TCCrides.GetDatesOfRides();
+        //TCCrides.GetDatesOfRides();
 
     });
 

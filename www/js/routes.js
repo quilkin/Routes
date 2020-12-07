@@ -34,15 +34,20 @@ var TCCroutes = (function () {
                     return null;
                 }
                 if (alsoGetRides) {
-                    // get list of rides for next Sunday
-                    // find next Sunday's date
-                    var today = new Date();
-                    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-                    while (today.getDay() !== 0) {
-                        today = bleTime.addDays(today, 1);
-                    }
-                    TCCrides.CreateRideList(today);
-                    showRouteList();
+                    // first get a list of all dates that have rides arranged
+                    rideData.myAjax("GetDatesWithRides", "POST", null, function (response) {
+                        TCCrides.DatesWithRides = response;
+                        // now get list of rides for next Sunday
+                        // find next Sunday's date
+                        var today = new Date();
+                        today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                        while (today.getDay() !== 0) {
+                            today = bleTime.addDays(today, 1);
+                        }
+                        TCCrides.CreateRideList(today);
+                        showRouteList();
+                    });
+                    
                 }
                 return routes;
             });

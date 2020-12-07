@@ -94,6 +94,11 @@ var login = (function () {
         p = $("#password", form).val();
         remember = $("#remember").is(':checked');
 
+         // prevent clicks while timer is downloading new data
+         // see http://malsup.com/jquery/block/
+            $(document).ajaxStart($.blockUI({ message: '<h4><img src="images/page-loader.gif" /> Just a moment...</h4>' })).ajaxStop($.unblockUI);
+
+
         role = 0;
 
         if (u !== '' && p !== '') {
@@ -156,6 +161,10 @@ var login = (function () {
 
     function handleSignup() {
         var form, u, p1, p2, e, c, creds;
+
+        // prevent clicks while timer is downloading new data
+        // see http://malsup.com/jquery/block/
+        $(document).ajaxStart($.blockUI({ message: '<h4><img src="images/page-loader.gif" /> Just a moment...</h4>' })).ajaxStop($.unblockUI);
 
         form = $("#form-register");
         //disable the button so we can't resubmit while we wait
