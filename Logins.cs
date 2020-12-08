@@ -58,7 +58,8 @@ namespace Routes
             LogEntry log = new LogEntry("Login", login.Name);
             string result = "";
 
-            string query = string.Format("SELECT Id, name, pw, email, role, units, climbs FROM logins where name = '{0}'", login.Name);
+            // can now login with either username or email
+            string query = string.Format("SELECT Id, name, pw, email, role, units, climbs FROM logins where name = '{0}'  or email = '{0}'", login.Name);
             if (gpxConnection.IsConnect())
             {
                 try
@@ -79,13 +80,21 @@ namespace Routes
                             string dbemail = (string)dr["email"];
                             dbemail = dbemail.Trim();
 
-                            if (dbname == login.Name && dbpw == hash)
+                           // login with either username or email
+                            if ((dbname == login.Name && dbpw == hash) || (dbemail == login.Name && dbpw == hash))
                             {
+                                if (dbemail == login.Name)
+                                {
+                                    // change back to actual login name
+                                    login.Name = dbname;
+                                }
                                 login.Role = (int)dr["role"];
                                 login.ID = (int)dr["id"];
                                 login.Email = (string)dr["email"];
                                 login.Units = ((string)dr["units"])[0];
                                 login.Climbs = (int)dr["climbs"];
+                                // don't need to return the password
+                                login.PW = String.Empty;
                                 break;
                             }
                         }
