@@ -545,7 +545,7 @@ var TCCrides = (function ($) {
         $("#edit-ride-dest").attr("value", thisRoute.dest);
         $("#edit-ride-distance").attr("value", thisRoute.distance);
         $("#edit-ride-start").attr("value", currentride.meetingAt);
-        $("#edit-cancelRide").prop('disabled', true);
+        $("#edit-cancelRide").prop('readonly', true);
 
         $("#meet11").click(TCCrides.setMeetingEdit);
         $("#meet12").click(TCCrides.setMeetingEdit);
@@ -554,30 +554,26 @@ var TCCrides = (function ($) {
 
         if (thisRoute.hasGPX) {
             // cannot edit distance for routes wth GPX file
-            $("#edit-ride-distance").prop('disabled', true);
+            $("#edit-ride-distance").prop('readonly', true);
             $("#label-distance").html("To edit distance, please upload a different route using 'View all Routes'");
         }
         else {
-            $("#edit-ride-distance").prop('disabled', false);
+            $("#edit-ride-distance").prop('readonly', false);
             $("#label-distance").html("Distance" + units + ':');
         }
+        if (thisRoute.owner !==login.User()) {
+            // cannot edit name of someone else's route
+            $("#edit-ride-dest").prop('readonly', true);
+            $("#label-dest").html("You cannot edit the name of another user's route");
+        }
         if (pp[currentIndex][0] === '') {
-            $("#edit-cancelRide").prop('disabled', false);
+            $("#edit-cancelRide").prop('readonly', false);
             $("#edit-ride-title").html("Edit ride details");
         }
         else {
             // there are riders booked on this ride
             $("#edit-ride-title").html("There are rider(s) booked on this ride. Please make only minor changes!");
         }
-
-
-        //$("#edit-ride-ok").on("click", TCCrides.handleRideEdit);
-        //$("#edit-ride-cancel").on('click', function () {
-        //    $('#editRideModal').modal('hide');
-        //});
-        //$("#edit-cancelRide").on('click', function () {
-        //    rideData.deleteRide(currentride.rideID);
-        //});
 
     });
     $("#edit-ride-ok").on("click", TCCrides.handleRideEdit);

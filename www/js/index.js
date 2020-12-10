@@ -170,9 +170,13 @@ var bleApp = (function () {
                     lastClickTime = d;
                 }
                 else if (rideData.getCurrentTab() === 'rides-tab') {
-                    // update rides list in case other users have modified it
-                    TCCrides.clearPopovers(-1);
-                    TCCrides.CreateRideList(null);
+                    if ($('#editRideModal').is(':visible') === false) {
+                        if ($('#editRouteModal').is(':visible') === false) {
+                            // update rides list in case other users have modified it
+                            TCCrides.clearPopovers(-1);
+                            TCCrides.CreateRideList(null);
+                        }
+                    }
 
                 }
             }

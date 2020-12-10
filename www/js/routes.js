@@ -288,10 +288,10 @@ var TCCroutes = (function () {
 
         if (currentRoute.hasGPX) {
             // cannot edit distance for routes wth GPX file
-            $("#edit-route-distance").prop('disabled', true);
+            $("#edit-route-distance").prop('readonly', true);
         }
         else {
-            $("#edit-route-distance").prop('disabled', false);
+            $("#edit-route-distance").prop('readonly', false);
         }
        // $("#form-editroute").on("submit", handleRouteEdit);  // strange bug if this is used!
         $("#edit-ok").on("click", handleRouteEdit);
