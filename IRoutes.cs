@@ -24,6 +24,11 @@ namespace Routes
         IEnumerable<Route> GetRouteSummaries();
 
         [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/GetRoutesAll", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [ServiceKnownType(typeof(List<Route>))]
+        IEnumerable<Route> GetRoutesAll();
+
+        [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/GetRidesForDate", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         [ServiceKnownType(typeof(List<Ride>))]
         IEnumerable<Ride> GetRidesForDate(int date);

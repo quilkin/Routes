@@ -32,6 +32,9 @@
             var win = window.open("Rides-signup.htm");
             win.focus();
         });
+        $('#allRoutes').click(function () {
+            MultiMap.showRoutes();
+        });
         var today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         // find next Sunday's date
@@ -56,6 +59,11 @@
         //    $('.loader').remove();
         //});
 
+        $('#setupExisting').click(function () {
+            $('#routes-tab').tab('show');
+            rideData.setCurrentTab('routes-tab');
+        });
+        
 
 
         var lasttab = 'rides-tab';
@@ -169,16 +177,16 @@ var bleApp = (function () {
                     qPopup.Alert("No activity, you have been logged out");
                     lastClickTime = d;
                 }
-                else if (rideData.getCurrentTab() === 'rides-tab') {
-                    if ($('#editRideModal').is(':visible') === false) {
-                        if ($('#editRouteModal').is(':visible') === false) {
-                            // update rides list in case other users have modified it
-                            TCCrides.clearPopovers(-1);
-                            TCCrides.CreateRideList(null);
-                        }
-                    }
+                //else if (rideData.getCurrentTab() === 'rides-tab') {
+                //    if ($('#editRideModal').is(':visible') === false) {
+                //        if ($('#editRouteModal').is(':visible') === false && $('#editRideModal').is(':visible') === false) {
+                //            // update rides list in case other users have modified it
+                //            TCCrides.clearPopovers(-1);
+                //            TCCrides.CreateRideList(null);
+                //        }
+                //    }
 
-                }
+                //}
             }
 
 

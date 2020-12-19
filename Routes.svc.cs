@@ -253,6 +253,75 @@ namespace Routes
 
             return routes;
         }
+
+
+
+        public IEnumerable<Route> GetRoutesAll()
+        {
+            // get details of all routes including the GPX data
+            LogEntry log = new LogEntry("GetRoutesAll", "");
+
+            routes = new List<Route>();
+
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    string query = string.Format("SELECT * FROM routes ");
+
+                    using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataRoutes = new DataTable();
+                        routeAdapter.Fill(dataRoutes);
+                        int length = dataRoutes.Rows.Count;
+                        for (int row = 0; row < length; row++)
+                        {
+                            string dest = "", descrip = "", owner = "", gpx = "";
+                            int id, climbing = 0, distance = 0;
+                            bool hasGPX = false;
+                            try
+                            {
+                                DataRow dr = dataRoutes.Rows[row];
+                                id = (int)dr["id"];
+                                dest = (string)dr["dest"];
+                                descrip = (string)dr["description"];
+                                climbing = (int)dr["climbing"];
+                                distance = (int)dr["distance"];
+                                owner = (string)dr["ownername"];
+                                gpx = (string)dr["route"];
+                                Int32 h = Convert.ToInt32(dr["hasGPX"]);
+                                hasGPX = (h > 0);
+
+                                if (hasGPX)
+                                    routes.Add(new Route(hasGPX, gpx, dest, descrip, distance, climbing, owner, id));
+                            }
+                            catch (Exception ex)
+                            {
+                                Trace.WriteLine(ex.Message);
+                                log.Error = ex.Message;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    Trace.WriteLine(ex2.Message);
+                    log.Error = ex2.Message;
+                }
+
+                finally
+                {
+                    log.Result = routes.Count.ToString() + " routes altogether";
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            //else
+            //    return DBConnection.ErrStr;
+
+            return routes;
+        }
+
         public string GetGPXforRoute(int routeID)
         {
             LogEntry log = new LogEntry("GetGPXforRoute ", routeID.ToString());

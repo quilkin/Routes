@@ -31,7 +31,10 @@ var newRoute = (function ($) {
 
                 }
                 else {
-                    qPopup.Alert(response);
+                    if (response.includes("XML parse error"))
+                        qPopup.Alert("Error: please ensure that this is a GPX file");
+                    else
+                        qPopup.Alert(response);
                 }
 
             });

@@ -344,7 +344,7 @@ var TCCrides = (function ($) {
         var start = $("#edit-ride-start").val();
         var dest = $("#edit-ride-dest").val();
         var dist = $("#edit-ride-distance").val();
-
+        var newtime = starthours * 60 + startmins;
         if (dest.length < 2 || dist === '' || dist === 0) {
             qPopup.Alert("Destination and distance needed");
             return;
@@ -355,6 +355,7 @@ var TCCrides = (function ($) {
             thisRoute.dest = dest;
             currentride.description = descrip;
             currentride.meetingAt = start;
+            currentride.time = newtime;
             thisRoute.distance = dist;
             rideData.myAjax("EditRoute", "POST", thisRoute, function (response) {
                 if (response === 'OK') {
@@ -415,7 +416,14 @@ var TCCrides = (function ($) {
     };
     $('#start-time').timepicker().on('changeTime.timepicker', function (e) {
         if (e.time !== undefined) {
-           // console.log('The time is ' + e.time.value);
+         
+            starthours = e.time.hours;
+            startmins = e.time.minutes;
+        }
+    });
+    $('#start-time-edit').timepicker().on('changeTime.timepicker', function (e) {
+        if (e.time !== undefined) {
+           
             starthours = e.time.hours;
             startmins = e.time.minutes;
         }
@@ -551,6 +559,9 @@ var TCCrides = (function ($) {
         $("#meet12").click(TCCrides.setMeetingEdit);
         $("#meet13").click(TCCrides.setMeetingEdit);
         $("#meet1Other").click(function () { $('#edit-ride-start').val(''); });
+        // convert our time in minutes to a string for editing the time
+
+        $('#start-time-edit').timepicker('setTime', bleTime.fromIntTime(currentride.time));
 
         if (thisRoute.hasGPX) {
             // cannot edit distance for routes wth GPX file

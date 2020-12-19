@@ -20,4 +20,5 @@
 /// <reference path="www/js/newroute.js" />
 /// <reference path="www/js/mousePos.js" />
 /// <reference path="www/js/cafeMap.js" />
+/// <reference path="www/js/multimap.js" />
 /// <reference path="www/js-lib/gpx.js" />

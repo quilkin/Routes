@@ -175,6 +175,7 @@ L.GPX = L.FeatureGroup.extend({
                   });
           });
     },
+    get_latlngs: function () { return this._info.latlngs; },             //**** added by quilkin
     get_elevation_max: function () { return this._info.elevation.max; },
     get_elevation_min: function () { return this._info.elevation.min; },
     get_elevation_max_imp: function () { return this.to_ft(this.get_elevation_max()); },
@@ -260,7 +261,8 @@ L.GPX = L.FeatureGroup.extend({
             hr: { avg: 0, _total: 0, _points: [] },
             duration: { start: null, end: null, moving: 0, total: 0 },
             atemp: { avg: 0, _total: 0, _points: [] },
-            cad: { avg: 0, _total: 0, _points: [] }
+            cad: { avg: 0, _total: 0, _points: [] },
+            latlngs: []                              //**** added by quilkin
         };
     },
 
@@ -492,6 +494,8 @@ L.GPX = L.FeatureGroup.extend({
 
             this._info.elevation._points.push([this._info.length, ll.meta.ele]);
             this._info.duration.end = ll.meta.time;
+
+            this._info.latlngs.push(ll);        //**** added by quilkin
 
             if (last != null) {
                 this._info.length += this._dist3d(last, ll);

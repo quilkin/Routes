@@ -58,10 +58,10 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right" role="tablist" id="mytabs">
                     <li class="active"><a href="#panel-rides" id="rides-tab" role="tab" data-toggle="tab" aria-controls="rides-tab" aria-expanded="true"><i class="fa fa-calendar"></i><span> Calendar</span></a></li>
-                    <li><a href="#panel-routes" id="routes-tab" role="tab" data-toggle="tab" aria-controls="routes-tab"><i class="fa fa-map-signs"></i><span > All routes</span></a></li>
-                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup-tab"><i class="fa fa-wrench"></i><span > New ride</span></a></li>
-                    <li><a href="#panel-cafes" id="cafes-tab" role="tab" data-toggle="tab" aria-controls="cafe-tab"><i class="fa fa-coffee"></i><span > Coffee</span></a></li>
-                    <li><a href="#panel-account" id="account-tab" role="tab" data-toggle="tab" aria-controls="account-tab"><i class="fa fa-user"></i><span > Account</span></a></li>
+                    <li><a href="#panel-routes" id="routes-tab" role="tab" data-toggle="tab" aria-controls="routes-tab"><i class="fa fa-map-signs"></i><span> All routes</span></a></li>
+                    <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup-tab"><i class="fa fa-wrench"></i><span> New ride</span></a></li>
+                    <li><a href="#panel-cafes" id="cafes-tab" role="tab" data-toggle="tab" aria-controls="cafe-tab"><i class="fa fa-coffee"></i><span> Coffee</span></a></li>
+                    <li><a href="#panel-account" id="account-tab" role="tab" data-toggle="tab" aria-controls="account-tab"><i class="fa fa-user"></i><span> Account</span></a></li>
 
                     <!--<li class="dropdown">
                         <button class="btn btn-dropped btn-info btn-responsive" type="button" data-toggle="dropdown" id="userName">Username</button>
@@ -93,7 +93,7 @@
                         <div class="list-group scrollable-list" id="ridelist">
                             <a id="rideTitle" class="list-group-item list-group-item-info">Choose a ride</a>
                         </div>
-                        
+
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
@@ -131,8 +131,8 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="dropdown">
-                            <a style="color:blue;  font-size: larger">Suggested routes</a>
-                            <button class="btn btn-info btn-lifted pull-right btn-responsive" type="button" data-toggle="dropdown">Sort <span class="caret"></span></button><span id="help" role="button" class="btn btn-lifted  btn-info btn-sm btn-responsive pull-right">Help</span>'
+                            <a style="color:blue;  font-size: larger">Suggested routes</a><span id="allRoutes" role="button" class="btn btn-lifted  btn-info btn-sm btn-responsive">Show All</span>
+                            <button class="btn btn-info btn-lifted pull-right btn-responsive" type="button" data-toggle="dropdown">Sort <span class="caret"></span></button><span id="help" role="button" class="btn btn-lifted  btn-info btn-sm btn-responsive pull-right">Help</span>
                             <ul class="dropdown-menu  dropdown-menu-right">
                                 <li><a id="btnSortabc">alphabetically</a></li>
                                 <li><a id="btnSort123">by distance</a></li>
@@ -182,8 +182,26 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
+                        <div class="panel panel-primary" id="existingRoute">
+                            <div class="panel-heading" id="routeTitle">Three options....</div>
+                            <div class="panel-body">
+                                <form id="form-setup">
+                                    <div class="row">
+                                        <!--<div class="col-md-12">-->
+                                        <div class="form-group">
+                                            <label for="setupExisting" class="control-label side-label" id="route-url-label">Base your ride on an existing route:</label>
+                                            <button type="button" class="btn btn-info pull-right " id="setupExisting" data-dismiss="modal">OK</button>
+                                        </div>
+                                        <!--</div>-->
+                                    </div>
+                                </form>
+                            </div>
+                            <!--<div class="panel-footer">
+                                <button type="button" class="btn btn-info pull-right " id="setupExisting" data-dismiss="modal">OK</button>
+                            </div>-->
+                        </div> <!-- /panel-->
                         <div class="panel panel-primary" id="uploadRoute">
-                            <div class="panel-heading" id="routeTitle" data-toggle="tooltip" title="We will extract name and distance from the file">Upload a GPX or TCX route....</div>
+                            <div class="panel-heading" id="routeTitle" data-toggle="tooltip" title="We will extract name and distance from the file">....or upload a GPX or TCX route....</div>
                             <div class="panel-body">
                                 <form id="form-setup">
                                     <div class="row">
@@ -199,19 +217,13 @@
                                                 <input type="file" id="route-file" name="file" enctype="multipart/form-data" />
                                             </div>
                                         </div>
-                                        <!--<div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="route-descrip" class="control-label side-label">Description:</label>
-                                                <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="Help others to know if they would like to ride this route" id="route-descrip">
-                                            </div>
-                                        </div>-->
                                     </div>
                                 </form>
                             </div> <!-- /panel-body-->
                             <div class="panel-footer">
                                 <button type="button" class="btn btn-primary" id="cancelNewRoute" data-dismiss="modal">Cancel</button>
                                 <!--<button type="button" class="btn btn-info pull-right " id="leadRide" data-dismiss="modal">Lead a ride based on this route</button>-->
-                                <button type="button" class="btn btn-info pull-right " id="setupDone" data-dismiss="modal">Done</button>
+                                <button type="button" class="btn btn-info pull-right " id="setupDone" data-dismiss="modal">OK</button>
                             </div>
                         </div> <!-- /panel-->
                         <div class="panel panel-primary" id="manualRoute">
@@ -243,7 +255,7 @@
                             <div class="panel-footer">
                                 <button type="button" class="btn btn-primary" id="manual-cancelNewRoute" data-dismiss="modal">Cancel</button>
                                 <!--<button type="button" class="btn btn-info pull-right " id="manual-leadRide" data-dismiss="modal">Lead a ride based on this route</button>-->
-                                <button type="button" class="btn btn-info pull-right " id="manual-setupDone" data-dismiss="modal">Done</button>
+                                <button type="button" class="btn btn-info pull-right " id="manual-setupDone" data-dismiss="modal">OK</button>
                             </div>
                         </div> <!-- /panel-->
                         <div class="panel panel-primary" id="convertToRide">
@@ -390,7 +402,7 @@
                                 </div>
                             </form>
                         </div>
-                        </div>
+                    </div>
                 </div>  <!-- /row -->
             </div> <!-- /container -->
         </div>
@@ -511,7 +523,7 @@
                 <div class="modal-body">
                     <form id="form-editride">
                         <div class="form-group">
-                            <label for="edit-ride-dest" class="control-label side-label"id="label-dest">Destination:</label>
+                            <label for="edit-ride-dest" class="control-label side-label" id="label-dest">Destination:</label>
                             <input type="text" class="form-control  side-input detectChange" data-toggle="tooltip" title="your coffee stop? " id="edit-ride-dest">
                             <label for="edit-ride-distance" class="control-label side-label" id="label-distance">Distance (km):</label>
                             <input type="number" class="form-control side-input detectChange" id="edit-ride-distance">
@@ -525,6 +537,15 @@
                             <input type="text" class="form-control side-input detectChange" id="edit-ride-start">
                             <label for="edit-ride-description" class="control-label side-label">Description / Notes:</label>
                             <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="Easy? Hard? Any useful info :)" id="edit-ride-description">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="input-group bootstrap-timepicker timepicker">
+                                        <label for="start-time-edit" class="control-label side-label">Starting at time:</label>
+                                        <input id="start-time-edit" type="text" class="form-control input-sm" data-show-Meridian="false" data-template="modal" />
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -586,20 +607,22 @@
     <script src="js/timesdates.js"></script>
     <script src="js/popups.js"></script>
     <script src="js/cafeMap.js?version=4"></script>
+    <script src="js/multimap.js?version=1"></script>
     <script src="js/login.js?version=5.1"></script>
-    <script src="js/index.js?version=5.1"></script>
+    <script src="js/index.js?version=5.2"></script>
     <script src="js/serial.js"></script>
     <script src="js-lib/gpx.js"></script>
     <script src="js-lib/blockui.js"></script>
 
     <script src="js-lib/bootstrap-datepicker.js"></script>
     <script src="js-lib/bootstrap-timepicker.min.js"></script>
-    <script src="js/routes.js?version=4.1"></script>
-    <script src="js/rides.js?version=6.1"></script>
+    <script src="js/routes.js?version=4.2"></script>
+    <script src="js/rides.js?version=6.2"></script>
     <script src="js/server.js"></script>
     <script src="js/TTdata.js?version=4.1"></script>
     <script src="js/map.js?version=4"></script>
     <script src="js/newroute.js?version=4"></script>
+
 
 
 </body>

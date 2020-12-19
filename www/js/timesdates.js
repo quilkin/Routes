@@ -50,7 +50,7 @@ var bleTime = (function () {
         },
         fromIntTime: function (intTime) {
             // return time of day from minutes;
-            var hours = (intTime / 60).toFixed(0);
+            var hours = Math.floor(intTime / 60);
             var mins = intTime % 60;
             return pad2(hours) + ':' +pad2(mins);
         },

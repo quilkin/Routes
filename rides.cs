@@ -355,22 +355,17 @@ namespace Routes
                     }
                     else
                     {
-
                         // todo: this string is now redundant
                         string riders = "*";
 
-                        //using (System.Net.WebClient client = new System.Net.WebClient())
+                        query = string.Format("insert into Participants (rider, rideID) values ('{0}','{1}')", pp.Rider, pp.rideID);
+
+                        using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                         {
+                            successRows = command.ExecuteNonQuery();
 
-                            query = string.Format("insert into Participants (rider, rideID) values ('{0}','{1}')", pp.Rider, pp.rideID);
-
-                            using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
-                            {
-                                successRows = command.ExecuteNonQuery();
-
-                            }
-                            result = riders;
                         }
+                        result = riders;
 
                     }
                 }
@@ -425,18 +420,16 @@ namespace Routes
                     }
                     else
                     {
-                        //using (System.Net.WebClient client = new System.Net.WebClient())
+
+                        query = string.Format("delete from Participants where rider = '{0}'and rideID = {1}", pp.Rider, pp.rideID);
+
+                        using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                         {
+                            successRows = command.ExecuteNonQuery();
 
-                            query = string.Format("delete from Participants where rider = '{0}'and rideID = {1}", pp.Rider, pp.rideID);
-
-                            using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
-                            {
-                                successRows = command.ExecuteNonQuery();
-
-                            }
-                            result = "OK";
                         }
+                        result = "OK";
+
                     }
                 }
                 catch (Exception ex)
@@ -469,15 +462,12 @@ namespace Routes
             {
                 try
                 {
-                    //using (System.Net.WebClient client = new System.Net.WebClient())
-                    {
                         string query = string.Format("delete from rides where rideID = {0}", rideID);
                         using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                         {
                             successRows = command.ExecuteNonQuery();
                         }
                         result = "OK";
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -495,7 +485,7 @@ namespace Routes
                 return DBConnection.ErrStr;
             return result;
         }
-        // change destination or description
+        // change meetingAt, description, start time
         public string EditRide(Ride ride)
         {
             ride.MeetAt = GetRidOfApostrophes(ride.MeetAt);
@@ -506,22 +496,16 @@ namespace Routes
             string result = "";
             if (gpxConnection.IsConnect())
             {
-
                 try
                 {
-                    //using (System.Net.WebClient client = new System.Net.WebClient())
+                    string query = string.Format("update rides set meetingAt = '{0}', description = '{1}', time = {2} where rideID = {3}", ride.MeetAt, ride.Descrip, ride.Time, ride.ID);
+
+                    using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                     {
+                        command.ExecuteNonQuery();
 
-
-                        string query = string.Format("update rides set meetingAt = '{0}', description = '{1}' where rideID = {2}", ride.MeetAt, ride.Descrip, ride.ID);
-
-                        using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
-                        {
-                            command.ExecuteNonQuery();
-
-                        }
-                        result = "OK";
                     }
+                    result = "OK";
                 }
                 catch (Exception ex2)
                 {

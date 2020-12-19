@@ -65,6 +65,9 @@
         var tab = rideData.getCurrentTab();
         var mapid = "routes-map";
         var elevid = "routes-elev";
+        var elev_data;
+        var latlng_data;
+
         var map_pane = document.getElementById('routes');
         if (tab === 'setup-tab') {
             mapid = "setup-map";
@@ -111,9 +114,36 @@
                 endIconUrl: '',
                 shadowUrl: ''
             }
+        }).on('addline', function (e) {
+            console.log(e.line);
+            e.line.on('mouseover', function (e) {
+                var lat = e.latlng.lat;
+                var lng = e.latlng.lng;
+                $.each(latlng_data, function (index, data) {
+                    if (Math.abs(data.lat - lat) < 0.001) {
+                        if (Math.abs(data.lng - lng) < 0.001) {
+                            var dist = Math.round(elev_data[index][0]);
+                            var metric = (login.Units() === 'k');
+                            var popup = L.popup(
+                                {
+                                    maxWidth: 100,
+                                    className: 'custompopup',
+                                    closeButton: false
+                                })
+                                .setLatLng(data)
+                                .setContent(metric ? dist + ' km' : Math.round(dist * 0.62137) + ' miles')
+                                .openOn(map);
+                            return false;
+                            //var chartPoint = categoryAxis.categoryToPoint(dist);  // not available in this version of AMCharts
+                            //chart.cursor.triggerMove(chartPoint, false);
+                        }
+                    }
+                });
+
+            });
         }).on('loaded', function (e) {
             var gpx = e.target;
-            var elev_data;
+            //var elev_data;
             var bounds = gpx.getBounds();
             map.fitBounds(bounds);
 
@@ -170,6 +200,7 @@
                 _c('elevation-gain').textContent = elev_gain;
                 _c('elevation-loss').textContent = elev_loss;
 
+                latlng_data = gpx.get_latlngs();
                 if (gpx.get_elevation_gain() > 0 && gpx.get_elevation_loss() > 0) {
                     var maxheight = 0;
                     if (metric) {
