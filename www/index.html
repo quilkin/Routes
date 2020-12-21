@@ -39,9 +39,13 @@
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
+    <!--<script src="js-lib/jquery-1.11.1.min.js"></script>
+    <script>   $(function () {  $("#includedTabs").load("tabs.html");   });  </script>-->
+
 </head>
 
 <body>
+
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -77,6 +81,7 @@
         </div>
     </nav>
 
+
     <div id="myTabContent" class="tab-content">
 
         <!--tab for listing rides for a chosen date-->
@@ -99,6 +104,7 @@
                         <div class="panel panel-primary">
                             <div id="rides" class="panel-body gpx" data-map-target="rides-map" data-elev-target="rides-elev">
                                 <header>
+                                    <!--<a id="getGPX1" role="button" class="btn btn-lifted  btn-info btn-sm btn-responsive" data-toggle="tooltip" title="Get this into your PC's download folder so you can load into Garmin etc">Get GPX</a>-->
                                     <h4>Truro cycling club weekly rides</h4>
                                 </header>
                                 <article>
@@ -149,9 +155,12 @@
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
+                        
                             <div id="routes" class="panel-body gpx" data-map-target="routes-map" data-elev-target="routes-elev">
                                 <header>
-                                    <h4>Trurocycling.org routes</h4>
+                                    <h4 id="mapTitle2">Trurocycling.org routes</h4>
+                                    <!--<a id="getGPX2" role="button" class="btn btn-lifted  btn-info btn-sm btn-responsive pull-right" data-toggle="tooltip" title="Get this into your PC's download folder so you can load into Garmin etc">Get GPX</a>
+                                    <button type="button" id="leadRide" class="btn btn-lifted  btn-info btn-sm btn-responsive pull-right" data-toggle="tooltip" title="Lead a ride based on this route">Lead ride</button>-->
                                 </header>
                                 <article>
                                     <div class="map" id="routes-map"></div>
@@ -187,12 +196,17 @@
                             <div class="panel-body">
                                 <form id="form-setup">
                                     <div class="row">
-                                        <!--<div class="col-md-12">-->
-                                        <div class="form-group">
-                                            <label for="setupExisting" class="control-label side-label" id="route-url-label">Base your ride on an existing route:</label>
-                                            <button type="button" class="btn btn-info pull-right " id="setupExisting" data-dismiss="modal">OK</button>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="setupExisting" class="control-label side-label" id="route-url-label">Base your ride on an existing route</label>
+                                                <p></p>(Please check existing routes before uploading a new route)
+                                            </div>
                                         </div>
-                                        <!--</div>-->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-info pull-right " id="setupExisting" data-dismiss="modal">Check existing routes</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -215,6 +229,12 @@
                                             <div class="form-group">
                                                 <label for="route-file" class="control-label side-label" id="route-file-label">or file on your computer:</label>
                                                 <input type="file" id="route-file" name="file" enctype="multipart/form-data" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="route-dest" class="control-label side-label">Destination:</label>
+                                                <input type="text" class="form-control  side-input detectChange" data-toggle="tooltip" title="your coffee stop? " id="route-dest">
                                             </div>
                                         </div>
                                     </div>
@@ -312,9 +332,10 @@
                     </div> <!-- /col-->
                     <div class="col-md-6">
                         <div class="panel panel-primary">
+                      
                             <div id="setup" class="panel-body gpx" data-map-target="setup-map" data-elev-target="setup-elev">
                                 <header>
-                                    <h4>Upload a new route</h4>
+                                    <h4 id="mapTitle">Upload a new route</h4>
                                 </header>
 
                                 <article>
@@ -342,6 +363,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
+                       
                             <div id="cafe" class="panel-body gpx" data-map-target="cafe-map">
                                 <header>
                                     <h4>Suggested Coffee Stops</h4>
@@ -408,6 +430,8 @@
         </div>
 
     </div> <!-- /tab-content -->
+
+
 
     <div id="loginModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -594,6 +618,7 @@
     <!--<script src="cordova.js"></script>-->
 
     <script src="js-lib/jquery-1.11.1.min.js"></script>
+
     <script src="js-lib/bootstrap.min.js"></script>
     <script src="js-lib/leaflet.js"></script>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>-->
@@ -604,24 +629,24 @@
     <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
 
-    <script src="js/timesdates.js"></script>
+    <script src="js/timesdates.js?version=1.2"></script>
     <script src="js/popups.js"></script>
-    <script src="js/cafeMap.js?version=4"></script>
-    <script src="js/multimap.js?version=1"></script>
+    <script src="js/cafeMap.js?version=4.1"></script>
+    <script src="js/multimap.js?version=1.0"></script>
     <script src="js/login.js?version=5.1"></script>
-    <script src="js/index.js?version=5.2"></script>
+    <script src="js/index.js?version=5.3"></script>
     <script src="js/serial.js"></script>
-    <script src="js-lib/gpx.js"></script>
+    <script src="js-lib/gpx.js?version=1.2"></script>
     <script src="js-lib/blockui.js"></script>
 
     <script src="js-lib/bootstrap-datepicker.js"></script>
     <script src="js-lib/bootstrap-timepicker.min.js"></script>
-    <script src="js/routes.js?version=4.2"></script>
-    <script src="js/rides.js?version=6.2"></script>
+    <script src="js/routes.js?version=4.3"></script>
+    <script src="js/rides.js?version=6.3"></script>
     <script src="js/server.js"></script>
     <script src="js/TTdata.js?version=4.1"></script>
-    <script src="js/map.js?version=4"></script>
-    <script src="js/newroute.js?version=4"></script>
+    <script src="js/map.js?version=4.1"></script>
+    <script src="js/newroute.js?version=4.2"></script>
 
 
 

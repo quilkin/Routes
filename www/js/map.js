@@ -115,7 +115,7 @@
                 shadowUrl: ''
             }
         }).on('addline', function (e) {
-            console.log(e.line);
+            //console.log(e.line);
             e.line.on('mouseover', function (e) {
                 var lat = e.latlng.lat;
                 var lng = e.latlng.lng;
@@ -146,13 +146,16 @@
             //var elev_data;
             var bounds = gpx.getBounds();
             map.fitBounds(bounds);
+            console.log('bounds: ' +bounds._southWest.lat);
 
 
             var distance = (gpx.get_distance() / 1000).toFixed(0);
             var elev_gain = gpx.get_elevation_gain().toFixed(0);
             var elev_loss = gpx.get_elevation_loss().toFixed(0);
 
-            var name = TCCroutes.currentRoute().dest;
+            var name = '';
+            if (TCCroutes.currentRoute() !== null)
+                name = TCCroutes.currentRoute().dest;
             if (name === '' || listedRoute === false) {
                 name = gpx.get_name();
             }
@@ -175,12 +178,36 @@
                 // add a download link
                 var a = document.createElement('a');
                 var linkText = document.createTextNode("Get GPX");
-                a.style.textDecoration = "underline";
+                a.setAttribute('class', "btn btn-lifted  btn-info btn-sm btn-responsive");
                 a.appendChild(linkText);
                 a.title = "Get this into your PC's download folder so you can load into Garmin etc";
                 a.href = 'data:text/csv;base64,' + btoa(gpxdata);
                 a.download = name + '.gpx';
+
                 _t('h4').appendChild(a);
+
+                if (tab === 'routes-tab') {
+                    var b = document.createElement('a');
+                    linkText = document.createTextNode("Lead Ride");
+                    b.setAttribute('class', "btn btn-lifted  btn-info btn-sm btn-responsive");
+                    b.appendChild(linkText);
+                    b.title = "Lead a ride based on this route";
+                    b.onclick = function () {
+                        rideData.switchingFromLeadRide = true;
+                        // move to different tab
+                        rideData.setCurrentTab('setup-tab');
+                        $('#setup-tab').tab('show');
+                        $('#uploadRoute').hide();
+                        $('#manualRoute').hide();
+                        $('#existingRoute').hide();
+                        TCCMap.showRoute();
+                        TCCrides.leadRide();
+                    };
+
+
+                    _t('h4').appendChild(b);
+
+                }
 
                 // prepare a profile chart
                 var metric = (login.Units() === 'k');
@@ -244,9 +271,13 @@
             TCCMap.showRouteStage2(null, false);
             return null;
         }
+        var gpxdata = currentroute.url;
+        if (gpxdata !== null && gpxdata.length > 1000) {
+            // already have it
+            TCCMap.showRouteStage2(gpxdata, true);
+        }
 
         var routeID = currentroute.id;
-        var gpxdata = null;
 
         rideData.myAjax("GetGPXforRoute", "POST", routeID, function (response) {
             gpxdata = response;

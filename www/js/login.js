@@ -96,7 +96,7 @@ var login = (function () {
 
          // prevent clicks while timer is downloading new data
          // see http://malsup.com/jquery/block/
-            $(document).ajaxStart($.blockUI({ message: '<h4><img src="images/page-loader.gif" /> Just a moment...</h4>' })).ajaxStop($.unblockUI);
+        $(document).ajaxStart($.blockUI({ message: '<h4><img src="images/page-loader.gif" />wait...</h4>' })).ajaxStop($.unblockUI);
 
 
         role = 0;
@@ -164,7 +164,7 @@ var login = (function () {
 
         // prevent clicks while timer is downloading new data
         // see http://malsup.com/jquery/block/
-        $(document).ajaxStart($.blockUI({ message: '<h4><img src="images/page-loader.gif" /> Just a moment...</h4>' })).ajaxStop($.unblockUI);
+        $(document).ajaxStart($.blockUI({ message: '<h4><img src="images/page-loader.gif" />wait...</h4>' })).ajaxStop($.unblockUI);
 
         form = $("#form-register");
         //disable the button so we can't resubmit while we wait

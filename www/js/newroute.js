@@ -16,19 +16,18 @@ var newRoute = (function ($) {
                     if (temproute.hasGPX === false) {
                         $('#uploadRoute').hide();
                         $('#manualRoute').hide();
+                        $('#existingRoute').hide();
                         TCCrides.leadRide();
-                      //  $('#manual-leadRide').show();
                     }
                     else {
                         TCCMap.showRoute();
                         TCCroutes.CreateRouteList(false);
                         $('#uploadRoute').hide();
                         $('#manualRoute').hide();
+                        $('#existingRoute').hide();
+                        qPopup.Alert("Route uploaded. You (or others) can now create ride(s) based on this route");
                         TCCrides.leadRide();
-                        //$('#leadRide').show();
                     }
-                    
-
                 }
                 else {
                     if (response.includes("XML parse error"))
@@ -85,15 +84,16 @@ var newRoute = (function ($) {
     $('#uploadRoute').show();
     $("#setupDone").show();
     $('#manualRoute').show();
+    $('#existingRoute').show();
     $("#manual-setupDone").show();
 
   //  $('#leadRide').hide();
-    $('#manual-leadRide').hide();
+   // $('#manual-leadRide').hide();
 
     $('#convertToRide').hide();
 
-    $("#leadRide").on('click', TCCrides.leadRide);
-    $("#manual-leadRide").on('click', TCCrides.leadRide);
+    //$("#leadRide").on('click', TCCrides.leadRide);
+    //$("#manual-leadRide").on('click', TCCrides.leadRide);
 
     document.getElementById('route-file').onchange = function (e) {
         readFile(e.srcElement.files[0]);
@@ -145,10 +145,9 @@ var newRoute = (function ($) {
             qPopup.Alert("You need to register for this");
             return;
         }
-        //var descrip = $("#route-descrip").val();
+        var dest = $("#route-dest").val();
         var url = $("#route-url").val();
         var owner = login.User();
-        var dest = '';
 
         temproute = new TCCroutes.Route(url, dest, '', 0, 0, owner, 0);
 

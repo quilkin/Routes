@@ -4,9 +4,12 @@
 (function () {
     "use strict";
 
-   
+    
 
     $(document).ready(function () {
+
+        
+
         $(".navbar-nav li a").click(function (event) {
             $(".navbar-collapse").collapse('hide');
         });
@@ -35,6 +38,8 @@
         $('#allRoutes').click(function () {
             MultiMap.showRoutes();
         });
+
+
         var today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         // find next Sunday's date
@@ -74,13 +79,21 @@
             rideData.setCurrentTab(tab);
             console.log(tab);
             if (tab === 'setup-tab') {
-                if ($('#convertToRide').is(":hidden")) {
+                if ($('#convertToRide').is(":hidden") || rideData.switchingFromLeadRide===false)
+                {
                     $('#uploadRoute').show();
                     $('#manualRoute').show();
+                    $('#existingRoute').show();
+                    $('#convertToRide').hide();
+                    $('#mapTitle').html('');
+
                 }
+                rideData.switchingFromLeadRide = false;
+                
             }
             if (tab === 'routes-tab') {
-                TCCroutes.ShowStartLocation();
+                MultiMap.showRoutes();
+                //TCCroutes.ShowStartLocation();
             }
             if (tab === 'cafes-tab') {
                 mapOfCafes.createMap();
@@ -148,8 +161,6 @@
             $(".navbar-nav a[href=#rides-tab]").tab('show');
 
         }
-        //// get some preparory data from the DB
-        //TCCrides.GetDatesOfRides();
 
     });
 
@@ -177,16 +188,7 @@ var bleApp = (function () {
                     qPopup.Alert("No activity, you have been logged out");
                     lastClickTime = d;
                 }
-                //else if (rideData.getCurrentTab() === 'rides-tab') {
-                //    if ($('#editRideModal').is(':visible') === false) {
-                //        if ($('#editRouteModal').is(':visible') === false && $('#editRideModal').is(':visible') === false) {
-                //            // update rides list in case other users have modified it
-                //            TCCrides.clearPopovers(-1);
-                //            TCCrides.CreateRideList(null);
-                //        }
-                //    }
 
-                //}
             }
 
 

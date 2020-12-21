@@ -260,6 +260,7 @@ var TCCroutes = (function () {
         $('#setup-tab').tab('show');
         $('#uploadRoute').hide();
         $('#manualRoute').hide();
+        $('#existingRoute').hide();
         TCCMap.showRoute();
         TCCrides.leadRide();
     });

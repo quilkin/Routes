@@ -254,3 +254,15 @@ h4 {
     overflow: hidden; /* "overflow" value must be different from  visible"*/
     text-overflow: ellipsis; /* IE, Safari (WebKit), Opera >= 11, FF > 6 */
 }
+.mapbutton {
+    display: block;
+    width: 115px;
+    height: 25px;
+    background: #4E9CAF;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    line-height: 25px;
+}

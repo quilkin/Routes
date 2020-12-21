@@ -6,7 +6,7 @@ var rideData = (function ($) {
 
     var rideData = {},
 
-
+       switchingFromLeadRide = false,              // this is a bit of a fudge. Need a state machine really.
 
         rideDate,
         newDate,
