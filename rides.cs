@@ -11,6 +11,8 @@ namespace Routes
     [DataContract]
     public class Ride
     {
+        public const int maxRiders = 10;
+
 
         [DataMember(Name = "rideID")]
         public int ID { get; set; }
@@ -33,7 +35,10 @@ namespace Routes
         [DataMember(Name = "description")]
         public string Descrip { get; set; }
 
-        public Ride(int r_ID, string lead, int id, int date, int time, string meet, string descrip)
+        [DataMember(Name = "groupSize")]
+        public int GroupSize { get; set; }
+
+        public Ride(int r_ID, string lead, int id, int date, int time, string meet, string descrip, int size)
         {
             routeID = r_ID;
             LeaderName = lead;
@@ -42,6 +47,7 @@ namespace Routes
             MeetAt = meet;
             Descrip = descrip;
             ID = id;
+            GroupSize = size;
         }
 
     }
@@ -115,8 +121,8 @@ namespace Routes
                         //using (System.Net.WebClient client = new System.Net.WebClient())
                         {
 
-                            query = string.Format("insert into rides (routeID,leaderName,date,time,meetingAt,description) values ('{0}','{1}','{2}','{3}','{4}','{5}')",
-                                ride.routeID, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt, ride.Descrip);
+                            query = string.Format("insert into rides (routeID,leaderName,date,time,meetingAt,description,groupSize) values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}')",
+                                ride.routeID, ride.LeaderName, ride.Date, ride.Time, ride.MeetAt, ride.Descrip, ride.GroupSize);
                             // get new ride ID
                             query += "; SELECT CAST(LAST_INSERT_ID() AS int)";
                             object rideID = null;
@@ -165,7 +171,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT rideID,routeID,date,time,meetingAt,leaderName,description FROM rides where date= {0}", date);
+                    string query = string.Format("SELECT rideID,routeID,date,time,meetingAt,leaderName,description,groupSize FROM rides where date= {0}", date);
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -175,7 +181,7 @@ namespace Routes
                         for (int row = 0; row < length; row++)
                         {
                             string meet = "", leader = "", descrip="";
-                            int time = 0, id, routeID = 0;
+                            int time = 0, id, routeID = 0, size=10;
                             DataRow dr = dataRoutes.Rows[row];
                             try
                             {
@@ -186,9 +192,10 @@ namespace Routes
                                 date = (int)dr["date"];
                                 time = (int)dr["time"]; 
                                 leader = (string)dr["leadername"]; 
-                                descrip = (string)dr["description"]; 
+                                descrip = (string)dr["description"];
+                                size = (int)dr["groupSize"];
 
-                                rides.Add(new Ride(routeID, leader, id, date, time, meet,descrip));
+                                rides.Add(new Ride(routeID, leader, id, date, time, meet,descrip,size));
                             }
                             catch (Exception ex)
                             {
@@ -248,7 +255,7 @@ namespace Routes
                                 try { leader = (string)dr["leadername"]; } catch { }
                                 
                                 //DateTime dt = Logdata.JSDateToDateTime(date);
-                                rides.Add(new Ride(routeID, leader, 0, date, 0, "",""));
+                                rides.Add(new Ride(routeID, leader, 0, date, 0, "","",Ride.maxRiders));
                                 
                             }
                             catch (Exception ex)
@@ -302,9 +309,9 @@ namespace Routes
                                 DataRow dr = dataRoutes.Rows[row];
                                 pp = pp + (string)dr["rider"] + ",";
                             }
-
                         }
-                        participants[index++] = pp;
+
+                        participants[index++] = pp; 
 
                     }
                 }
@@ -498,7 +505,8 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("update rides set meetingAt = '{0}', description = '{1}', time = {2} where rideID = {3}", ride.MeetAt, ride.Descrip, ride.Time, ride.ID);
+                    string query = string.Format("update rides set meetingAt = '{0}', description = '{1}', time = {2}, groupSize = {3} where rideID = {4}",
+                        ride.MeetAt, ride.Descrip, ride.Time, ride.GroupSize, ride.ID);
 
                     using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
                     {

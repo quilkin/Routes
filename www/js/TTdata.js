@@ -129,6 +129,27 @@ var rideData = (function ($) {
         }, null, -10);
         return list;
     };
+
+    // not yet implemented
+    //rideData.saveGuest = function (rideID, rider) {
+    //    var list = "";
+    //    qPopup.Confirm("Join a guest for this ride", "Are you sure?", function () {
+    //        var pp = new TCCrides.Participant(rider, rideID);
+    //        rideData.myAjax("SaveParticipant", "POST", pp, function (response) {
+    //            if (response[0] === '*') {
+    //                // a list of riders entered
+    //                list = response.substr(1);
+    //                qPopup.Alert("A guest has been added to this ride");
+    //                TCCrides.CreateRideList(null);
+    //            }
+    //            else {
+    //                qPopup.Alert(response);
+    //            }
+    //        });
+    //    }, null, -10);
+    //    return list;
+    //};
+
     rideData.leaveParticipant = function (rideID, rider) {
         qPopup.Confirm("Leave this ride", "Are you sure?", function () {
             var pp = new TCCrides.Participant(rider, rideID);
@@ -202,7 +223,11 @@ var rideData = (function ($) {
     };
 
     rideData.setDateChooser = function (btntext) {
-        $('#dateTitle').html(bleTime.DateString(rideDate) + '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span><span id="help" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">Help</span>');
+        $('#dateTitle').html(bleTime.DateString(rideDate) + '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span><span id="help3" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">Help</span>');
+        $('#help3').click(function () {
+            var win = window.open("Rides-signup.htm");
+            win.focus();
+        });
         
     };
           

@@ -37,7 +37,6 @@ namespace Routes
         [WebInvoke(Method = "POST", UriTemplate = "/GetDatesWithRides", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         [ServiceKnownType(typeof(List<Ride>))]
         IEnumerable<Ride> GetRecentRides();
-
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/GetGPXforRoute", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         [ServiceKnownType(typeof(string))]
@@ -123,5 +122,8 @@ namespace Routes
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/EditRide", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string EditRide(Ride ride);
+
+
+
     }
 }

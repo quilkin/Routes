@@ -181,7 +181,7 @@
                 a.setAttribute('class', "btn btn-lifted  btn-info btn-sm btn-responsive");
                 a.appendChild(linkText);
                 a.title = "Get this into your PC's download folder so you can load into Garmin etc";
-                a.href = 'data:text/csv;base64,' + btoa(gpxdata);
+                a.href = 'data:application/gpx+xml;base64,' + btoa(gpxdata);
                 a.download = name + '.gpx';
 
                 _t('h4').appendChild(a);

@@ -108,8 +108,8 @@ var newRoute = (function ($) {
             return;
         }
        
-        var descrip  = $("#manual-route-descrip").val();
-        var dest = $("#route-dest").val();
+        //var descrip  = $("#manual-route-descrip").val();
+        var dest = $("#manual-route-dest").val();
         var dist = $("#route-distance").val();
         if (dist === '') dist = 0;
         dist = Number(dist);

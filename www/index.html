@@ -194,7 +194,7 @@
                         <div class="panel panel-primary" id="existingRoute">
                             <div class="panel-heading" id="routeTitle">Three options....</div>
                             <div class="panel-body">
-                                <form id="form-setup">
+                                <form id="form-setup-existing">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -253,8 +253,8 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="route-dest" class="control-label side-label">Destination:</label>
-                                                <input type="text" class="form-control  side-input detectChange" data-toggle="tooltip" title="your coffee stop? " id="route-dest" required>
+                                                <label for="manual-route-dest" class="control-label side-label">Destination:</label>
+                                                <input type="text" class="form-control  side-input detectChange" data-toggle="tooltip" title="your coffee stop? " id="manual-route-dest" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -318,7 +318,10 @@
                                                     <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
                                                 </div>
                                             </div>
+                                            <label for="ride-maxriders" class="control-label side-label" id="label-maxriders">Maximum riders:</label>
+                                            <input type="number" id="ride-maxriders" data-toggle="tooltip" value="10" min="3" max="10" title="Most you are willing to lead, including yourself">
                                         </div>
+
                                     </div>
                                 </form>
 
@@ -542,7 +545,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="edit-ride-title">Edit ride details</h4>
-                    <button class="btn btn-info pull-right" id="edit-cancelRide" type="button">Cancel this ride</button>
+                    
                 </div>
                 <div class="modal-body">
                     <form id="form-editride">
@@ -561,6 +564,9 @@
                             <input type="text" class="form-control side-input detectChange" id="edit-ride-start">
                             <label for="edit-ride-description" class="control-label side-label">Description / Notes:</label>
                             <input type="text" class="form-control side-input detectChange" data-toggle="tooltip" title="Easy? Hard? Any useful info :)" id="edit-ride-description">
+                            <label for="edit-ride-maxriders" class="control-label side-label" id="label-maxriders">Maximum riders:</label>
+                            <input type="number" class="form-control side-input detectChange" id="edit-ride-maxriders" value="10" min="3" max="10" data-toggle="tooltip" title="Most you are willing to lead, including yourself">
+
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <div class="input-group bootstrap-timepicker timepicker">
@@ -574,6 +580,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
+                    <button class="btn btn-info" id="edit-cancelRide" type="button">Delete this ride</button>
                     <button class="btn btn-info" id="edit-ride-cancel" type="button">Cancel editing</button>
                     <button class="btn btn-primary pull-right" type="submit" id="edit-ride-ok" data-loading-text="Checking...">Submit</button>
                 </div>
@@ -641,12 +648,12 @@
 
     <script src="js-lib/bootstrap-datepicker.js"></script>
     <script src="js-lib/bootstrap-timepicker.min.js"></script>
-    <script src="js/routes.js?version=4.3"></script>
-    <script src="js/rides.js?version=6.3"></script>
+    <script src="js/routes.js?version=4.4"></script>
+    <script src="js/rides.js?version=6.4"></script>
     <script src="js/server.js"></script>
-    <script src="js/TTdata.js?version=4.1"></script>
-    <script src="js/map.js?version=4.1"></script>
-    <script src="js/newroute.js?version=4.2"></script>
+    <script src="js/TTdata.js?version=4.3"></script>
+    <script src="js/map.js?version=4.3"></script>
+    <script src="js/newroute.js?version=4.3"></script>
 
 
 

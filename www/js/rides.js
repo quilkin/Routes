@@ -13,11 +13,15 @@ var TCCrides = (function ($) {
 //[DataMember(Name = "time")]        public int Time { get; set; }
 //[DataMember(Name = "meetingAt")]        public string MeetAt { get; set; }
 //[DataMember(Name = "description")]        public string Description { get; set; }
+//[DataMember(Name = "groupSize")]       public int GroupSize { get; set; }
+
     const maxridesperday = 10;
+    const maxRidersPerRide = 10;
     const message = ", and cannot join more than one ride each day";
     const joinText = 'Join';
     const leaveText = 'Leave';
     const reserveText = 'Reserve';
+    const guestText = 'Add Guest';
     const leaveReserveText = 'UnReserve';
     const editRideText = 'Edit/Cancel';
 
@@ -32,8 +36,12 @@ var TCCrides = (function ($) {
         //array of lists of reserve participants, each member will be a string of paticipants for that ride
         reserves = [],
 
-        // a lit of all recent and future dates that have rides attached
+        // a list of all recent and future dates that have rides attached
         datesWithRides = [],
+
+        // number of signed-up riders for each ride
+        numRiders = [],
+
         // will be used to break up participant strings into 2D arrays
         pp,
         rs,
@@ -80,6 +88,8 @@ var TCCrides = (function ($) {
             var success = false;
             while (reserves.length > 0) { reserves.pop(); }
             while (participants.length > 0) { participants.pop(); }
+            while (numRiders.length > 0) numRiders.pop();
+
             rideData.myAjax("GetParticipants", "POST", rideIDs, function (response) {
                 if (rideIDs.length > 0) {
                     $.each(rideIDs, function (index, ride) {
@@ -91,6 +101,7 @@ var TCCrides = (function ($) {
                         var list = response[index].split(',');
                         var reserveList = '';
                         var ppList = '';
+                        var numberOfRiders = 1; // leader
                         $.each(list, function (index, pp) {
                             if (pp.includes('+')) {
                                 reserveList += pp.substring(1);
@@ -99,6 +110,7 @@ var TCCrides = (function ($) {
                             else if (pp.length > 2) {
                                 ppList += pp;
                                 ppList += ' ';
+                                ++numberOfRiders;
                             }
                         });
                         if (ppList.endsWith(' ')) {
@@ -111,6 +123,7 @@ var TCCrides = (function ($) {
                         participants.push(ppList);
                         //if (reserveList.length > 0)
                         reserves.push(reserveList);
+                        numRiders.push(numberOfRiders);
                     });
                 }
                 // all ready now to show the rides list??
@@ -161,14 +174,16 @@ var TCCrides = (function ($) {
                 //TCCroutes.SetGPX(null);
                 TCCMap.showRoute();
             });
+            var spacesLeft = ride.groupSize - numRiders[index];
+            var spacesLeftStr = "Riders (" + spacesLeft + " spaces left):";
             if (reserves[index].length > 4) {
-                $('#btnParticipants' + index).popover({ title: participants[index], content: 'Reserves: ' + reserves[index], container: 'body', placement: 'bottom' });
+                $('#btnParticipants' + index).popover({ title: participants[index] + " (full)", content: 'Reserves: ' + reserves[index], container: 'body', placement: 'bottom' });
             }
             else if (participants[index].length < 4) {
                 $('#btnParticipants' + index).popover({ title: 'Riders: ', content: 'none (yet)', container: 'body', placement: 'bottom' });
             }
             else {
-                $('#btnParticipants' + index).popover({ title: 'Riders: ', content: participants[index], container: 'body', placement: 'bottom' });
+                $('#btnParticipants' + index).popover({ title: spacesLeftStr, content: participants[index] , container: 'body', placement: 'bottom' });
             }
            
 
@@ -189,6 +204,10 @@ var TCCrides = (function ($) {
                         rideData.saveParticipant(ride.rideID, login.User());
                     }
                 }
+                //if (buttontext === guestText) {
+                //    rideData.saveGuest(ride.rideID, login.User());
+                //    $('#join' + index).html(leaveText);
+                //}
                 else if (buttontext === editRideText) {
                     currentIndex = index;
                     $('#editRideModal').modal();
@@ -304,12 +323,24 @@ var TCCrides = (function ($) {
                 if (pp[index].includes(ID)) {
                     // member is already signed up for this ride
                     joinButton[index] = leaveText;
+                    //var riders = pp[index];
+                    //var rider = riders.indexOf(ID);
+                    //if (rider > -1) {
+                    //    riders.splice(rider, 1);
+                    //}
+                    //if (riders.includes(ID)) {
+                    //    // name still there; can only add one guest
+                    //    joinButton[index] = leaveText;
+                    //}
+                    //else {
+                    //    joinButton[index] = guestText;
+                    //}
                 }
                 else if (rs[index].includes(ID)) {
                     // member is on reserve list for this ride
                     joinButton[index] = leaveReserveText;
                 }
-                else if (pp[index].length >= 5) {     // Todo: need to get this figure from DB beforehand
+                else if (pp[index].length >= ride.groupSize) {     
                     joinButton[index] = reserveText;
                 }
                 else if (login.User() === ride.leaderName /*&& pp[index][0] === ''*/) {
@@ -344,6 +375,7 @@ var TCCrides = (function ($) {
         var start = $("#edit-ride-start").val();
         var dest = $("#edit-ride-dest").val();
         var dist = $("#edit-ride-distance").val();
+        var maxRiders = $("#edit-ride-maxriders").val();
         var newtime = starthours * 60 + startmins;
         if (dest.length < 2 || dist === '' || dist === 0) {
             qPopup.Alert("Destination and distance needed");
@@ -356,6 +388,7 @@ var TCCrides = (function ($) {
             currentride.description = descrip;
             currentride.meetingAt = start;
             currentride.time = newtime;
+            currentride.groupSize = maxRiders;
             thisRoute.distance = dist;
             rideData.myAjax("EditRoute", "POST", thisRoute, function (response) {
                 if (response === 'OK') {
@@ -401,7 +434,7 @@ var TCCrides = (function ($) {
   //      });
   //  };
 
-    TCCrides.Ride = function (r_id, leader, date, time, meeting, id,descrip) {
+    TCCrides.Ride = function (r_id, leader, date, time, meeting, id,descrip,max) {
         this.leaderName = leader;
         this.routeID= r_id;
         this.date = date;
@@ -409,6 +442,7 @@ var TCCrides = (function ($) {
         this.time = time;
         this.meetingAt = meeting;
         this.description = descrip;
+        this.groupSize = max;
     };
     TCCrides.Participant = function (rider, rideID) {
         this.rider = rider;
@@ -446,7 +480,7 @@ var TCCrides = (function ($) {
         $("#meet2").click(TCCrides.setMeeting);
         $("#meet3").click(TCCrides.setMeeting);
         $("#meetOther").click(function () { $('#ride-meeting').val(''); });
-
+        $("#ride-maxriders").attr("max", maxRidersPerRide);
         
         
         thisRideDate = new Date();
@@ -465,12 +499,14 @@ var TCCrides = (function ($) {
     TCCrides.saveRide = function () {
         var startPlace = $("#ride-meeting").val();
         var description = $("#ride-descrip").val();
+        var maxRiders = $("#ride-maxriders").val();
         var route = TCCroutes.currentRoute();
         var leader = login.User();
         var time = starthours * 60 + startmins;
         //var dest = route.dest;
         var date = bleTime.toIntDays(thisRideDate);
-        var ride = new TCCrides.Ride(route.id, leader, date, time, startPlace, 0, description);
+
+        var ride = new TCCrides.Ride(route.id, leader, date, time, startPlace, 0, description,maxRiders);
         qPopup.Confirm("Save this ride", "Are you sure?", function () {
             rideData.myAjax("SaveRide", "POST", ride, function (response) {
                 // if successful, response should be just a new ID
@@ -552,6 +588,8 @@ var TCCrides = (function ($) {
         $("#edit-ride-description").attr("value", currentride.description);
         $("#edit-ride-dest").attr("value", thisRoute.dest);
         $("#edit-ride-distance").attr("value", thisRoute.distance);
+        $("#edit-ride-maxriders").attr("value", currentride.groupSize);
+        $("#edit-ride-maxriders").attr("max", maxRidersPerRide);
         $("#edit-ride-start").attr("value", currentride.meetingAt);
         $("#edit-cancelRide").prop('readonly', true);
 
@@ -593,6 +631,7 @@ var TCCrides = (function ($) {
     });
     $("#edit-cancelRide").on('click', function () {
         rideData.deleteRide(currentride.rideID);
+        $('#editRideModal').modal('hide');
     });
     $("#saveRide").on('click', TCCrides.saveRide);
 

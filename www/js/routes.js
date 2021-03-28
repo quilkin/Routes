@@ -256,6 +256,7 @@ var TCCroutes = (function () {
 
     $('#planRide').click(function () {
         // move to different tab
+        rideData.switchingFromLeadRide = true;
         rideData.setCurrentTab('setup-tab');
         $('#setup-tab').tab('show');
         $('#uploadRoute').hide();
