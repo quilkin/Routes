@@ -144,8 +144,8 @@ var login = (function () {
             qPopup.Alert("Passwords do not match");
             return false;
         }
-        if (u.length > 10 || u.includes(' ')) {
-            qPopup.Alert("User name must be 10 characters or less, and no spaces");
+        if (u.length < 3  || u.length > 10 || u.includes(' ')) {
+            qPopup.Alert("User name must be 3-10 characters, and no spaces");
             return false;
         }
         if (blanksOK)

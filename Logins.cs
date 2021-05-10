@@ -198,7 +198,7 @@ namespace Routes
                             dbpw = dbpw.Trim();
                             string dbemail = (string)dr["email"];
                             dbemail = dbemail.Trim();
-                            if (dbname == login.Name)
+                            if (dbname.ToLower() == login.Name.ToLower())
                             {
                                 return ("Sorry, this username has already been taken");
                             }

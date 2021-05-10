@@ -87,16 +87,17 @@ var newRoute = (function ($) {
     $('#existingRoute').show();
     $("#manual-setupDone").show();
 
-  //  $('#leadRide').hide();
-   // $('#manual-leadRide').hide();
-
     $('#convertToRide').hide();
 
-    //$("#leadRide").on('click', TCCrides.leadRide);
-    //$("#manual-leadRide").on('click', TCCrides.leadRide);
-
     document.getElementById('route-file').onchange = function (e) {
-        readFile(e.srcElement.files[0]);
+        var file = e.srcElement.files[0];
+        if (file.name.length > 25) {
+            // don't know why this occurs, and don't know max length. just guessing, I know 53 is too long!
+            qPopup.Alert("Filename too long, please shorten to less than 25 and try again");
+            return;
+        }
+
+        readFile(file);
     };
 
     myXML = "";
@@ -108,22 +109,16 @@ var newRoute = (function ($) {
             return;
         }
        
-        //var descrip  = $("#manual-route-descrip").val();
         var dest = $("#manual-route-dest").val();
         var dist = $("#route-distance").val();
         if (dist === '') dist = 0;
         dist = Number(dist);
-      //  dist = dist.toFixed(0);
         var owner = login.User();
 
         if (dest.length < 2 || dist === '' || dist === 0) {
             qPopup.Alert("Destination and distance needed");
             return;
         }
-        //if (descrip.length < 2) {
-        //    qPopup.Alert("Description needed");
-        //    return;
-        //}
 
         // prevent this route showing in routes listing
        // dest = '*' + dest;

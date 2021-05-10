@@ -75,6 +75,45 @@ var qPopup = (function () {
         });
     };
 
+    qPopup.Choose2 = function (message, question, option1, option2, chooseCallback, timeout) {
+        var confirm, timer = null;
+        checkpopups();
+        confirm = bootbox.prompt({
+            title: message,
+            message: question,
+            inputType: 'radio',
+            inputOptions: [
+                {
+                    text: option1,
+                    value: '1'
+                },
+                {
+                    text: option2,
+                    value: '2'
+                }
+
+            ],
+            callback: function (result) {
+                chooseCallback(result);
+            }
+
+        });
+
+        if (timeout !== null) {
+
+            timer = window.setTimeout(function () {
+                confirm.modal('hide');
+                null;
+            }, timeout * 1000);
+
+
+        }
+        confirm.on('hidden.bs.modal', function (e) {
+            --popupCount;
+            window.clearTimeout(timer);
+        });
+    };
+
     return qPopup;
 }());
 

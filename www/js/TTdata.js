@@ -130,26 +130,71 @@ var rideData = (function ($) {
         return list;
     };
 
-    // not yet implemented
-    //rideData.saveGuest = function (rideID, rider) {
-    //    var list = "";
-    //    qPopup.Confirm("Join a guest for this ride", "Are you sure?", function () {
-    //        var pp = new TCCrides.Participant(rider, rideID);
-    //        rideData.myAjax("SaveParticipant", "POST", pp, function (response) {
-    //            if (response[0] === '*') {
-    //                // a list of riders entered
-    //                list = response.substr(1);
-    //                qPopup.Alert("A guest has been added to this ride");
-    //                TCCrides.CreateRideList(null);
-    //            }
-    //            else {
-    //                qPopup.Alert(response);
-    //            }
-    //        });
-    //    }, null, -10);
-    //    return list;
-    //};
+    rideData.saveGuest = function (rideID, rider) {
+        var list = "";
 
+        qPopup.Confirm("Join a guest for this ride", "Are you sure?", function () {
+            var guest = rider + '+';
+            var pp = new TCCrides.Participant(guest, rideID);
+            rideData.myAjax("SaveParticipant", "POST", pp, function (response) {
+                if (response[0] === '*') {
+                    // a list of riders entered
+                    list = response.substr(1);
+                    qPopup.Alert("A guest has been added to this ride. Guest will need to complete a guest form at the start");
+                    TCCrides.CreateRideList(null);
+                }
+                else {
+                    qPopup.Alert(response);
+                }
+            });
+        }, null, -10);
+        return list;
+    };
+    rideData.leaveGuest = function (rideID, rider) {
+        var list = "";
+        var guest = rider + '+';
+        qPopup.Confirm("Remove guest from this ride", "Are you sure?", function () {
+            var pp = new TCCrides.Participant(guest, rideID);
+            rideData.myAjax("LeaveParticipant", "POST", pp, function (response) {
+                if (response === 'OK') {
+                    qPopup.Alert("Your guest has left this ride");
+                    // recursively create a new list
+                    TCCrides.CreateRideList(null);
+                }
+                else {
+                    qPopup.Alert(response);
+                }
+            });
+        }, null, -10);
+        return list;
+    };
+    rideData.leaveBoth = function (rideID, rider) {
+        var list = "";
+        var guest = rider + '+';
+        qPopup.Confirm("Remove you and your guest from this ride", "Are you sure?", function () {
+            var pp = new TCCrides.Participant(guest, rideID);
+            rideData.myAjax("LeaveParticipant", "POST", pp, function (response) {
+                if (response === 'OK') {
+                    pp = new TCCrides.Participant(rider, rideID);
+                    rideData.myAjax("LeaveParticipant", "POST", pp, function (response) {
+                        if (response === 'OK') {
+                            qPopup.Alert("You have both left this ride");
+                            // recursively create a new list
+                            TCCrides.CreateRideList(null);
+                        }
+                        else {
+                            qPopup.Alert(response);
+                        }
+                    });
+                }
+                else {
+                    qPopup.Alert(response);
+                }
+            });
+            
+        }, null, -10);
+        return list;
+    };
     rideData.leaveParticipant = function (rideID, rider) {
         qPopup.Confirm("Leave this ride", "Are you sure?", function () {
             var pp = new TCCrides.Participant(rider, rideID);

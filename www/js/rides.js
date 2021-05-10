@@ -19,9 +19,11 @@ var TCCrides = (function ($) {
     const maxRidersPerRide = 10;
     const message = ", and cannot join more than one ride each day";
     const joinText = 'Join';
-    const leaveText = 'Leave';
+    //const leaveText = 'Leave';
     const reserveText = 'Reserve';
-    const guestText = 'Add Guest';
+    //const guestText = 'Add Guest';
+    const meText = 'me';
+    const mePlusText = 'me+';
     const leaveReserveText = 'UnReserve';
     const editRideText = 'Edit/Cancel';
 
@@ -103,7 +105,7 @@ var TCCrides = (function ($) {
                         var ppList = '';
                         var numberOfRiders = 1; // leader
                         $.each(list, function (index, pp) {
-                            if (pp.includes('+')) {
+                            if (pp[0] == '+') {
                                 reserveList += pp.substring(1);
                                 reserveList += ' ';
                             }
@@ -218,9 +220,31 @@ var TCCrides = (function ($) {
                         rideData.saveReserveParticipant(ride.rideID, login.User());
                     }
                 }
-                else if (buttontext === leaveText) {
-
-                    rideData.leaveParticipant(ride.rideID, login.User());
+                else if (buttontext === meText) {
+                    qPopup.Choose2("You are signed up for this ride", "What do you want to do?",
+                        "Leave the ride", "Add a guest rider",
+                        function (choice) {
+                            if (choice == '1')
+                                rideData.leaveParticipant(ride.rideID, login.User())
+                            else if (choice == '2')
+                                rideData.saveGuest(ride.rideID, login.User())
+                        },
+                        100);
+                    ;
+                }
+                else if (buttontext === mePlusText) {
+                    qPopup.Choose2("You have signed a guest for this ride", "What do you want to do?",
+                        "Remove your guest", "Both leave the ride", 
+                        function (choice) {
+                            if (choice == '2') {
+                                rideData.leaveBoth(ride.rideID, login.User());
+                            }
+                            else if (choice == '1') {
+                                rideData.leaveGuest(ride.rideID, login.User());       
+                            }
+                        },
+                        100);
+                    ;
                 }
                 else if (buttontext === leaveReserveText) {
                     var reserve = '+' + login.User();
@@ -322,19 +346,19 @@ var TCCrides = (function ($) {
 
                 if (pp[index].includes(ID)) {
                     // member is already signed up for this ride
-                    joinButton[index] = leaveText;
-                    //var riders = pp[index];
-                    //var rider = riders.indexOf(ID);
+                    joinButton[index] = meText;
+                    var riders = pp[index];
+                    var rider = riders.indexOf(ID);
                     //if (rider > -1) {
                     //    riders.splice(rider, 1);
                     //}
-                    //if (riders.includes(ID)) {
-                    //    // name still there; can only add one guest
-                    //    joinButton[index] = leaveText;
-                    //}
-                    //else {
-                    //    joinButton[index] = guestText;
-                    //}
+                    if (riders.includes(ID + '+')) {
+                        // guest aleady added
+                        joinButton[index] = mePlusText;
+                    }
+                    else {
+                        joinButton[index] = meText;
+                    }
                 }
                 else if (rs[index].includes(ID)) {
                     // member is on reserve list for this ride
@@ -621,7 +645,7 @@ var TCCrides = (function ($) {
         }
         else {
             // there are riders booked on this ride
-            $("#edit-ride-title").html("There are rider(s) booked on this ride. Please make only minor changes!");
+            $("#edit-ride-title").html("There are rider(s) booked on this ride. Please make only minor changes");
         }
 
     });
@@ -630,8 +654,14 @@ var TCCrides = (function ($) {
         $('#editRideModal').modal('hide');
     });
     $("#edit-cancelRide").on('click', function () {
-        rideData.deleteRide(currentride.rideID);
-        $('#editRideModal').modal('hide');
+        if (pp[currentIndex][0] === '') {
+            rideData.deleteRide(currentride.rideID);
+            $('#editRideModal').modal('hide');
+        }
+        else {
+            qPopup.Alert("There are rider(s) booked on this ride. Please find a different leader if you cannot attend");
+        }
+
     });
     $("#saveRide").on('click', TCCrides.saveRide);
 

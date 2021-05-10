@@ -162,7 +162,7 @@ var mapOfCafes = (function ($) {
             qPopup.Alert("Only the originator can delete a cafe. Maybe mark as closed, or else contact " + cafe.user);
         }
         else {
-            qPopup.Confirm("Deelte this cafe", "Are you sure?", function () {
+            qPopup.Confirm("Delete this cafe", "Are you sure?", function () {
                 rideData.myAjax("DeleteCafe", "POST", cafe.id, function (response) {
                      if (response === "OK") {
                          qPopup.Alert("that cafe will be not be shown on next login");
