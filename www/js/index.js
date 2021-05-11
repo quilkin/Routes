@@ -43,9 +43,9 @@
         var today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         // find next Sunday's date
-        while (today.getDay() !== 0) {
-            today = bleTime.addDays(today,1);
-        }
+        //while (today.getDay() !== 0) {
+        //    today = bleTime.addDays(today,1);
+        //}
         
         rideData.setDate(today);
         rideData.setDateChooser('View other dates');

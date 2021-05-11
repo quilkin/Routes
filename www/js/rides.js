@@ -71,7 +71,7 @@ var TCCrides = (function ($) {
                 rides = response;
                 if (rides.length === 0) {
                     $('#ridelist').empty();  // this will also remove any handlers
-                    qPopup.Alert("No rides found for " + bleTime.DateString(date));
+                    qPopup.Alert(bleTime.DateString(date) + ": no rides found for 31 days");
                     return null;
                 }
                 $.each(rides, function (index) {
@@ -185,9 +185,9 @@ var TCCrides = (function ($) {
                 $('#btnParticipants' + index).popover({ title: 'Riders: ', content: 'none (yet)', container: 'body', placement: 'bottom' });
             }
             else {
-                $('#btnParticipants' + index).popover({ title: spacesLeftStr, content: participants[index] , container: 'body', placement: 'bottom' });
+                $('#btnParticipants' + index).popover({ title: spacesLeftStr, content: participants[index], container: 'body', placement: 'bottom' });
             }
-           
+
 
             if (ride.date < today) {
                 $('#join' + index).prop("disabled", true);
@@ -234,13 +234,13 @@ var TCCrides = (function ($) {
                 }
                 else if (buttontext === mePlusText) {
                     qPopup.Choose2("You have signed a guest for this ride", "What do you want to do?",
-                        "Remove your guest", "Both leave the ride", 
+                        "Remove your guest", "Both leave the ride",
                         function (choice) {
                             if (choice == '2') {
                                 rideData.leaveBoth(ride.rideID, login.User());
                             }
                             else if (choice == '1') {
-                                rideData.leaveGuest(ride.rideID, login.User());       
+                                rideData.leaveGuest(ride.rideID, login.User());
                             }
                         },
                         100);
@@ -261,11 +261,18 @@ var TCCrides = (function ($) {
             }
 
         },
+        showDateRow = function (date) {
+            //var htmlstr = '<a style="color:blue;  font-size: larger" &nbsp; &nbsp; >';
+         //   var htmlstr = '<a id="sen' + date + '" class="list-group-item list-group-item-info" style="color:blue;  font-size: larger"' + bleTime.fromIntDays(date) + '<button  type="button" id="help3" class="btn btn-lifted btn-info btn-sm pull-right"> Help</button></a>'  ;
+            var htmlstr = '<a id="sen' + date + '" class="list-group-item list-group-item-info" style="color:blue;  font-size: larger">' + bleTime.fromIntDays(date) +'</a>';
 
-
+            $('#ridelist').append(htmlstr);
+            $("#sen" + date).on('click', rideData.ChooseDates);
+        },
+        
         showRideList = function (rides) {
             // data-complete-text="Select"
-
+            var rideDate = null;
 
             $.each(rides, function (index, ride) {
                 // var dest = ride.dest;
@@ -290,6 +297,10 @@ var TCCrides = (function ($) {
 
             $('#ridelist').empty();  // this will also remove any handlers
             $.each(rides, function (index, ride) {
+                if (ride.date != rideDate) {
+                    showDateRow(ride.date);
+                    rideDate = ride.date;
+                }
                 showRideRow(index, ride);
             });
 
@@ -430,21 +441,27 @@ var TCCrides = (function ($) {
         }, null, -10);
     };
 
-
+    var last_msec = 0;
 
 
     TCCrides.CreateRideList = function (date) {
 
-        if (date === null) {
-            // recursive call from having aadded or removed a rider
-            date = currentDate;
-            while (rides.length > 0) { rides.pop(); }
-        }
-        else {
-            currentDate = date;
-        }
+        var t = new Date();
+        var msec = t.getTime();
+        if (msec - last_msec > 2000)  // don't do too often
+        {
+            last_msec = msec;
+            if (date === null) {
+                // recursive call from having aadded or removed a rider
+                date = currentDate;
+                while (rides.length > 0) { rides.pop(); }
+            }
+            else {
+                currentDate = date;
+            }
 
-        getWebRides(date); // will call part 2 as and when ready
+            getWebRides(date); // will call part 2 as and when ready
+        }
 
 
     };

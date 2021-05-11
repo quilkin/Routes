@@ -161,7 +161,7 @@ namespace Routes
 
         public IEnumerable<Ride> GetRidesForDate(int date)
         {
-            // get details of routes available for a given date (but not yet the GPX data)
+            // get details of routes available for a given date for the next month (but not yet the GPX data)
             // date represented by days since 01/01/1970
             LogEntry log = new LogEntry("GetRidesForDate", Logdata.JSDateToDateTime(date).ToShortDateString());
 
@@ -171,7 +171,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT rideID,routeID,date,time,meetingAt,leaderName,description,groupSize FROM rides where date= {0}", date);
+                    string query = string.Format("SELECT rideID,routeID,date,time,meetingAt,leaderName,description,groupSize FROM rides where date >= {0} and date <= {1} order by date asc", date-1, date+31);
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {
@@ -180,6 +180,8 @@ namespace Routes
                         int length = dataRoutes.Rows.Count;
                         for (int row = 0; row < length; row++)
                         {
+                            if (row >= 10) 
+                                break;
                             string meet = "", leader = "", descrip="";
                             int time = 0, id, routeID = 0, size=10;
                             DataRow dr = dataRoutes.Rows[row];

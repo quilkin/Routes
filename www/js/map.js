@@ -186,6 +186,19 @@
 
                 _t('h4').appendChild(a);
 
+                // add a help button
+                var h = document.createElement('h');
+                linkText = document.createTextNode("Help");
+                h.setAttribute('class', "btn btn-lifted  btn-info btn-sm btn-responsive pull-right");
+                h.appendChild(linkText);
+                h.onclick = function () {
+                    var win = window.open("Rides-signup.htm");
+                    win.focus();
+                };
+
+                _t('h4').appendChild(a);
+                _t('h4').appendChild(h);
+
                 if (tab === 'routes-tab') {
                     var b = document.createElement('a');
                     linkText = document.createTextNode("Lead Ride");

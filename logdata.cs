@@ -98,8 +98,16 @@ namespace Routes
 
         public void Close()
         {
-            if (Connection != null)
-                connection.Close();
+            try
+            {
+                if (Connection != null)
+                    connection.Close();
+            }
+            catch (Exception ex)
+            {
+                ErrStr = ex.Message;
+
+            }
         }
     }
 

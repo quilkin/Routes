@@ -82,7 +82,9 @@ var rideData = (function ($) {
     rideData.setDate = function (start) {
         rideDate = start;
     };
-
+    rideData.ChooseDates = function () {
+        chooseDates();
+    }
 
     rideData.setCurrentTab = function (tab) {
         currentTab = tab;
@@ -268,7 +270,10 @@ var rideData = (function ($) {
     };
 
     rideData.setDateChooser = function (btntext) {
-        $('#dateTitle').html(bleTime.DateString(rideDate) + '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span><span id="help3" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">Help</span>');
+        var shortDateString = bleTime.DateString(rideDate).substr(4);
+        $('#dateTitle').html('TCC Rides: ' + shortDateString + '</span>');
+      //  $('#dateTitle').html( bleTime.DateString(rideDate) + '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span><span id="help3" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">Help</span>');
+
         $('#help3').click(function () {
             var win = window.open("Rides-signup.htm");
             win.focus();
