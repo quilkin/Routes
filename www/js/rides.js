@@ -26,6 +26,8 @@ var TCCrides = (function ($) {
     const mePlusText = 'me+';
     const leaveReserveText = 'UnReserve';
     const editRideText = 'Edit/Cancel';
+    const removeGuest = "Remove guest";
+    const addGuest = "Add a guest";
 
 
     var TCCrides = {},
@@ -49,9 +51,10 @@ var TCCrides = (function ($) {
         rs,
 
         // to check that riders don't join two rides on same day
-        alreadyRidingToday,
-        alreadyReservedToday,
-        alreadyLeadingToday,
+        alreadyRidingDest, alreadyRidingDate,
+        alreadyReservedDest, alreadyReservedDate,
+        alreadyLeadingDest, alreadyLeadingDate,
+
         // state of join/leave button
         joinButton = [],
         thisRideDate,
@@ -148,16 +151,16 @@ var TCCrides = (function ($) {
                 qPopup.Alert("You cannot join your own ride!!");
                 return false;
             }
-            else if (alreadyReservedToday.length > 0) {
-                qPopup.Alert("You are aleady reserved for " + alreadyReservedToday + message);
+            else if (alreadyReservedDest.length > 0 && alreadyReservedDate == ride.date) {
+                qPopup.Alert("You are aleady reserved for " + alreadyReservedDest + message);
                 return false;
             }
-            else if (alreadyRidingToday.length > 0) {
-                qPopup.Alert("You are aleady listed for " + alreadyRidingToday + message);
+            else if (alreadyRidingDest.length > 0 && alreadyRidingDate == ride.date) {
+                qPopup.Alert("You are aleady listed for " + alreadyRidingDest + message);
                 return false;
             }
-            else if (alreadyLeadingToday.length > 0) {
-                qPopup.Alert("You are aleady leading " + alreadyLeadingToday + message);
+            else if (alreadyLeadingDest.length > 0 && alreadyLeadingDate == ride.date) {
+                qPopup.Alert("You are aleady leading " + alreadyLeadingDest + message);
                 return false;
             }
             return true;
@@ -308,9 +311,12 @@ var TCCrides = (function ($) {
 
         createRideList = function () {
 
-            alreadyRidingToday = '';
-            alreadyReservedToday = '';
-            alreadyLeadingToday = '';
+            alreadyRidingDest = '';
+            alreadyReservedDest = '';
+            alreadyLeadingDest= '';
+            alreadyRidingDate = 0;
+            alreadyReservedDate = 0;
+            alreadyLeadingDate = 0;
             // first, split participant list into arrays for each ride
 
             $.each(rides, function (index, ride) {
@@ -337,14 +343,22 @@ var TCCrides = (function ($) {
 
             $.each(rides, function (index, ride) {
                 try {
+                    //if (false) {  // ************************** TodO: check dates properly!!!!!!!!!!!!!!!!!
                     var dest = TCCroutes.findDestFromID(ride.routeID);
-                    if (pp[index].includes(ID))
-                        alreadyRidingToday = dest;
-                    if (rs[index].includes(ID))
-                        alreadyReservedToday = dest;
-                    var leader = ride.leaderName;
-                    if (leader === ID)
-                        alreadyLeadingToday = dest;
+                    if (pp[index].includes(ID)) {
+                        alreadyRidingDest = dest;
+                        alreadyRidingDate = ride.date;
+                    }
+                    if (rs[index].includes(ID)) {
+                        alreadyReservedDest = dest;
+                        alreadyReservedDate = ride.date;
+                    }
+                        var leader = ride.leaderName;
+                    if (leader === ID) {
+                        alreadyLeadingDest = dest;
+                        alreadyLeadingDate = ride.date;
+                    }
+                    //}
                 }
                 catch (e) {
                     console.log(e.message);
@@ -664,6 +678,13 @@ var TCCrides = (function ($) {
             // there are riders booked on this ride
             $("#edit-ride-title").html("There are rider(s) booked on this ride. Please make only minor changes");
         }
+        if (pp[currentIndex].includes(login.User() + '+')) {
+            // guest aleady added
+            $("#edit-guest").html(removeGuest);
+        }
+        else {
+            $("#edit-guest").html(addGuest);
+        }
 
     });
     $("#edit-ride-ok").on("click", TCCrides.handleRideEdit);
@@ -677,6 +698,17 @@ var TCCrides = (function ($) {
         }
         else {
             qPopup.Alert("There are rider(s) booked on this ride. Please find a different leader if you cannot attend");
+        }
+
+    });
+    $("#edit-guest").on('click', function () {
+        if (pp[currentIndex].includes(login.User() + '+')) {
+            rideData.leaveGuest(currentride.rideID, login.User());
+            $("#edit-guest").html(addGuest);
+        }
+        else {
+            rideData.saveGuest(currentride.rideID, login.User());
+            $("#edit-guest").html(removeGuest);
         }
 
     });

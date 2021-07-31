@@ -18,6 +18,12 @@ h4 {
     max-height: 250px;
     overflow-x: hidden;
 }
+
+@media (min-height: 500px) {
+    .scrollable-list {
+        max-height: 500px;
+    }
+}
 #loading {
 
   /*width: 2%;
@@ -122,7 +128,7 @@ h4 {
     }*/
     .scroll-area {
         width: 100%;
-        height: calc(100% - 600px);
+        height: calc(100% - 600px);  
 
     }
     .gpx {

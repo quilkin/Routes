@@ -269,9 +269,16 @@ var rideData = (function ($) {
         return climbingStr;
     };
 
+    Date.prototype.addDays = function (days) {
+        var date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+    }
     rideData.setDateChooser = function (btntext) {
-        var shortDateString = bleTime.DateString(rideDate).substr(4);
-        $('#dateTitle').html('TCC Rides: ' + shortDateString + '</span>');
+        var shortDateString1 = bleTime.DateString(rideDate).substr(4, 6);
+        var rideDate30 = rideDate.addDays(30);
+        var shortDateString2 = bleTime.DateString(rideDate30).substr(4, 6);
+        $('#dateTitle').html('TCC Rides: ' + shortDateString1 + ' - ' + shortDateString2 + '</span>');
       //  $('#dateTitle').html( bleTime.DateString(rideDate) + '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span><span id="help3" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">Help</span>');
 
         $('#help3').click(function () {

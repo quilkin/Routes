@@ -13,7 +13,7 @@
     <link href="css/datepicker3.css" rel="stylesheet">
 
     <link href="css/gpx.css" rel="stylesheet">
-    <link href="css/index.css" rel="stylesheet">
+    <link href="css/index.css?version=1.1" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
@@ -65,20 +65,20 @@
 
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right" role="tablist" id="mytabs">
-                    <li class="active"><a href="#panel-rides" id="rides-tab" role="tab" data-toggle="tab" aria-controls="rides-tab" aria-expanded="true"><i class="fa fa-calendar"></i><span> Calendar</span></a></li>
-                    <li><a href="#panel-routes" id="routes-tab" role="tab" data-toggle="tab" aria-controls="routes-tab"><i class="fa fa-map-signs"></i><span> All routes</span></a></li>
+                    <!--<li class="active"><a href="#panel-rides" id="rides-tab" role="tab" data-toggle="tab" aria-controls="rides-tab" aria-expanded="true"><i class="fa fa-calendar"></i><span> Calendar</span></a></li> -->
+                    <li class="active"><a href="#panel-routes" id="routes-tab" role="tab" data-toggle="tab" aria-controls="routes-tab"><i class="fa fa-map-signs"></i><span> All routes</span></a></li>
                     <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup-tab"><i class="fa fa-wrench"></i><span> New ride</span></a></li>
                     <li><a href="#panel-cafes" id="cafes-tab" role="tab" data-toggle="tab" aria-controls="cafe-tab"><i class="fa fa-coffee"></i><span> Coffee</span></a></li>
                     <li><a href="#panel-account" id="account-tab" role="tab" data-toggle="tab" aria-controls="account-tab"><i class="fa fa-user"></i><span> Account</span></a></li>
 
                     <!--<li class="dropdown">
-                        <button class="btn btn-dropped btn-info btn-responsive" type="button" data-toggle="dropdown" id="userName">Username</button>
-                        <ul class="dropdown-menu">
-                            <li><a id="account"><i class="fa fa-user"></i> Account</a></li>
-                            <li><a id="settings"><i class="fa fa-wrench"></i> Settings</a></li>
-                            <li><a id="logOut"><i class="fa fa-arrow-right"></i> Log Out</a></li>
-                        </ul>
-                    </li>-->
+        <button class="btn btn-dropped btn-info btn-responsive" type="button" data-toggle="dropdown" id="userName">Username</button>
+        <ul class="dropdown-menu">
+            <li><a id="account"><i class="fa fa-user"></i> Account</a></li>
+            <li><a id="settings"><i class="fa fa-wrench"></i> Settings</a></li>
+            <li><a id="logOut"><i class="fa fa-arrow-right"></i> Log Out</a></li>
+        </ul>
+    </li>-->
                 </ul>
             </div>
 
@@ -88,21 +88,15 @@
 
     <div id="myTabContent" class="tab-content">
 
-        <!--tab for listing rides for a chosen date-->
+        <!--tab for listing rides for a month-->
 
         <div role="tabpanel" class="tab-pane active" id="panel-rides" aria-labelledby="rides-tab">
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
-                        <!--<div>
-                            <a id="dateTitle" style="color:blue;  font-size: larger">Choose date</a>
-                            <a id="fromDate"><input type="text" id="rideDate" readonly><span class="glyphicon glyphicon-calendar"></span></a>
-                        </div>
-                        <p></p>-->
-                        <div class="list-group scrollable-list" id="ridelist">
-                            <a id="rideTitle" class="list-group-item list-group-item-info">Choose a ride</a>
-                        </div>
-
+                            <div class="list-group scrollable-list" id="ridelist">
+                                <a id="rideTitle" class="list-group-item list-group-item-info">Choose a ride</a>
+                            </div>
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
@@ -584,6 +578,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
+                    <button class="btn btn-info" id="edit-guest" type="button">Add a guest</button>
                     <button class="btn btn-info" id="edit-cancelRide" type="button">Delete this ride</button>
                     <button class="btn btn-info" id="edit-ride-cancel" type="button">Cancel editing</button>
                     <button class="btn btn-primary pull-right" type="submit" id="edit-ride-ok" data-loading-text="Checking...">Submit</button>
@@ -653,11 +648,11 @@
     <script src="js-lib/bootstrap-datepicker.js"></script>
     <script src="js-lib/bootstrap-timepicker.min.js"></script>
     <script src="js/routes.js?version=4.4"></script>
-    <script src="js/rides.js?version=6.5"></script>
+    <script src="js/rides.js?version=7.0"></script>
     <script src="js/server.js"></script>
-    <script src="js/TTdata.js?version=4.5"></script>
+    <script src="js/TTdata.js?version=4.6"></script>
     <script src="js/map.js?version=4.4"></script>
-    <script src="js/newroute.js?version=4.4"></script>
+    <script src="js/newroute.js?version=4.5"></script>
 
 
 

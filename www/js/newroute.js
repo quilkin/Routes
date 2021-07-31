@@ -148,7 +148,11 @@ var newRoute = (function ($) {
 
         if (myXML.length > 1000) {
             // user has complete data on PC
+
+            // remove any time stamps, to make file shorter
+            myXML = myXML.replace(/<time>.+<\/time>/g,'')
             temproute.url = myXML;
+
             temproute.dist = 0;
             temproute.hasGPX = true;
             qPopup.Confirm("Save new route", "Are you sure?", saveRoute, null, -10);
