@@ -42,7 +42,10 @@ var rideData = (function ($) {
                 'setDate': rideDate
             });
         },
-
+        participant = function (rider, rideID) {
+            this.rider = rider;
+            this.rideID = rideID;
+        },
 
         webRequestFailed = function (handle, status, error) {
             qPopup.Alert("Error with web request: " + handle.responseText + ' ' + handle.statusText);
@@ -97,7 +100,7 @@ var rideData = (function ($) {
     rideData.saveParticipant = function (rideID, rider) {
         var list = "";
         qPopup.Confirm("Join this ride", "Are you sure?", function () {
-            var pp = new TCCrides.Participant(rider, rideID);
+            var pp = new participant(rider, rideID);
             rideData.myAjax("SaveParticipant", "POST", pp, function (response) {
                 if (response[0] === '*') {
                     // a list of riders entered
@@ -116,7 +119,7 @@ var rideData = (function ($) {
         var list = "";
         qPopup.Confirm("Ride is full", "Would you like to be on a  reserve list?", function () {
             var reserve = '+' + rider;
-            var pp = new TCCrides.Participant(reserve, rideID);
+            var pp = new participant(reserve, rideID);
             rideData.myAjax("SaveParticipant", "POST", pp, function (response) {
                 if (response[0] === '*') {
                     // a list of riders entered
@@ -137,7 +140,7 @@ var rideData = (function ($) {
 
         qPopup.Confirm("Join a guest for this ride", "Are you sure?", function () {
             var guest = rider + '+';
-            var pp = new TCCrides.Participant(guest, rideID);
+            var pp = new participant(guest, rideID);
             rideData.myAjax("SaveParticipant", "POST", pp, function (response) {
                 if (response[0] === '*') {
                     // a list of riders entered
@@ -156,7 +159,7 @@ var rideData = (function ($) {
         var list = "";
         var guest = rider + '+';
         qPopup.Confirm("Remove guest from this ride", "Are you sure?", function () {
-            var pp = new TCCrides.Participant(guest, rideID);
+            var pp = new participant(guest, rideID);
             rideData.myAjax("LeaveParticipant", "POST", pp, function (response) {
                 if (response === 'OK') {
                     qPopup.Alert("Your guest has left this ride");
@@ -174,7 +177,7 @@ var rideData = (function ($) {
         var list = "";
         var guest = rider + '+';
         qPopup.Confirm("Remove you and your guest from this ride", "Are you sure?", function () {
-            var pp = new TCCrides.Participant(guest, rideID);
+            var pp = new participant(guest, rideID);
             rideData.myAjax("LeaveParticipant", "POST", pp, function (response) {
                 if (response === 'OK') {
                     pp = new TCCrides.Participant(rider, rideID);
@@ -199,7 +202,7 @@ var rideData = (function ($) {
     };
     rideData.leaveParticipant = function (rideID, rider) {
         qPopup.Confirm("Leave this ride", "Are you sure?", function () {
-            var pp = new TCCrides.Participant(rider, rideID);
+            var pp = new participant(rider, rideID);
             rideData.myAjax("LeaveParticipant", "POST", pp, function (response) {
                 if (response === 'OK') {
                     qPopup.Alert("You have left this ride");

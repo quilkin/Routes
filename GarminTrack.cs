@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 
 //Copyright (c) 2008 http://peterkellner.net
@@ -54,6 +55,8 @@ namespace Routes
         }
         public double DistanceMeters { get; set; }
         public List<Position> Positionx { get; set; }
+        public Position pos { get; set; }
+        //public Position LatLong { get; set; }
     }
 
     public class Track
@@ -61,13 +64,9 @@ namespace Routes
         public List<TrackPoint> TrackPoints { set; get; }
     }
 
-    /// <summary>
-    /// Summary description for GarminTrack
-    /// </summary>
-    public class GarminTrack
+    public class TrackFile
     {
-        static XElement root;
-        readonly static XNamespace ns1 = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
+        protected static XElement root;
 
         public static void SetRoot(string f)
         {
@@ -77,6 +76,90 @@ namespace Routes
         {
             root = XElement.Load(tr);
         }
+
+
+    }
+
+
+    public class GPXTrack : TrackFile
+    {
+        readonly static XNamespace ns1 = "http://www.topografix.com/GPX/1/1";
+
+        static string RouteName()
+        {
+            
+            // obtain a single element with specific tag (first instance), useful if only expecting one instance of the tag in the target doc
+            XElement nameElement = (from c in root.Descendants(ns1 + "name") select c).First();
+            return nameElement.Value;
+        }
+
+        public static Track ParseGPX()
+        {
+
+            List<Position> Px = new List<Position>();
+            IEnumerable<Track> tracks =
+                    from trackElement in root.Descendants(ns1 + "trkseg")
+                    select new Track
+                    {
+                        TrackPoints =
+                            (from trackPointElement in trackElement.Descendants(ns1 + "trkpt")
+                             select new TrackPoint
+                             {
+                                 pos = new Position
+                                 {
+                                     LatitudeDegrees = XmlConvert.ToDouble(trackPointElement.Attribute("lat").Value),
+                                     LongitudeDegrees = XmlConvert.ToDouble(trackPointElement.Attribute("lon").Value),
+
+                                 },
+                                 AltitudeMeters = trackPointElement.Element(ns1 + "ele") != null
+                                                 ? Convert.ToDouble(trackPointElement.Element(ns1 + "ele").Value) : 0.0,
+                             }).ToList()
+                    };
+
+            return tracks.SingleOrDefault();
+        }
+
+
+        public static string CreateGPX()
+        {
+
+            var trkseg = new XElement("trkseg");
+            XElement GPX = new XElement("gpx",
+                new XAttribute("version", "1.0"),
+                new XAttribute("creator", "quilkin.com"),
+                new XElement("trk",
+                    new XElement("name", RouteName()),
+                    trkseg
+                )
+            );
+
+            Track track = ParseGPX();
+            int pointCount = track.TrackPoints.Count;
+
+            // limit the number of points to < 1000, shorten lat/longs to 5 decimals and elevations to 1 decimal
+
+            int skipPoints = pointCount / 1000 + 1;
+
+            for (int count = 0; count < pointCount; count += skipPoints)
+            {
+                TrackPoint tp = track.TrackPoints[count];
+                Position pos = tp.pos;
+                trkseg.Add(new XElement("trkpt",
+                    new XAttribute("lat", pos.LatitudeDegrees.ToString("0.#####")),
+                    new XAttribute("lon", pos.LongitudeDegrees.ToString("0.#####")),
+                    new XElement("ele", tp.AltitudeMeters.ToString("0.#"))));
+            }
+            return GPX.ToString();
+        }
+    }
+
+    /// <summary>
+    /// Summary description for GarminTrack
+    /// </summary>
+    public class GarminTrack : TrackFile
+    {
+        readonly static XNamespace ns1 = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
+
         static string RouteName()
         {
             // obtain a single element with specific tag (first instance), useful if only expecting one instance of the tag in the target doc
@@ -114,10 +197,12 @@ namespace Routes
 
             return tracks.SingleOrDefault();
         }
- 
 
-        public static string CreateGPX()
+
+        public static string TCXtoGPX()
         {
+
+            
 
             var trkseg = new XElement("trkseg");
             XElement GPX = new XElement("gpx",
@@ -130,17 +215,20 @@ namespace Routes
             );
 
             Track track = ParseTCX();
-            int count = 0;
+            int pointCount = track.TrackPoints.Count;
 
-            foreach (TrackPoint tp in track.TrackPoints)
+            // limit the number of points to < 1000, shorten lat/longs to 5 decimals and elevations to 1 decimal
+
+            int skipPoints = pointCount / 1000 + 1;
+
+            for (int count = 0; count < pointCount; count += skipPoints)
             {
+                TrackPoint tp = track.TrackPoints[count];
                 Position pos = tp.Positionx[0];
                 trkseg.Add(new XElement("trkpt",
-                    new XAttribute("lat", pos.LatitudeDegrees),
-                    new XAttribute("lon", pos.LongitudeDegrees),
-                    new XElement("ele", tp.AltitudeMeters)));
-
-                count++;
+                    new XAttribute("lat", pos.LatitudeDegrees.ToString("0.#####")),
+                    new XAttribute("lon", pos.LongitudeDegrees.ToString("0.#####")),
+                    new XElement("ele", tp.AltitudeMeters.ToString("0.#"))));
             }
             return GPX.ToString();
         }

@@ -114,12 +114,16 @@ namespace Routes
                                     System.IO.StringReader sr = new System.IO.StringReader(route.URL);
                                     // convert TCX to GPX
                                     GarminTrack.SetRoot(sr);
-                                    fullText = GarminTrack.CreateGPX();
+                                    fullText = GarminTrack.TCXtoGPX();
                                 }
                                 else
                                 {
+                                    // full text of GPX file
+                                    System.IO.StringReader sr = new System.IO.StringReader(route.URL);
+                                    // check / shorten GPX
+                                    GPXTrack.SetRoot(sr);
+                                    fullText = GPXTrack.CreateGPX();
 
-                                    fullText = route.URL;
                                 }
                             }
 
@@ -127,14 +131,17 @@ namespace Routes
                             {
                                 // convert TCX to GPX
                                 GarminTrack.SetRoot(route.URL);
-                                fullText = GarminTrack.CreateGPX();
+                                fullText = GarminTrack.TCXtoGPX();
                             }
                             else
                             {
-                                using (System.Net.WebClient client = new System.Net.WebClient())
-                                {
-                                      fullText = client.DownloadString(route.URL);
-                                }
+                                // check the GPX
+                                GPXTrack.SetRoot(route.URL);
+                                fullText = GPXTrack.CreateGPX();
+                                //using (System.Net.WebClient client = new System.Net.WebClient())
+                                //{
+                                //      fullText = client.DownloadString(route.URL);
+                                //}
                             }
 
                             if (route.HasGPX)
