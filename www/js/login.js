@@ -40,7 +40,7 @@ var login = (function () {
 
     function checkRole() {
         if (role < UserRoles.SiteAdmin) {
-            qPopup.Alert("To access this function, please request site-level authorisation by emailing 'admin@quilkin.co.uk'");
+            qPopup.Alert("To access this function, please request site-level authorisation by emailing 'rides@truro.cc'");
             return false;
         }
         return true;
@@ -71,7 +71,7 @@ var login = (function () {
     function logout() {
         username = '';
         role = 0;
-        TCCrides.CreateRideList(null);
+        RideList.CreateRideList(null);
         $("#logOut").html('<i class="fa fa-arrow-right"></i> Log In');
         $("#account").prop('disabled', true);
         $("#setup-tab").attr('class', 'disabled');

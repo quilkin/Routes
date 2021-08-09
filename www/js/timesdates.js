@@ -1,6 +1,4 @@
-﻿/*global hyper,console*/
-
-var bleTime = (function () {
+﻿var RideTimes = (function () {
 
     "use strict";
     var bleTime = {},
@@ -57,7 +55,7 @@ var bleTime = (function () {
         datepickerDates: function (date) {
             var search = this.toIntDays(date);
             var popupString = '';
-            var rides = TCCrides.findRides(search);
+            var rides = RideList.findRides(search);
             if (rides === null) {
                 return { tooltip: 'No rides' };
             }

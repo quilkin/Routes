@@ -25,8 +25,8 @@ var rideData = (function ($) {
                     //rideDate = new Date($("#rideDate").val());
                     rideDate = newDate;
                     rideData.setDateChooser('View other dates');
-                    TCCrides.Clear();
-                    TCCrides.CreateRideList(rideDate);
+                    RideList.Clear();
+                    RideList.CreateRideList(rideDate);
                     $("#rideDate").datepicker('hide');
                     $('#fromDate').hide();
                     return;
@@ -35,7 +35,7 @@ var rideData = (function ($) {
             // show highlighted dates for those when a ride is planned
 
             $("#rideDate").datepicker({
-                beforeShowDay: function (date) { return bleTime.datepickerDates(date); },
+                beforeShowDay: function (date) { return RideTimes.datepickerDates(date); },
                 todayBtn: false,
                 autoclose: true,
                 format: "DD M dd yyyy",
@@ -67,8 +67,8 @@ var rideData = (function ($) {
             //rideDate = new Date($("#rideDate").val());
             rideDate = newDate;
             rideData.setDateChooser('View other dates');
-            TCCrides.Clear();
-            TCCrides.CreateRideList(rideDate);
+            RideList.Clear();
+            RideList.CreateRideList(rideDate);
             $("#rideDate").datepicker('hide');
             $('#fromDate').hide();
         }
@@ -106,7 +106,7 @@ var rideData = (function ($) {
                     // a list of riders entered
                     list = response.substr(1);
                     qPopup.Alert("You have been added to this ride");
-                    TCCrides.CreateRideList(null);
+                    RideList.CreateRideList(null);
                 }
                 else {
                     qPopup.Alert(response);
@@ -125,7 +125,7 @@ var rideData = (function ($) {
                     // a list of riders entered
                     list = response.substr(1);
                     qPopup.Alert("You have been added to reserve list for this ride");
-                    TCCrides.CreateRideList(null);
+                    RideList.CreateRideList(null);
                 }
                 else {
                     qPopup.Alert(response);
@@ -146,7 +146,7 @@ var rideData = (function ($) {
                     // a list of riders entered
                     list = response.substr(1);
                     qPopup.Alert("A guest has been added to this ride. Guest will need to complete a guest form at the start");
-                    TCCrides.CreateRideList(null);
+                    RideList.CreateRideList(null);
                 }
                 else {
                     qPopup.Alert(response);
@@ -164,7 +164,7 @@ var rideData = (function ($) {
                 if (response === 'OK') {
                     qPopup.Alert("Your guest has left this ride");
                     // recursively create a new list
-                    TCCrides.CreateRideList(null);
+                    RideList.CreateRideList(null);
                 }
                 else {
                     qPopup.Alert(response);
@@ -180,12 +180,12 @@ var rideData = (function ($) {
             var pp = new participant(guest, rideID);
             rideData.myAjax("LeaveParticipant", "POST", pp, function (response) {
                 if (response === 'OK') {
-                    pp = new TCCrides.Participant(rider, rideID);
+                    pp = new RideList.Participant(rider, rideID);
                     rideData.myAjax("LeaveParticipant", "POST", pp, function (response) {
                         if (response === 'OK') {
                             qPopup.Alert("You have both left this ride");
                             // recursively create a new list
-                            TCCrides.CreateRideList(null);
+                            RideList.CreateRideList(null);
                         }
                         else {
                             qPopup.Alert(response);
@@ -207,7 +207,7 @@ var rideData = (function ($) {
                 if (response === 'OK') {
                     qPopup.Alert("You have left this ride");
                     // recursively create a new list
-                    TCCrides.CreateRideList(null);
+                    RideList.CreateRideList(null);
                 }
                 else {
                     qPopup.Alert(response);
@@ -221,7 +221,7 @@ var rideData = (function ($) {
                 if (response === 'OK') {
                     qPopup.Alert("You have deleted this ride");
                     // recursively create a new list
-                    TCCrides.CreateRideList(null);
+                    RideList.CreateRideList(null);
                 }
                 else {
                     qPopup.Alert(response);
@@ -278,9 +278,9 @@ var rideData = (function ($) {
         return date;
     }
     rideData.setDateChooser = function (btntext) {
-        var shortDateString1 = bleTime.DateString(rideDate).substr(4, 6);
+        var shortDateString1 = RideTimes.DateString(rideDate).substr(4, 6);
         var rideDate30 = rideDate.addDays(30);
-        var shortDateString2 = bleTime.DateString(rideDate30).substr(4, 6);
+        var shortDateString2 = RideTimes.DateString(rideDate30).substr(4, 6);
         $('#dateTitle').html('TCC Rides: ' + shortDateString1 + ' - ' + shortDateString2 + '</span>');
       //  $('#dateTitle').html( bleTime.DateString(rideDate) + '<span id="btnGo" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">' + btntext + '</span><span id="help3" role="button" class="btn btn-lifted  btn-info btn-sm pull-right">Help</span>');
 

@@ -214,7 +214,7 @@
                         $('#manualRoute').hide();
                         $('#existingRoute').hide();
                         TCCMap.showRoute();
-                        TCCrides.leadRide();
+                        Ride.leadRide();
                     };
 
 
@@ -288,6 +288,7 @@
         if (gpxdata !== null && gpxdata.length > 1000) {
             // already have it
             TCCMap.showRouteStage2(gpxdata, true);
+            return null;
         }
 
         var routeID = currentroute.id;

@@ -15,10 +15,10 @@
     <AssemblyName>routes</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
+    <IISExpressSSLPort>44390</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <TargetFrameworkProfile />
     <UseGlobalApplicationHostFile />
     <Use64BitIISExpress />
@@ -184,10 +184,11 @@
     <Content Include="www\js\cafeMap.js" />
     <Content Include="www\js\map.js" />
     <Content Include="www\js\multimap.js" />
+    <Content Include="www\js\ride.js" />
     <Content Include="www\js\rides.js" />
     <Content Include="www\js\serial.js" />
     <Content Include="www\index.html" />
-    <Content Include="www\js\index.js" />
+    <Content Include="www\js\ridehub.js" />
     <Content Include="www\js\login.js" />
     <Content Include="www\js\popups.js" />
     <Content Include="www\js\routes.js" />

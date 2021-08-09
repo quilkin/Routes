@@ -1,29 +1,20 @@
 
 var TCCroutes = (function () {
     "use strict";
+
+
+
     var TCCroutes = {},
-
-        //route data members
-        //[DataMember(Name = "route")]//            public string GPX { get; set; }
-        //[DataMember(Name = "dest")]//                 public string Dest { get; set; }
-        //[DataMember(Name = "distance")]//             public string Descrip { get; set; }
-        //[DataMember(Name = "description")]//          public int Distance { get; set; }
-        //[DataMember(Name = "climbing")]//             public int Climbing { get; set; }
-        /////[DataMember(Name = "owner")]//                public int Owner { get; set; }
-        //[DataMember(Name = "id")]//                   public int ID{ get; set; }
-        //[DataMember(Name = "owner")]//                public string Owner { get; set; }
-       // [DataMember(Name = "hasGPX")]                public bool HasGPX {    get; set; }
-
         // list of routes downloaded from database
         routes = [],
-        // list of routes currently displayed in chart etc
-        displayedRoutes = [],
+        //// list of routes currently displayed in chart etc
+        //displayedRoutes = [],
 
         // the latest one to be downloaded from web. Includes URL only, not full gpx
         currentRoute = null,
 
-        // the latest full gpx text
-        currentGPX = null,
+        //// the latest full gpx text
+        //currentGPX = null,
 
 
         getWebRoutes = function (alsoGetRides) {
@@ -36,7 +27,7 @@ var TCCroutes = (function () {
                 if (alsoGetRides) {
                     // first get a list of all dates that have rides arranged
                     rideData.myAjax("GetDatesWithRides", "POST", null, function (response) {
-                        TCCrides.DatesWithRides = response;
+                        RideList.DatesWithRides = response;
                         // now get list of rides for next month
                         
                         var today = new Date();
@@ -44,7 +35,7 @@ var TCCroutes = (function () {
                         //while (today.getDay() !== 0) {
                         //    today = bleTime.addDays(today, 1);
                         //}
-                        TCCrides.CreateRideList(today);
+                        RideList.CreateRideList(today);
                         showRouteList();
                     });
                     
@@ -155,22 +146,17 @@ var TCCroutes = (function () {
 
         };
 
-
-
-
-
-    TCCroutes.Route = function (url,dest,descrip,dist,climb, owner,id) {
-        this.url= url;       // URL of gpx file
+    TCCroutes.Route = function (url, dest, descrip, dist, climb, owner, id) {
+        this.url = url;       // URL of gpx file
         this.dest = dest;
         this.climbing = climb;
-        this.distance= dist;
+        this.distance = dist;
         this.description = descrip;
         this.id = id;
         this.owner = owner;
         this.hasGPX = url.length > 0;
 
     };
-
 
     TCCroutes.findRoute = function (id) {
         var found = $.grep(routes, function (e, i) {
@@ -219,27 +205,27 @@ var TCCroutes = (function () {
         currentRoute = route;
     };
 
-    TCCroutes.displayedRoutes = function () {
-        return displayedRoutes;
-    };
+    //TCCroutes.displayedRoutes = function () {
+    //    return displayedRoutes;
+    //};
 
-    TCCroutes.DisplayedRouteNames = function () {
-        var index, nameStr='';
-        for (index = 0; index < displayedRoutes.length; index++) {
-            nameStr += displayedRoutes[index].Dest;
-            nameStr += ', ';
-        }
-        nameStr = nameStr.slice(0, -2);
-        return nameStr;
-    };
+    //TCCroutes.DisplayedRouteNames = function () {
+    //    var index, nameStr='';
+    //    for (index = 0; index < displayedRoutes.length; index++) {
+    //        nameStr += displayedRoutes[index].Dest;
+    //        nameStr += ', ';
+    //    }
+    //    nameStr = nameStr.slice(0, -2);
+    //    return nameStr;
+    //};
 
-    TCCroutes.ShowStartLocation = function () {
-        // get default map which shows Lemon Quay
+    //TCCroutes.ShowStartLocation = function () {
+    //    // get default map which shows Lemon Quay
 
-        currentRoute = TCCroutes.findRoute(71);
-        currentRoute.dest = 'Truro CC rides start here';
-        TCCMap.showRoute();
-    };
+    //    currentRoute = TCCroutes.findRoute(71);
+    //    currentRoute.dest = 'Truro CC rides start here';
+    //    TCCMap.showRoute();
+    //};
 
     TCCroutes.CreateRouteList = function (alsoGetRides) {
 
@@ -263,7 +249,7 @@ var TCCroutes = (function () {
         $('#manualRoute').hide();
         $('#existingRoute').hide();
         TCCMap.showRoute();
-        TCCrides.leadRide();
+        Ride.leadRide();
     });
 
     $('#deleteRoute').click(function () {

@@ -230,7 +230,7 @@ namespace Routes
                     //string URLstr = string.Format("http://localhost/routes/www?user={0}&regcode={1}",login.Name, login.EmailCode);
 
                     EmailConnection ec = new EmailConnection();
-                    MailAddress from = new MailAddress("admin@quilkin.co.uk");
+                    MailAddress from = new MailAddress("rides@truro.cc");
                     MailMessage message = new MailMessage(from, emailAddr)
                     {
                         Subject = "TCC rides signup",
@@ -408,7 +408,7 @@ namespace Routes
                     string URLstr = string.Format(Connections.serviceURL + "?pwuser={0}&regcode={1}",username, emailCode);
 
                     EmailConnection ec = new EmailConnection();
-                    MailAddress from = new MailAddress("admin@quilkin.co.uk");
+                    MailAddress from = new MailAddress("rides@truro.cc");
                     MailMessage message = new MailMessage(from, emailAddr)
                     {
                         Subject = "TCC rides forgotten password",

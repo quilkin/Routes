@@ -17,7 +17,7 @@ var newRoute = (function ($) {
                         $('#uploadRoute').hide();
                         $('#manualRoute').hide();
                         $('#existingRoute').hide();
-                        TCCrides.leadRide();
+                        Ride.leadRide();
                     }
                     else {
                         TCCMap.showRoute();
@@ -26,7 +26,7 @@ var newRoute = (function ($) {
                         $('#manualRoute').hide();
                         $('#existingRoute').hide();
                         qPopup.Alert("Route uploaded. You (or others) can now create ride(s) based on this route");
-                        TCCrides.leadRide();
+                        Ride.leadRide();
                     }
                 }
                 else {

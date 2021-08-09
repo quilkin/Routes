@@ -45,7 +45,6 @@
 </head>
 
 <body>
-
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -65,20 +64,20 @@
 
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right" role="tablist" id="mytabs">
-                    <li class="active"><a href="#panel-rides" id="rides-tab" role="tab" data-toggle="tab" aria-controls="rides-tab" aria-expanded="true"><i class="fa fa-calendar"></i><span> Calendar</span></a></li> 
+                    <li class="active"><a href="#panel-rides" id="rides-tab" role="tab" data-toggle="tab" aria-controls="rides-tab" aria-expanded="true"><i class="fa fa-calendar"></i><span> Calendar</span></a></li>
                     <li><a href="#panel-routes" id="routes-tab" role="tab" data-toggle="tab" aria-controls="routes-tab"><i class="fa fa-map-signs"></i><span> All routes</span></a></li>
                     <li><a href="#panel-setup" id="setup-tab" role="tab" data-toggle="tab" aria-controls="setup-tab"><i class="fa fa-wrench"></i><span> New ride</span></a></li>
                     <li><a href="#panel-cafes" id="cafes-tab" role="tab" data-toggle="tab" aria-controls="cafe-tab"><i class="fa fa-coffee"></i><span> Coffee</span></a></li>
                     <li><a href="#panel-account" id="account-tab" role="tab" data-toggle="tab" aria-controls="account-tab"><i class="fa fa-user"></i><span> Account</span></a></li>
 
                     <!--<li class="dropdown">
-        <button class="btn btn-dropped btn-info btn-responsive" type="button" data-toggle="dropdown" id="userName">Username</button>
-        <ul class="dropdown-menu">
-            <li><a id="account"><i class="fa fa-user"></i> Account</a></li>
-            <li><a id="settings"><i class="fa fa-wrench"></i> Settings</a></li>
-            <li><a id="logOut"><i class="fa fa-arrow-right"></i> Log Out</a></li>
-        </ul>
-    </li>-->
+                        <button class="btn btn-dropped btn-info btn-responsive" type="button" data-toggle="dropdown" id="userName">Username</button>
+                        <ul class="dropdown-menu">
+                            <li><a id="account"><i class="fa fa-user"></i> Account</a></li>
+                            <li><a id="settings"><i class="fa fa-wrench"></i> Settings</a></li>
+                            <li><a id="logOut"><i class="fa fa-arrow-right"></i> Log Out</a></li>
+                        </ul>
+                    </li>-->
                 </ul>
             </div>
 
@@ -94,9 +93,9 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
-                            <div class="list-group scrollable-list" id="ridelist">
-                                <a id="rideTitle" class="list-group-item list-group-item-info">Choose a ride</a>
-                            </div>
+                        <div class="list-group scrollable-list" id="ridelist">
+                            <a id="rideTitle" class="list-group-item list-group-item-info">Choose a ride</a>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
@@ -153,7 +152,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
-                        
+
                             <div id="routes" class="panel-body gpx" data-map-target="routes-map" data-elev-target="routes-elev">
                                 <header>
                                     <h4 id="mapTitle2">Trurocycling.org routes</h4>
@@ -333,7 +332,7 @@
                     </div> <!-- /col-->
                     <div class="col-md-6">
                         <div class="panel panel-primary">
-                      
+
                             <div id="setup" class="panel-body gpx" data-map-target="setup-map" data-elev-target="setup-elev">
                                 <header>
                                     <h4 id="mapTitle">Upload a new route</h4>
@@ -364,7 +363,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
-                       
+
                             <div id="cafe" class="panel-body gpx" data-map-target="cafe-map">
                                 <header>
                                     <h4>Suggested Coffee Stops</h4>
@@ -438,7 +437,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Sign In / Register</h4>
+                    <h4 class="modal-title">TCC Rides Hub: Sign In / Register</h4>
                     <!--<h4 class="modal-title">Under development! Any dated rides and/or participants shown are fictional , for testing purposes only :)</h4>-->
                 </div>
                 <div class="modal-body">
@@ -543,7 +542,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="edit-ride-title">Edit ride details</h4>
-                    
+
                 </div>
                 <div class="modal-body">
                     <form id="form-editride">
@@ -640,7 +639,7 @@
     <script src="js/cafeMap.js?version=4.2"></script>
     <script src="js/multimap.js?version=1.0"></script>
     <script src="js/login.js?version=5.2"></script>
-    <script src="js/index.js?version=5.4"></script>
+    <script src="js/ridehub.js?version=5.0"></script>
     <script src="js/serial.js"></script>
     <script src="js-lib/gpx.js?version=1.2"></script>
     <script src="js-lib/blockui.js"></script>
@@ -648,6 +647,7 @@
     <script src="js-lib/bootstrap-datepicker.js"></script>
     <script src="js-lib/bootstrap-timepicker.min.js"></script>
     <script src="js/routes.js?version=4.4"></script>
+    <script src="js/ride.js?version=1.0"></script>
     <script src="js/rides.js?version=7.0"></script>
     <script src="js/server.js"></script>
     <script src="js/TTdata.js?version=4.6"></script>

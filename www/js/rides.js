@@ -1,8 +1,7 @@
-﻿var TCCrides = (function ($) {
+﻿var RideList = (function ($) {
     "use strict";
 
     const maxridesperday = 10;
-    const maxRidersPerRide = 10;
     const message = ", and cannot join more than one ride each day";
     const joinText = 'Join';
     const reserveText = 'Reserve';
@@ -10,22 +9,10 @@
     const mePlusText = 'me+';
     const leaveReserveText = 'UnReserve';
     const editRideText = 'Edit/Cancel';
-    const removeGuest = "Remove guest";
-    const addGuest = "Add a guest";
 
-    var TCCrides = {},
 
-    // define a ride, happening on a defined date/time, led by a defined leader.
-    Ride = function (r_id, leader, date, time, meeting, id, descrip, max) {
-        this.leaderName = leader;
-        this.routeID = r_id;
-        this.date = date;
-        this.rideID = id;
-        this.time = time;
-        this.meetingAt = meeting;
-        this.description = descrip;
-        this.groupSize = max;
-    },
+    var RideList = {},
+
     // list of rides downloaded from database
     rides = [],
     //rideIDs = [],
@@ -40,7 +27,11 @@
     // will be used to break up participant strings into 2D arrays
     pp,
     rs,
+    // the latest one to be downloaded from web. Includes URL only, not full gpx
+    currentride = null,
 
+    // curently chosen one from the list, used for getting participants
+    currentIndex = 0,
     // to check that riders don't join two rides on same day
     alreadyRidingDest, alreadyRidingDate,
     alreadyReservedDest, alreadyReservedDate,
@@ -48,25 +39,20 @@
 
     // state of join/leave button
     joinButton = [],
-    thisRideDate,
 
     currentDate,
-    starthours, startmins,
-    // the latest one to be downloaded from web. Includes URL only, not full gpx
-    currentride = null,
-    // curently chosen one from the list, used for getting participants
-    currentIndex = 0,
+
     last_msec = 0,
 
     getWebRides = function (date) {
         var rideIDs = [];
-        var intdays = bleTime.toIntDays(date);
+        var intdays = RideTimes.toIntDays(date);
         console.log("getWebRides: ");
         rideData.myAjax("GetRidesForDate", "POST", intdays, function (response) {
             rides = response;
             if (rides.length === 0) {
                 $('#ridelist').empty();  // this will also remove any handlers
-                qPopup.Alert(bleTime.DateString(date) + ": no rides found for 31 days");
+                qPopup.Alert(RideTimes.DateString(date) + ": no rides found for 31 days");
                 return null;
             }
             $.each(rides, function (index) {
@@ -179,14 +165,14 @@
             $('#btnParticipants' + index).popover({ title: spacesLeftStr, content: participants[index], container: 'body', placement: 'bottom' });
         }
 
-        if (ride.date < bleTime.toIntDays(new Date()))  // before today
+        if (ride.date < RideTimes.toIntDays(new Date()))  // before today
         {
             $('#join' + index).prop("disabled", true);
             $('#join' + index).html('Closed');
         }
         $('#join' + index).click(function () {
             currentride = ride;
-            var user = login.User();
+           // var user = login.User();
             if (login.loggedOut()) {
                 qPopup.Alert("You are not logged in, please 'account' menu to log in again");
                 return false;
@@ -238,7 +224,7 @@
             }
         });
         $('#btnParticipants' + index).click(function () {
-            TCCrides.clearPopovers(index);
+            RideList.clearPopovers(index);
         });
         if (index === 0) {
             // show route for first ride in list
@@ -247,41 +233,9 @@
 
     },
     showDateRow = function (date) {
-        var htmlstr = '<a id="sen' + date + '" class="list-group-item list-group-item-info" style="color:blue;  font-size: larger">' + bleTime.fromIntDays(date) +'</a>';
+        var htmlstr = '<a id="sen' + date + '" class="list-group-item list-group-item-info" style="color:blue;  font-size: larger">' + RideTimes.fromIntDays(date) +'</a>';
         $('#ridelist').append(htmlstr);
         $("#sen" + date).on('click', rideData.ChooseDates);
-    },
-
-    saveRide = function () {
-        var startPlace = $("#ride-meeting").val();
-        var description = $("#ride-descrip").val();
-        var maxRiders = $("#ride-maxriders").val();
-        var route = TCCroutes.currentRoute();
-        var leader = login.User();
-        var time = starthours * 60 + startmins;
-        var date = bleTime.toIntDays(thisRideDate);
-
-        var ride = new Ride(route.id, leader, date, time, startPlace, 0, description, maxRiders);
-        qPopup.Confirm("Save this ride", "Are you sure?", function () {
-            rideData.myAjax("SaveRide", "POST", ride, function (response) {
-                // if successful, response should be just a new ID
-                if (response.length < 5) {
-                    ride.id = response;
-                    TCCroutes.SetRoute(route);
-                    rides.push(ride);
-                    $('#convertToRide').hide();
-                    rideData.setCurrentTab('rides-tab');
-                    rideData.setDate(thisRideDate);
-                    rideData.setDateChooser('View other dates');
-                    TCCrides.CreateRideList(thisRideDate);
-
-                }
-                else {
-                    qPopup.Alert(response);
-                }
-
-            });
-        }, null, -10);
     },
         
     showRideList = function (rides) {
@@ -293,7 +247,7 @@
             var route = TCCroutes.findRoute(ride.routeID);
             if (route === null)
                 return true;
-            var time = bleTime.fromIntTime(ride.time);
+            var time = RideTimes.fromIntTime(ride.time);
             var distanceStr = rideData.DistanceString(route);
             var climbingStr = rideData.ClimbingString(route);
 
@@ -303,7 +257,7 @@
                 '<span style="color: blue; font-weight: bold"> (' + ride.leaderName + ') </span>';
             htmlstringSecondbit[index] = '<button id="btnParticipants' + index + '" type="button" class="btn btn-lifted btn-info btn-responsive pull-right has-popover" >Rider List</button>   ';
             htmlstringThirdbit[index] = '<button id="join' + index + '" type="button" class="btn btn-lifted btn-info  btn-responsive pull-right" >' + joinButton[index] + '</button > </a>';
-            htmlstringFourthbit[index] = '<a>' + ride.description + ', <i>meeting at: </i>' + ride.meetingAt + '</a>';
+            htmlstringFourthbit[index] = ride.description + '<span style="color: blue; font-weight: bold"> Meeting at: </span>' + ride.meetingAt ;
 
         });
 
@@ -315,52 +269,6 @@
             }
             showRideRow(index, ride);
         });
-    },
-
-    handleRideEdit = function () {
-        var descrip = $("#edit-ride-description").val();
-        var start = $("#edit-ride-start").val();
-        var dest = $("#edit-ride-dest").val();
-        var dist = $("#edit-ride-distance").val();
-        var maxRiders = $("#edit-ride-maxriders").val();
-        var newtime = starthours * 60 + startmins;
-        if (dest.length < 2 || dist === '' || dist === 0) {
-            qPopup.Alert("Destination and distance needed");
-            return;
-        }
-
-        qPopup.Confirm("Save edited ride", "Are you sure?", function () {
-            var thisRoute = TCCroutes.findRoute(currentride.routeID);
-            thisRoute.dest = dest;
-            currentride.description = descrip;
-            currentride.meetingAt = start;
-            currentride.time = newtime;
-            currentride.groupSize = maxRiders;
-            thisRoute.distance = dist;
-            rideData.myAjax("EditRoute", "POST", thisRoute, function (response) {
-                if (response === 'OK') {
-                    rideData.myAjax("EditRide", "POST", currentride, function (response) {
-                        if (response === 'OK') {
-                            createRideList();
-                            $('#editRideModal').modal('hide');
-                        }
-                        else {
-                            qPopup.Alert(response);
-                        }
-                    });
-                }
-            });
-        }, null, -10);
-    },
-
-
-    setMeeting = function () {
-            var text = $("input[name='meet']:checked").parent('label').text();
-            $('#ride-meeting').val(text);
-    },
-    setMeetingEdit = function () {
-            var text = $("input[name='meet']:checked").parent('label').text();
-            $('#edit-ride-start').val(text);
     },
 
     createRideList = function () {
@@ -455,13 +363,14 @@
             }
         });
         // show the current route (first in list)
+        //var route = TCCroutes.findRoute(Ride.GetCurrent());
         var route = TCCroutes.findRoute(currentride.routeID);
         TCCroutes.SetRoute(route);
         // load new map
         TCCMap.showRoute();
     };
 
-    TCCrides.CreateRideList = function (date) {
+    RideList.CreateRideList = function (date) {
 
         var t = new Date();
         var msec = t.getTime();
@@ -479,33 +388,11 @@
             getWebRides(date); // will call part 2 as and when ready
         }
     };
-    TCCrides.DatesWithRides = [];
+    RideList.DatesWithRides = [];
 
-    TCCrides.leadRide = function () {
-        $('#convertToRide').show();
-        $("#meet2").prop('checked', true);
-        $('#start-time').timepicker('setTime', '08:00 AM');
-        $("#meet1").click(setMeeting);
-        $("#meet2").click(setMeeting);
-        $("#meet3").click(setMeeting);
-        $("#meetOther").click(function () { $('#ride-meeting').val(''); });
-        $("#ride-maxriders").attr("max", maxRidersPerRide);
-                
-        thisRideDate = new Date();
-        $("#rideDate1").datepicker({
-            beforeShowDay: function (date) { return bleTime.datepickerDates(date); },
-            todayBtn: false,
-            autoclose: true,
-            format: "DD M dd yyyy",
-            'setDate': thisRideDate
-        });
-        $("#rideDate1").change(function () {
-            thisRideDate = new Date($("#rideDate1").val());
-        });
-    };
  
-    TCCrides.findRides = function (date) {
-        var found = $.grep(TCCrides.DatesWithRides, function (e, i) {
+    RideList.findRides = function (date) {
+        var found = $.grep(RideList.DatesWithRides, function (e, i) {
             return e.date === date;
         });
         if (found.length > 0) {
@@ -514,11 +401,22 @@
         return null;
     };
 
-    TCCrides.Clear = function () {
+    RideList.Clear = function () {
         while (rides.length > 0) { rides.pop(); }
     };
-
-    TCCrides.clearPopovers = function (thisIndex) {
+    RideList.Add = function (ride) {
+        rides.push(ride);
+    };
+    //RideList.Participants = function () {
+    //    return pp;
+    //};
+    RideList.CurrentParticipants = function () {
+        return pp[currentIndex];
+    };
+    RideList.CurrentRide = function () {
+        return currentride;
+    };
+    RideList.clearPopovers = function (thisIndex) {
         $.each(rides, function (index) {
             if (index !== thisIndex) {
                 $('#btnParticipants' + index).popover('hide');
@@ -526,101 +424,6 @@
         });
     };
 
-    $('#start-time').timepicker().on('changeTime.timepicker', function (e) {
-        if (e.time !== undefined) {
 
-            starthours = e.time.hours;
-            startmins = e.time.minutes;
-        }
-    });
-    $('#start-time-edit').timepicker().on('changeTime.timepicker', function (e) {
-        if (e.time !== undefined) {
-
-            starthours = e.time.hours;
-            startmins = e.time.minutes;
-        }
-    });
-
-    $('#editRideModal').on('shown.bs.modal', function (e) {
-        var thisRoute = TCCroutes.findRoute(currentride.routeID);
-        var units = ' km';
-        if (login.Units() === 'm') {
-            units = ' miles';
-        }
-
-        $("#edit-ride-description").attr("value", currentride.description);
-        $("#edit-ride-dest").attr("value", thisRoute.dest);
-        $("#edit-ride-distance").attr("value", thisRoute.distance);
-        $("#edit-ride-maxriders").attr("value", currentride.groupSize);
-        $("#edit-ride-maxriders").attr("max", maxRidersPerRide);
-        $("#edit-ride-start").attr("value", currentride.meetingAt);
-        $("#edit-cancelRide").prop('readonly', true);
-
-        $("#meet11").click(setMeetingEdit);
-        $("#meet12").click(setMeetingEdit);
-        $("#meet13").click(setMeetingEdit);
-        $("#meet1Other").click(function () { $('#edit-ride-start').val(''); });
-        // convert our time in minutes to a string for editing the time
-
-        $('#start-time-edit').timepicker('setTime', bleTime.fromIntTime(currentride.time));
-
-        if (thisRoute.hasGPX) {
-            // cannot edit distance for routes wth GPX file
-            $("#edit-ride-distance").prop('readonly', true);
-            $("#label-distance").html("To edit distance, please upload a different route using 'View all Routes'");
-        }
-        else {
-            $("#edit-ride-distance").prop('readonly', false);
-            $("#label-distance").html("Distance" + units + ':');
-        }
-        if (thisRoute.owner !==login.User()) {
-            // cannot edit name of someone else's route
-            $("#edit-ride-dest").prop('readonly', true);
-            $("#label-dest").html("You cannot edit the name of another user's route");
-        }
-        if (pp[currentIndex][0] === '') {
-            $("#edit-cancelRide").prop('readonly', false);
-            $("#edit-ride-title").html("Edit ride details");
-        }
-        else {
-            // there are riders booked on this ride
-            $("#edit-ride-title").html("There are rider(s) booked on this ride. Please make only minor changes");
-        }
-        if (pp[currentIndex].includes(login.User() + '+')) {
-            // guest aleady added
-            $("#edit-guest").html(removeGuest);
-        }
-        else {
-            $("#edit-guest").html(addGuest);
-        }
-
-    });
-    $("#edit-ride-ok").on("click", handleRideEdit);
-    $("#edit-ride-cancel").on('click', function () {
-        $('#editRideModal').modal('hide');
-    });
-    $("#edit-cancelRide").on('click', function () {
-        if (pp[currentIndex][0] === '') {
-            rideData.deleteRide(currentride.rideID);
-            $('#editRideModal').modal('hide');
-        }
-        else {
-            qPopup.Alert("There are rider(s) booked on this ride. Please find a different leader if you cannot attend");
-        }
-
-    });
-    $("#edit-guest").on('click', function () {
-        if (pp[currentIndex].includes(login.User() + '+')) {
-            rideData.leaveGuest(currentride.rideID, login.User());
-            $("#edit-guest").html(addGuest);
-        }
-        else {
-            rideData.saveGuest(currentride.rideID, login.User());
-            $("#edit-guest").html(removeGuest);
-        }
-
-    });
-    $("#saveRide").on('click', saveRide);
-
-    return TCCrides;
+    return RideList;
 }(jQuery));

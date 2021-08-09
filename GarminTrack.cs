@@ -126,7 +126,7 @@ namespace Routes
             var trkseg = new XElement("trkseg");
             XElement GPX = new XElement("gpx",
                 new XAttribute("version", "1.0"),
-                new XAttribute("creator", "quilkin.com"),
+                new XAttribute("creator", "quilkin.co.uk"),
                 new XElement("trk",
                     new XElement("name", RouteName()),
                     trkseg
@@ -207,7 +207,7 @@ namespace Routes
             var trkseg = new XElement("trkseg");
             XElement GPX = new XElement("gpx",
                 new XAttribute("version", "1.0"),
-                new XAttribute("creator", "quilkin.com"),
+                new XAttribute("creator", "quilkin.co.uk"),
                 new XElement("trk",
                     new XElement("name", RouteName()),
                     trkseg
