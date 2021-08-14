@@ -242,6 +242,8 @@ var TCCroutes = (function () {
 
     $('#planRide').click(function () {
         // move to different tab
+        if (login.loggedOut())
+            return;
         rideData.switchingFromLeadRide = true;
         rideData.setCurrentTab('setup-tab');
         $('#setup-tab').tab('show');

@@ -52,7 +52,7 @@
             rides = response;
             if (rides.length === 0) {
                 $('#ridelist').empty();  // this will also remove any handlers
-                qPopup.Alert(RideTimes.DateString(date) + ": no rides found for 31 days");
+                qPopup.Alert(RideTimes.DateString(date) + ": no rides found for 60 days");
                 return null;
             }
             $.each(rides, function (index) {
@@ -153,16 +153,18 @@
             TCCroutes.SetRoute(route);
             TCCMap.showRoute();
         });
-        var spacesLeft = ride.groupSize - numRiders[index];
-        var spacesLeftStr = "Riders (" + spacesLeft + " spaces left):";
-        if (reserves[index].length > 4) {
-            $('#btnParticipants' + index).popover({ title: participants[index] + " (full)", content: 'Reserves: ' + reserves[index], container: 'body', placement: 'bottom' });
-        }
-        else if (participants[index].length < 4) {
-            $('#btnParticipants' + index).popover({ title: 'Riders: ', content: 'none (yet)', container: 'body', placement: 'bottom' });
-        }
-        else {
-            $('#btnParticipants' + index).popover({ title: spacesLeftStr, content: participants[index], container: 'body', placement: 'bottom' });
+        if (login.loggedIn()) {
+            var spacesLeft = ride.groupSize - numRiders[index];
+            var spacesLeftStr = "Riders (" + spacesLeft + " spaces left):";
+            if (reserves[index].length > 4) {
+                $('#btnParticipants' + index).popover({ title: participants[index] + " (full)", content: 'Reserves: ' + reserves[index], container: 'body', placement: 'bottom' });
+            }
+            else if (participants[index].length < 4) {
+                $('#btnParticipants' + index).popover({ title: 'Riders: ', content: 'none (yet)', container: 'body', placement: 'bottom' });
+            }
+            else {
+                $('#btnParticipants' + index).popover({ title: spacesLeftStr, content: participants[index], container: 'body', placement: 'bottom' });
+            }
         }
 
         if (ride.date < RideTimes.toIntDays(new Date()))  // before today
@@ -174,7 +176,8 @@
             currentride = ride;
            // var user = login.User();
             if (login.loggedOut()) {
-                qPopup.Alert("You are not logged in, please 'account' menu to log in again");
+              //  $('#loginModal').modal();
+                //qPopup.Alert("You are not logged in, please 'account' menu to log in again");
                 return false;
             }
             var buttontext = $('#join' + index).text();
@@ -246,7 +249,7 @@
             var descrip = ride.description;
             var route = TCCroutes.findRoute(ride.routeID);
             if (route === null)
-                return true;
+                return;
             var time = RideTimes.fromIntTime(ride.time);
             var distanceStr = rideData.DistanceString(route);
             var climbingStr = rideData.ClimbingString(route);
@@ -357,11 +360,11 @@
         });
         $('#rides-tab').tab('show');
         showRideList(rides);
-        $.each(rides, function (index, ride) {
-            if (login.loggedOut()) {
-                $('#btnParticipants' + index).prop("disabled", true);
-            }
-        });
+        //$.each(rides, function (index, ride) {
+        //    if (login.loggedOut()) {
+        //        $('#btnParticipants' + index).prop("disabled", true);
+        //    }
+        //});
         // show the current route (first in list)
         //var route = TCCroutes.findRoute(Ride.GetCurrent());
         var route = TCCroutes.findRoute(currentride.routeID);

@@ -206,6 +206,8 @@
                     b.appendChild(linkText);
                     b.title = "Lead a ride based on this route";
                     b.onclick = function () {
+                        if (login.loggedOut())
+                            return;
                         rideData.switchingFromLeadRide = true;
                         // move to different tab
                         rideData.setCurrentTab('setup-tab');

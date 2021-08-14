@@ -9,17 +9,22 @@ var qPopup = (function () {
 
         checkpopups = function () {
             if (popupCount > 5) {
+                bootbox.hideAll();
                 window.alert("Too many popups?");
                 popupCount = 0;
             }
             ++popupCount;
+            
         };
 
-
+    var lastAlert = null;
     qPopup.Alert = function (alertstr, timeout) {
         var alert, timer = null;
 
         checkpopups();
+        if (alertstr === lastAlert)
+            return;
+        lastAlert = alertstr;
         alert = bootbox.alert(alertstr);
 
         if (timeout !== null) {

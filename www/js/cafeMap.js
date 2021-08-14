@@ -154,10 +154,13 @@ var mapOfCafes = (function ($) {
 
 
     $("#editCafe").on("click", function () {
-        
+        if (login.loggedOut())
+            return;
         $('#editCafeModal').modal();
     });
     $("#deleteCafe").on("click", function () {
+        if (login.loggedOut())
+            return;
         if (cafe.user !== login.User()) {
             qPopup.Alert("Only the originator can delete a cafe. Maybe mark as closed, or else contact " + cafe.user);
         }
@@ -238,10 +241,10 @@ var mapOfCafes = (function ($) {
         //AddControls();
         cafemap.on('dblclick', onMapDblClick);
         cafemap.doubleClickZoom.disable();
-        if (login.loggedOut()) {
-            $("#editCafe").prop("disabled", true);
-            $("#deleteCafe").prop("disabled", true);
-        }
+        //if (login.loggedOut()) {
+        //    $("#editCafe").prop("disabled", true);
+        //    $("#deleteCafe").prop("disabled", true);
+        //}
 
     };
 

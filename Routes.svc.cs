@@ -116,7 +116,7 @@ namespace Routes
                                     GarminTrack.SetRoot(sr);
                                     fullText = GarminTrack.TCXtoGPX();
                                 }
-                                else
+                                else if (route.URL.ToLower().Contains("gpx"))
                                 {
                                     // full text of GPX file
                                     System.IO.StringReader sr = new System.IO.StringReader(route.URL);
@@ -125,6 +125,8 @@ namespace Routes
                                     fullText = GPXTrack.CreateGPX();
 
                                 }
+                                else
+                                    fullText = route.URL;
                             }
 
                             else if (route.URL.ToLower().Contains(".tcx"))

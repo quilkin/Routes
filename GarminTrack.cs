@@ -81,16 +81,31 @@ namespace Routes
     }
 
 
+
     public class GPXTrack : TrackFile
     {
-        readonly static XNamespace ns1 = "http://www.topografix.com/GPX/1/1";
+
+
+        readonly static XNamespace ns11 = "http://www.topografix.com/GPX/1/1";
+        readonly static XNamespace ns10 = "http://www.topografix.com/GPX/1/0";
+        static XNamespace ns1;
 
         static string RouteName()
         {
-            
-            // obtain a single element with specific tag (first instance), useful if only expecting one instance of the tag in the target doc
-            XElement nameElement = (from c in root.Descendants(ns1 + "name") select c).First();
-            return nameElement.Value;
+            ns1 = ns11;
+            XElement nameElement;
+            // horrid bodge to deal with two different potentail namespaces
+            try
+            {
+                nameElement = (from c in root.Descendants(ns1 + "name") select c).First();
+                return nameElement.Value;
+            }
+            catch
+            {
+                ns1 = ns10;
+                nameElement = (from c in root.Descendants(ns1 + "name") select c).First();
+                return nameElement.Value;
+            }
         }
 
         public static Track ParseGPX()

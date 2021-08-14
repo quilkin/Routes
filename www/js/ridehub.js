@@ -57,9 +57,10 @@
         $('#planRide').hide();
         $('#deleteRoute').hide();
         $('#editRoute').hide();
-        $("#form-signin").show();
+        //$("#form-signin").show();
 
         $('#rides-tab').tab('show');
+       
         rideData.setCurrentTab('rides-tab');
 
         $('#help').click(function () {
@@ -85,18 +86,29 @@
             rideData.setCurrentTab(tab);
             console.log(tab);
             if (tab === 'setup-tab') {
-                if ($('#convertToRide').is(":hidden") || rideData.switchingFromLeadRide===false)
+                if (login.loggedOut())
                 {
-                    $('#uploadRoute').show();
-                    $('#manualRoute').show();
-                    $('#existingRoute').show();
+                    $('#uploadRoute').hide();
+                    $('#manualRoute').hide();
+                    $('#existingRoute').hide();
                     $('#convertToRide').hide();
-                    $('#mapTitle').html('');
-
                 }
-                rideData.switchingFromLeadRide = false;
-                
+                else
+                {
+
+                    if ($('#convertToRide').is(":hidden") || rideData.switchingFromLeadRide === false) {
+                        $('#uploadRoute').show();
+                        $('#manualRoute').show();
+                        $('#existingRoute').show();
+                        $('#convertToRide').hide();
+                        $('#mapTitle').html('');
+
+                    }
+                    rideData.switchingFromLeadRide = false;
+                }
             }
+                
+
             if (tab === 'routes-tab') {
                 MultiMap.showRoutes();
             }
@@ -167,8 +179,9 @@
         else {
           
             // always need to login, 
-            $('#loginModal').modal();
+       //     $('#loginModal').modal();
             // switch straight to rides tab
+            rideData.CreateLists();
             $(".navbar-nav a[href=#rides-tab]").tab('show');
 
         }

@@ -171,7 +171,7 @@ namespace Routes
             {
                 try
                 {
-                    string query = string.Format("SELECT rideID,routeID,date,time,meetingAt,leaderName,description,groupSize FROM rides where date >= {0} and date <= {1} order by date asc", date-1, date+31);
+                    string query = string.Format("SELECT rideID,routeID,date,time,meetingAt,leaderName,description,groupSize FROM rides where date >= {0} and date <= {1} order by date asc", date-1, date+60);
 
                     using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                     {

@@ -18,7 +18,14 @@ var login = (function () {
     login.Role = function () { return role; };
     login.ID = function () { return id; };
     login.loggedIn = function () { return (role > UserRoles.None); };
-    login.loggedOut = function () { return (role === UserRoles.None); };
+    login.loggedOut = function () {
+        if (role > UserRoles.None)
+            return false;
+        //$("#form-signin").show();
+        $('#loginModal').modal();
+     
+        return true;
+    };
     login.User = function () { return username; };
     login.Email = function () { return email; };
     login.setUser = function (u) { username = u; };
@@ -52,10 +59,11 @@ var login = (function () {
     function loggedInOK() {
         // get some preparory data from the DB
         //TCCrides.GetDatesOfRides();
-        rideData.CreateLists();
+        //rideData.CreateLists();
         $('#loginModal').modal('hide');
         // switch to rides tab
-        $(".navbar-nav a[href=#rides-tab]").tab('show');
+        //$(".navbar-nav a[href=#rides-tab]").tab('show');
+
         //add username to account dropdown button
         //if (username !== undefined) {
         //    $("#userName").html(username + ' <span class="caret"></span>');
@@ -64,8 +72,21 @@ var login = (function () {
         $("#logOut").html('<i class="fa fa-arrow-right"></i> Log Out');
         $("#account").prop('disabled', false);
         $("#setup-tab").attr('class', 'enabled');
-        $('#rides-tab').tab('show');
-        rideData.setCurrentTab('rides-tab');
+        //$('#rides-tab').tab('show');
+        //rideData.setCurrentTab('rides-tab');
+        if (rideData.getCurrentTab() === 'rides-tab')
+            RideList.CreateRideList(null);
+        else if (rideData.getCurrentTab() === 'setup-tab') {
+            if ($('#convertToRide').is(":hidden") || rideData.switchingFromLeadRide === false) {
+                $('#uploadRoute').show();
+                $('#manualRoute').show();
+                $('#existingRoute').show();
+                $('#convertToRide').hide();
+                $('#mapTitle').html('');
+
+            }
+            rideData.switchingFromLeadRide = false;
+        }
     }
 
     function logout() {
@@ -343,11 +364,12 @@ var login = (function () {
 
 
     $("#logOut").click(function () {
-        console.log('logOut clicked');
-        if (login.loggedOut()) {
-            $('#loginModal').modal();
-        }
-        else {
+        //console.log('logOut clicked');
+        //if (login.loggedOut()) {
+        //    $('#loginModal').modal();
+        //}
+        //else
+        {
             logout();
         }
     });
