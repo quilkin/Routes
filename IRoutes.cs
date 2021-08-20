@@ -28,6 +28,11 @@ namespace Routes
         [ServiceKnownType(typeof(List<Route>))]
         IEnumerable<Route> GetRoutesAll();
 
+
+        [OperationContract]
+        [WebInvoke(Method = "GET", UriTemplate = "/ShortenRoutes", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        void ShortenRoutes();
+
         [OperationContract]
         [WebInvoke(Method = "POST", UriTemplate = "/GetRidesForDate", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         [ServiceKnownType(typeof(List<Ride>))]

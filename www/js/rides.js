@@ -166,6 +166,13 @@
                 $('#btnParticipants' + index).popover({ title: spacesLeftStr, content: participants[index], container: 'body', placement: 'bottom' });
             }
         }
+        $('#btnParticipants' + index).click(function () {
+            if (login.loggedOut()) {
+                //  $('#loginModal').modal();
+                //qPopup.Alert("You are not logged in, please 'account' menu to log in again");
+                return false;
+            }
+        });
 
         if (ride.date < RideTimes.toIntDays(new Date()))  // before today
         {
@@ -377,6 +384,8 @@
 
         var t = new Date();
         var msec = t.getTime();
+        if (date === null)
+            date = currentDate;
         if (msec - last_msec > 2000)  // don't do too often
         {
             last_msec = msec;

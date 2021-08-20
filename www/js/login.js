@@ -396,6 +396,11 @@ var login = (function () {
     });
 
     login.setAccount = function () {
+        if (login.loggedOut()) {
+            $('#rides-tab').tab('show');
+            rideData.setCurrentTab('rides-tab');
+            return;
+        }
         //if (email === '')
         //    email = dummyEmail;
         $("#username2").attr("value", username);

@@ -81,7 +81,7 @@
                     if (response === 'OK') {
                         rideData.myAjax("EditRide", "POST", current, function (response) {
                             if (response === 'OK') {
-                                createRideList();
+                                RideList.CreateRideList();
                                 $('#editRideModal').modal('hide');
                             }
                             else {

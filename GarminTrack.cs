@@ -94,7 +94,7 @@ namespace Routes
         {
             ns1 = ns11;
             XElement nameElement;
-            // horrid bodge to deal with two different potentail namespaces
+            // horrid bodge to deal with two different potential namespaces
             try
             {
                 nameElement = (from c in root.Descendants(ns1 + "name") select c).First();
@@ -137,9 +137,10 @@ namespace Routes
 
         public static string CreateGPX()
         {
-
+            XNamespace xNamespace = "http://www.topografix.com/GPX/1/1";
             var trkseg = new XElement("trkseg");
-            XElement GPX = new XElement("gpx",
+            XElement GPX = new XElement(xNamespace + "gpx",
+                new XAttribute("xmlns", xNamespace),
                 new XAttribute("version", "1.0"),
                 new XAttribute("creator", "quilkin.co.uk"),
                 new XElement("trk",
@@ -149,6 +150,8 @@ namespace Routes
             );
 
             Track track = ParseGPX();
+            if (track == null)
+                return "";
             int pointCount = track.TrackPoints.Count;
 
             // limit the number of points to < 1000, shorten lat/longs to 5 decimals and elevations to 1 decimal

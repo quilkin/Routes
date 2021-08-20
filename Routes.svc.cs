@@ -123,6 +123,8 @@ namespace Routes
                                     // check / shorten GPX
                                     GPXTrack.SetRoot(sr);
                                     fullText = GPXTrack.CreateGPX();
+                                    if (fullText == "")
+                                        fullText = fullText = route.URL;
 
                                 }
                                 else
@@ -144,6 +146,8 @@ namespace Routes
                                 //{
                                 //      fullText = client.DownloadString(route.URL);
                                 //}
+                                if (fullText == "")
+                                    fullText = fullText = route.URL;
                             }
 
                             if (route.HasGPX)
@@ -197,7 +201,59 @@ namespace Routes
 
         }
 
+        /// <summary>
+        /// Consolidate GPX files to get rid of overlong decimal numbers (Garmin!) and reduce points to under 1000
+        /// </summary>
+        public void ShortenRoutes()
+        {
+            routes = (List<Route>)GetRoutesAll();
+            string fullText;
+            string result = "";
+            LogEntry log = new LogEntry("ShortenRoutes", "");
+            foreach (Route route in routes)
+            {
 
+                if (route.URL.ToLower().Contains("gpx"))
+                {
+                    if (route.URL.ToLower().Contains("quilkin"))
+                        continue;  // already done?
+                    // full text of GPX file
+                    System.IO.StringReader sr = new System.IO.StringReader(route.URL);
+                    // check / shorten GPX
+                    GPXTrack.SetRoot(sr);
+                    fullText = GPXTrack.CreateGPX();
+                    if (fullText == "")
+                        continue;
+                    if (gpxConnection.IsConnect())
+                    {
+
+                        try
+                        {
+                                string query = string.Format("update routes set route = '{0}' where id = {1}", fullText, route.ID);
+
+                                using (MySqlCommand command = new MySqlCommand(query, gpxConnection.Connection))
+                                {
+                                    command.ExecuteNonQuery();
+
+                                }
+                        }
+                        catch (Exception ex2)
+                        {
+                            result = string.Format("Database error: route \"{0}\" not updated: {1}", route.Dest, ex2.Message);
+                        }
+
+                        finally
+                        {
+                            log.Result = result;
+                            log.Save(gpxConnection);
+                            gpxConnection.Close();
+                        }
+                    }
+
+                }
+
+            }
+        }
 
         public IEnumerable<Route> GetRouteSummaries()
         {
