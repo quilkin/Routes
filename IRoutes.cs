@@ -128,7 +128,10 @@ namespace Routes
         [WebInvoke(Method = "POST", UriTemplate = "/EditRide", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string EditRide(Ride ride);
 
-
+        [OperationContract]
+        [WebInvoke(Method = "POST", UriTemplate = "/GetLogins", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        [ServiceKnownType(typeof(List<Login>))]
+        IEnumerable<Login> GetLogins();
 
     }
 }

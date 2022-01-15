@@ -21,6 +21,7 @@
 
         thisRideDate,
         starthours, startmins,
+        thisMember,
 
 
         saveRide = function () {
@@ -28,7 +29,10 @@
             var description = $("#ride-descrip").val();
             var maxRiders = $("#ride-maxriders").val();
             var route = TCCroutes.currentRoute();
-            var leader = login.User();
+            //var leader = login.User();
+            var leader = thisMember;
+            if (thisMember === undefined)
+                leader = login.User();
             var time = starthours * 60 + startmins;
             var date = RideTimes.toIntDays(thisRideDate);
 
@@ -81,7 +85,7 @@
                     if (response === 'OK') {
                         rideData.myAjax("EditRide", "POST", current, function (response) {
                             if (response === 'OK') {
-                                RideList.CreateRideList();
+                                RideList.CreateRideList(null);
                                 $('#editRideModal').modal('hide');
                             }
                             else {
@@ -95,23 +99,53 @@
         currentParticipants = function () {
             return RideList.CurrentParticipants();
         },
-    setMeeting = function () {
-        var text = $("input[name='meet']:checked").parent('label').text();
-        $('#ride-meeting').val(text);
-    },
-    setMeetingEdit = function () {
-        var text = $("input[name='meet']:checked").parent('label').text();
-        $('#edit-ride-start').val(text);
-    };
+        setMeeting = function () {
+            var text = $("input[name='meet']:checked").parent('label').text();
+            $('#ride-meeting').val(text);
+        },
+        setMeetingEdit = function () {
+            var text = $("input[name='meet']:checked").parent('label').text();
+            $('#edit-ride-start').val(text);
+        },
+        getLeader = function (elem) {
+            thisMember = login.User();
+            $(elem).val(thisMember);
 
-        
+            if (login.Admin()) {
+                var members = [];
+
+                rideData.myAjax('GetLogins', "POST", null, function (response) {
+                    var logins = response;
+                    $.each(logins, function (index, login) {
+
+                        members.push(login.name);
+                    });
+                    $(elem).autocomplete({
+                        source: members,
+                        minLength: 2,
+                        select:
+                            function (event, ui) {
+                                if (ui.item)
+                                    thisMember = ui.item.label;
+                                $(elem).val(thisMember);
+
+                            },
+                    })
+                });
+            }
+            else
+                $(elem).prop("disabled", true);
+        };
+
+
     Ride.leadRide = function () {
+
         $('#convertToRide').show();
         $("#meet2").prop('checked', true);
         $('#start-time').timepicker('setTime', '08:00 AM');
-        $("#meet1").click(setMeeting);
+/*        $("#meet1").click(setMeeting);*/
         $("#meet2").click(setMeeting);
-        $("#meet3").click(setMeeting);
+/*        $("#meet3").click(setMeeting);*/
         $("#meetOther").click(function () { $('#ride-meeting').val(''); });
         $("#ride-maxriders").attr("max", maxRidersPerRide);
 
@@ -126,6 +160,9 @@
         $("#rideDate1").change(function () {
             thisRideDate = new Date($("#rideDate1").val());
         });
+        getLeader("#ride-leader");
+
+
     };
 
     $('#start-time').timepicker().on('changeTime.timepicker', function (e) {
@@ -159,13 +196,15 @@
         $("#edit-ride-start").attr("value", current.meetingAt);
         $("#edit-cancelRide").prop('readonly', true);
 
-        $("#meet11").click(setMeetingEdit);
+/*        $("#meet11").click(setMeetingEdit);*/
         $("#meet12").click(setMeetingEdit);
-        $("#meet13").click(setMeetingEdit);
+/*        $("#meet13").click(setMeetingEdit);*/
         $("#meet1Other").click(function () { $('#edit-ride-start').val(''); });
         // convert our time in minutes to a string for editing the time
 
         $('#start-time-edit').timepicker('setTime', RideTimes.fromIntTime(current.time));
+
+        //     getLeader("#edit-leader");
 
         if (thisRoute.hasGPX) {
             // cannot edit distance for routes wth GPX file

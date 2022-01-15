@@ -106,19 +106,25 @@
                     }
                     rideData.switchingFromLeadRide = false;
                 }
+                $('#dateTitle').html('Offer to lead a ride');
             }
                 
 
             if (tab === 'routes-tab') {
                 MultiMap.showRoutes();
+                $('#dateTitle').html('Some existing rides to choose');
             }
             if (tab === 'cafes-tab') {
                 mapOfCafes.createMap();
+                $('#dateTitle').html('RideHub suggested coffee stops');
             }
             if (tab === 'rides-tab') {
                 RideList.CreateRideList(null);
+                rideData.setDateChooser("");
+
             }
             if (tab === 'account-tab') {
+                $('#dateTitle').html('RideHub: edit your account');
                 login.setAccount();
             }
         });

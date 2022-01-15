@@ -170,7 +170,6 @@
     <Content Include="www\js-lib\bluetoothle.js" />
     <Content Include="www\js-lib\bootbox.min.js" />
     <Content Include="www\js-lib\bootstrap-datepicker.js" />
-    <Content Include="www\js-lib\bootstrap-orig.min.js" />
     <Content Include="www\js-lib\bootstrap-timepicker.min.js" />
     <Content Include="www\js-lib\bootstrap.min.js" />
     <Content Include="www\js-lib\ie10-viewport-bug-workaround.js" />

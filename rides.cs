@@ -4,6 +4,7 @@ using System.Data;
 using MySql.Data.MySqlClient;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using System.Net.Mail;
 
 namespace Routes
 {
@@ -133,11 +134,13 @@ namespace Routes
                             }
                             // return id of new route
                             result = rideID.ToString();
+                            SendNotificationEmails(ride);
                         }
                         //}
                     }
                 }
                 catch (Exception ex)
+
                 {
                     result = string.Format("Database error: ride \"{0}\" not saved: {1}", ride.ID, ex.Message);
                     log.Error = ex.Message;
@@ -157,6 +160,100 @@ namespace Routes
 
         }
 
+        public void SendNotificationEmails(Ride ride)
+        {
+            string result = "";
+            LogEntry log = new LogEntry("SaveRide Notify", ride.routeID.ToString());
+
+            // create and send an email about the new ride to all users, unless they opted out
+            try
+            {
+                string URLstr = string.Format(Connections.serviceURL);
+
+
+                EmailConnection ec = new EmailConnection();
+                MailAddress from = new MailAddress("rides@truro.cc");
+                MailAddress to = new MailAddress("chris@quilkin.co.uk");
+
+
+                //MailAddress bcc1 = new MailAddress("quilkin2@gmail.com");
+                //MailAddress bcc2 = new MailAddress("quilkin@btinternet.com");
+                //MailAddress bcc3 = new MailAddress("chrisfearnley1@gmail.com");
+                //MailAddress bcc4 = new MailAddress("davidanthonybennett@outlook.com");
+                //MailAddress bcc5 = new MailAddress("rickettfamily@btconnect.com");
+                //MailAddress bcc6 = new MailAddress("m_higman@sky.com");
+                //MailAddress bcc7 = new MailAddress("consultpca@btconnect.com");
+                //MailAddress bcc8 = new MailAddress("janerickard@googlemail.com");
+
+
+                String time = Logdata.JSDateToDateTime(ride.Date).ToLongDateString();
+                String body = "A new ride has been posted! :)\n\r    Date/Time: {0}.\n    Decription: {1}\n\rPlease visit https://ridehub.truro.cc for details\n\r\n\r";
+                body += "============================================================================================\n\r";
+                body += "If you no longer wish to receive these emails please reply with 'unsubscribe' in the message\n\r";
+
+                //body += "****** This is an auto generated test email at this stage **************************\n\r";
+                //body += "Please reply to rides@truro.cc so that I can check if it is working correctly\n\r";
+                MailMessage message = new MailMessage(from, to)
+                {
+                    Subject = "TCC Ride Hub",
+                    Body = string.Format(body,
+                    time,
+                    ride.Descrip)
+                };
+                // get email lsit from DB
+                string query = string.Format("SELECT email FROM logins where notifications>0 ");
+                using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                {
+                    dataRoutes = new DataTable();
+                    routeAdapter.Fill(dataRoutes);
+
+                    int length = dataRoutes.Rows.Count;
+                    for (int row = 0; row < length; row++)
+                    {
+                        string email = "";
+                        DataRow dr = dataRoutes.Rows[row];
+                        try
+                        {
+                            email = (string)dr["email"];
+                            message.Bcc.Add(email);
+                        }
+                        catch (Exception ex)
+                        {
+                            Trace.WriteLine(ex.Message);
+                            log.Error = ex.Message;
+                        }
+                    }
+                }
+
+                try
+                {
+                    SmtpClient client = new System.Net.Mail.SmtpClient(ec.Server)
+                    {
+                        Credentials = new System.Net.NetworkCredential(ec.User, ec.PW)
+                    };
+                    client.Send(message);
+
+                }
+                catch (Exception ex)
+                {
+                    result = "Sorry, there is an error with the email service: " + ex.Message;
+                }
+
+
+
+            }
+            catch (Exception ex2)
+            {
+                result = "Error: " + ex2.Message;
+                log.Error = ex2.Message;
+            }
+            finally
+            {
+                log.Result = result;
+                log.Save(gpxConnection);
+                gpxConnection.Close();
+            }
+        }
 
 
         public IEnumerable<Ride> GetRidesForDate(int date)

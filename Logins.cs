@@ -3,7 +3,7 @@ using System.Data;
 using System.Runtime.Serialization;
 using System.Net.Mail;
 using MySql.Data.MySqlClient;
-
+using System.Collections.Generic;
 
 namespace Routes
 {
@@ -27,6 +27,9 @@ namespace Routes
         public char Units { get; set; }
         [DataMember(Name = "climbs")]
         public int Climbs { get; set; }
+        [DataMember(Name = "notifications")]
+        public int Notify { get; set; }
+
 
         public Login(string name, string pw)
         {
@@ -37,6 +40,13 @@ namespace Routes
         {
             Name = name;
             PW = pw;
+            Email = email;
+        }
+        public Login(int id, string name, string email, int notify)
+        {
+            ID = id;
+            Name = name;
+            Notify = notify;
             Email = email;
         }
 
@@ -80,7 +90,7 @@ namespace Routes
                             string dbemail = (string)dr["email"];
                             dbemail = dbemail.Trim();
 
-                           // login with either username or email
+                            // login with either username or email
                             if ((dbname == login.Name && dbpw == hash) || (dbemail == login.Name && dbpw == hash))
                             {
                                 if (dbemail == login.Name)
@@ -102,7 +112,7 @@ namespace Routes
                 }
                 catch (Exception ex)
                 {
-                    result =  "There is a database error, please try again:" + ex.Message;
+                    result = "There is a database error, please try again:" + ex.Message;
                     log.Error = ex.Message;
                 }
                 finally
@@ -114,6 +124,53 @@ namespace Routes
                 return login;
             }
             return null;
+        }
+
+        public IEnumerable<Login> GetLogins()
+        {
+            LogEntry log = new LogEntry("GetDatesWithRides", "");
+
+            List<Login> logins = new List<Login>();
+            string result = "";
+
+            // can now login with either username or email
+            string query = string.Format("SELECT id, name, email, notifications FROM logins");
+            if (gpxConnection.IsConnect())
+            {
+                try
+                {
+                    using (MySqlDataAdapter loginAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
+                    {
+                        dataLogins = new DataTable();
+                        loginAdapter.Fill(dataLogins);
+
+                        int length = dataLogins.Rows.Count;
+                        for (int row = 0; row < length; row++)
+                        {
+                            DataRow dr = dataLogins.Rows[row];
+                            string dbname = (string)dr["name"];
+                            dbname = dbname.Trim();
+                            int dbnotify = (int)dr["notifications"];
+                            int dbid = (int)dr["id"];
+                            string dbemail = (string)dr["email"];
+                            dbemail = dbemail.Trim();
+                            logins.Add(new Login(dbid, dbname, dbemail, dbnotify));
+                        }
+                    }
+
+                }
+                catch (Exception ex2)
+                {
+                    log.Error = ex2.Message;
+                }
+                finally
+                {
+                    log.Result = logins.Count.ToString() + " logins found";
+                    log.Save(gpxConnection);
+                    gpxConnection.Close();
+                }
+            }
+            return logins;
         }
 
         public string Register(Login login)
@@ -147,7 +204,7 @@ namespace Routes
                 }
                 else
                     return DBConnection.ErrStr;
-  
+
                 return result;
             }
             else
@@ -175,7 +232,7 @@ namespace Routes
             if (login.PW.Length < 4 || login.PW.Length > 10)
                 return ("Password must be between 4 and 10 characters");
 
-  
+
 
             if (gpxConnection.IsConnect())
             {
@@ -219,12 +276,12 @@ namespace Routes
                     return "DB error: " + ex.Message;
 
                 }
-                
+
                 // create and send an email
                 try
                 {
                     // create a code based on data
-                    login.EmailCode = Logdata.GetHash(login.Name+login.Name);
+                    login.EmailCode = Logdata.GetHash(login.Name + login.Name);
 
                     string URLstr = string.Format(Connections.serviceURL + "?user={0}&regcode={1}", login.Name, login.EmailCode);
                     //string URLstr = string.Format("http://localhost/routes/www?user={0}&regcode={1}",login.Name, login.EmailCode);
@@ -234,7 +291,7 @@ namespace Routes
                     MailMessage message = new MailMessage(from, emailAddr)
                     {
                         Subject = "TCC rides signup",
-                        Body = string.Format("Please click {0}  to complete your registration", URLstr)
+                        Body = string.Format("Please click {0}  to complete your registration\n\r\n\rFor security, this link will expire in 15 minutes!", URLstr)
                     };
 
                     try
@@ -248,13 +305,13 @@ namespace Routes
                         // save the login details but with role as zero so login won't yet work
                         log = new LogEntry("Register1", login.Name + " " + login.EmailCode);
                         query = string.Format("insert into logins (name, pw, email,role,messagetime,units,climbs) values ('{0}','{1}','{2}',{3},'{4}','{5}',{6})",
-                            login.Name, hash, login.Email, 0, Logdata.DBTimeString(DateTime.Now),login.Units,login.Climbs);
+                            login.Name, hash, login.Email, 0, Logdata.DBTimeString(DateTime.Now), login.Units, login.Climbs);
 
                         try
                         {
                             var cmd = new MySqlCommand(query, gpxConnection.Connection);
                             cmd.ExecuteNonQuery();
-                            result = "Thank you, please wait for an email and click link to complete registration";
+                            result = "Thank you, please wait for an email and click link to complete registration. Please check your spam folder if you don't receive an email within 5 minutes.";
                         }
                         catch (Exception ex2)
                         {
@@ -289,7 +346,7 @@ namespace Routes
 
         public string ChangeAccount(Login login)
         {
-           
+
             LogEntry log = new LogEntry("ChangeAccount", login.Name);
             string query;
             string result = "";
@@ -351,7 +408,7 @@ namespace Routes
         {
             LogEntry log = new LogEntry("ForgetPassword", email);
 
-            string result = "OK, now please wait for an email and click the link to set a new password";
+            string result = "OK, now please wait for an email and click the link to set a new password. Please check your spam folder if you don't receive an email within 5 minutes.";
             string username = "";
             MailAddress emailAddr;
             try
@@ -366,7 +423,7 @@ namespace Routes
 
             if (gpxConnection.IsConnect())
             {
-                string query = string.Format("SELECT Id, name, email FROM logins where email = '{0}'",email);
+                string query = string.Format("SELECT Id, name, email FROM logins where email = '{0}'", email);
                 try
                 {
                     using (MySqlDataAdapter loginAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
@@ -404,14 +461,14 @@ namespace Routes
                     // create a code based on data
                     string emailCode = Logdata.GetHash(username + username);
 
-                   // string URLstr = string.Format("https://quilkin.co.uk/tccrides?pwuser={0}&regcode={1}", username, emailCode);
-                    string URLstr = string.Format(Connections.serviceURL + "?pwuser={0}&regcode={1}",username, emailCode);
+                    // string URLstr = string.Format("https://quilkin.co.uk/tccrides?pwuser={0}&regcode={1}", username, emailCode);
+                    string URLstr = string.Format(Connections.serviceURL + "?pwuser={0}&regcode={1}", username, emailCode);
 
                     EmailConnection ec = new EmailConnection();
                     MailAddress from = new MailAddress("rides@truro.cc");
                     MailMessage message = new MailMessage(from, emailAddr)
                     {
-                        Subject = "TCC rides forgotten password",
+                        Subject = "TCC RideHub forgotten password",
                         Body = string.Format("Please click {0}  to reset your password or other details.\n\rFor security, this link will expire in 15 minutes!", URLstr)
                     };
 
@@ -424,22 +481,22 @@ namespace Routes
                         client.Send(message);
 
                         // save the time this message was delivered
-                        
-                        query = string.Format("update logins set messagetime = '{0}' where email = '{1}'", Logdata.DBTimeString(DateTime.Now),email);
+
+                        query = string.Format("update logins set messagetime = '{0}' where email = '{1}'", Logdata.DBTimeString(DateTime.Now), email);
 
                         try
                         {
                             var cmd = new MySqlCommand(query, gpxConnection.Connection);
                             cmd.ExecuteNonQuery();
-                            
+
                         }
                         catch (Exception ex2)
                         {
                             result = "There is a database error, please try again:" + ex2.Message;
                             log.Error = ex2.Message;
                         }
-                        result = "OK, now please wait for an email and click the link to set a new password";
-                       
+                        //result = "OK, now please wait for an email and click the link to set a new password";
+
                     }
                     catch (Exception ex)
                     {
@@ -491,7 +548,7 @@ namespace Routes
                             }
                             else
                             {
-                                result =  "OK" + id.ToString();
+                                result = "OK" + id.ToString();
                             }
 
 

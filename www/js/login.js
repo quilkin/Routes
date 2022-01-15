@@ -12,25 +12,27 @@ var login = (function () {
         email,
         units,
         climbs,
-
+        passwordReset,
         UserRoles = { None: 0, Viewer: 1, SiteAdmin: 2, FullAdmin: 3 };
 
     login.Role = function () { return role; };
+    login.Admin = function () { return role >= UserRoles.SiteAdmin; };
     login.ID = function () { return id; };
     login.loggedIn = function () { return (role > UserRoles.None); };
     login.loggedOut = function () {
-        if (role > UserRoles.None)
+        if (role != undefined && role > UserRoles.None)
             return false;
         //$("#form-signin").show();
-        $('#loginModal').modal();
-     
+        if (passwordReset === undefined || passwordReset === false)
+            $('#loginModal').modal();
+
         return true;
     };
     login.User = function () { return username; };
     login.Email = function () { return email; };
     login.setUser = function (u) { username = u; };
     login.LogOut = function () { logout(); };
-    login.Units = function () { return units; };
+    login.Units = function () { if (units === undefined) return 'k'; return units; };
     login.Climbs = function () { return climbs; };
 
 
@@ -87,6 +89,16 @@ var login = (function () {
             }
             rideData.switchingFromLeadRide = false;
         }
+        else if (rideData.getCurrentTab() === 'account-tab') {
+            $("#username2").attr("value", username);
+            $("#email2").attr("value", email);
+            $("#password3").attr("value", "");
+            $("#password4").attr("value", "");
+            $("#radioKm").prop('checked', units === 'k');
+            $("#radioMile").prop('checked', units === 'm');
+            $("#showClimbs").prop('checked', climbs > 0);
+            $("#noShowClimbs").prop('checked', climbs === 0);
+        }
     }
 
     function logout() {
@@ -115,8 +127,8 @@ var login = (function () {
         p = $("#password", form).val();
         remember = $("#remember").is(':checked');
 
-         // prevent clicks while timer is downloading new data
-         // see http://malsup.com/jquery/block/
+        // prevent clicks while timer is downloading new data
+        // see http://malsup.com/jquery/block/
         $(document).ajaxStart($.blockUI({ message: '<h4><img src="images/page-loader.gif" />wait...</h4>' })).ajaxStop($.unblockUI);
 
 
@@ -165,7 +177,7 @@ var login = (function () {
             qPopup.Alert("Passwords do not match");
             return false;
         }
-        if (u.length < 3  || u.length > 10 || u.includes(' ')) {
+        if (u.length < 3 || u.length > 10 || u.includes(' ')) {
             qPopup.Alert("User name must be 3-10 characters, and no spaces");
             return false;
         }
@@ -205,8 +217,8 @@ var login = (function () {
             return false;
         }
 
-        if (u !== '' && p1 === p2 && p1 !== ''  && e !== '') {
-            creds = { name: u, pw: p1, email: e, code: c, units: km, climbs: climbing};
+        if (u !== '' && p1 === p2 && p1 !== '' && e !== '') {
+            creds = { name: u, pw: p1, email: e, code: c, units: km, climbs: climbing };
             rideData.myAjax('Signup', "POST", creds, function (res) {
                 qPopup.Alert(res);
                 $("#button-register").removeAttr("disabled");
@@ -226,7 +238,7 @@ var login = (function () {
 
 
     function handleAccount() {
-        var form, u, p1, p2, e,  creds;
+        var form, u, p1, p2, e, creds;
 
         form = $("#form-account");
         u = $("#username2", form).val();
@@ -242,10 +254,10 @@ var login = (function () {
             e = '';
         }
         var myid = id;
-        creds = { id: myid, name: u, pw: p1, email: e, units: km , climbs: climbing};
+        creds = { id: myid, name: u, pw: p1, email: e, units: km, climbs: climbing };
         var success = false;
         rideData.myAjax('ChangeAccount', "POST", creds, function (res) {
-           
+
             if (res.substring(0, 2) === "OK") {
                 success = true;
                 qPopup.Alert("Your details have been saved");
@@ -254,9 +266,11 @@ var login = (function () {
                 if (e !== '')
                     email = e;
                 $('#loginModal').modal();
-
+                // switch straight to ridestab
+                $(".navbar-nav a[href=#rides-tab]").tab('show');
+                passwordReset = false;
             }
-            else 
+            else
                 qPopup.Alert(res);
 
         });
@@ -273,12 +287,12 @@ var login = (function () {
         // switch to 'all routes' tab
 
         $(".navbar-nav a[href=#routes-tab]").tab('show');
-    //    $("#userName").html('Log In <span class="caret"></span>');
+        //    $("#userName").html('Log In <span class="caret"></span>');
         logout();
 
     }
     function cancelRegister() {
-        
+
         // get ready for next time
         $("#form-register").hide();
         $("#form-signin").show();
@@ -287,8 +301,7 @@ var login = (function () {
     //function cancelAccount() {
     //    $('#accountModal').modal('hide');
     //}
-    function handlePassword()
-    {
+    function handlePassword() {
         var form, email;
 
         form = $("#form-password");
@@ -298,6 +311,7 @@ var login = (function () {
             rideData.myAjax('ForgetPassword', "POST", email, function (res) {
                 success = true;
                 $('#passwordModal').modal('hide');
+                $('#loginModal').modal('hide');
                 qPopup.Alert(res);
 
             });
@@ -312,14 +326,14 @@ var login = (function () {
 
         console.log('Registration: ' + user + ' ' + regcode + ' ');
 
-        var creds = { name: user, code: regcode};
+        var creds = { name: user, code: regcode };
         var success = false;
         rideData.myAjax('Register', "POST", creds, function (res) {
             if (res.substring(0, 9) === "Thank you")           //"Thank you, you have now registered"
             {
                 success = true;
-                qPopup.Alert("Thank you, you can now log in");
-             } else {
+                qPopup.Alert("Thank you, you can now log in next time you visit");
+            } else {
                 qPopup.Alert("Invalid username , code or email");
             }
 
@@ -331,27 +345,30 @@ var login = (function () {
         var success = false;
         // check that timeout hasn't expired
         rideData.myAjax('CheckTimeout', "POST", username, function (res) {
-            
-            if (res.substring(0, 2) === "OK")           
-            {
+
+            if (res.substring(0, 2) === "OK") {
+                //qPopup.Alert("OK, please set new password next");
                 success = true;
+                passwordReset = true;
                 // remainder of res has login id
                 var userID = res.substring(2);
                 id = parseInt(userID);
-                $('#accountModal').modal();
+                $('#account-tab').tab('show');
+                rideData.setCurrentTab('account-tab');
             } else {
                 qPopup.Alert(res);
+                $('#loginModal').modal();
             }
 
         });
         return success;
     };
     login.Login = function () {
-        
+
         if (role === undefined || role === UserRoles.None) {
             $("#form-signin").on("submit", handleLogin);
             $("#form-register").on("submit", handleSignup);
-            
+
             checkPreAuth();
 
         }
@@ -374,6 +391,8 @@ var login = (function () {
         }
     });
     $('#loginModal').on('shown.bs.modal', function (e) {
+
+
         $("#form-register").hide();
         $("#signin-cancel").on('click', cancelSignIn);
         $("#signin-register").on('click', function () {
@@ -396,21 +415,20 @@ var login = (function () {
     });
 
     login.setAccount = function () {
-        if (login.loggedOut()) {
+        if (login.loggedOut() && passwordReset === false) {
             $('#rides-tab').tab('show');
             rideData.setCurrentTab('rides-tab');
             return;
         }
-        //if (email === '')
-        //    email = dummyEmail;
-        $("#username2").attr("value", username);
-        $("#email2").attr("value", email);
-        $("#password3").attr("value", "");
-        $("#password4").attr("value", "");
-        $("#radioKm").prop('checked', units === 'k');
-        $("#radioMile").prop('checked', units === 'm');
-        $("#showClimbs").prop('checked', climbs > 0);
-        $("#noShowClimbs").prop('checked', climbs === 0);
+
+        //$("#username2").attr("value", username);
+        //$("#email2").attr("value", email);
+        //$("#password3").attr("value", "");
+        //$("#password4").attr("value", "");
+        //$("#radioKm").prop('checked', units === 'k');
+        //$("#radioMile").prop('checked', units === 'm');
+        //$("#showClimbs").prop('checked', climbs > 0);
+        //$("#noShowClimbs").prop('checked', climbs === 0);
 
     };
     //$('#accountModal').on('shown.bs.modal', function (e) {
@@ -437,9 +455,9 @@ var login = (function () {
     $('#passwordModal').on('shown.bs.modal', function (e) {
         $("#form-password").on('submit', handlePassword);
         $("#password-cancel").on('click', cancelPassword);
-    //    $("#password-ok").on('click', handlePassword);
+        //    $("#password-ok").on('click', handlePassword);
 
     });
-  //  $(document).on('submit', 'form-password', handlePassword);
+    //  $(document).on('submit', 'form-password', handlePassword);
     return login;
 }());
