@@ -13,6 +13,7 @@ var login = (function () {
         units,
         climbs,
         passwordReset,
+        notifications,
         UserRoles = { None: 0, Viewer: 1, SiteAdmin: 2, FullAdmin: 3 };
 
     login.Role = function () { return role; };
@@ -34,6 +35,7 @@ var login = (function () {
     login.LogOut = function () { logout(); };
     login.Units = function () { if (units === undefined) return 'k'; return units; };
     login.Climbs = function () { return climbs; };
+    login.Notify = function () { return notifications; };
 
 
     function checkPreAuth() {
@@ -98,6 +100,8 @@ var login = (function () {
             $("#radioMile").prop('checked', units === 'm');
             $("#showClimbs").prop('checked', climbs > 0);
             $("#noShowClimbs").prop('checked', climbs === 0);
+            $("#noNotify").prop('checked', notifications === 0);
+            $("#notify").prop('checked', notifications > 0);
         }
     }
 
@@ -145,6 +149,7 @@ var login = (function () {
                     email = res.email;
                     units = res.units;
                     climbs = res.climbs;
+                    notifications = res.notifications;
                     //if (userRole < 2)
                     //    $(".adminonly").prop("disabled", true);
                     //store
@@ -209,6 +214,7 @@ var login = (function () {
         c = $("#code", form).val();
         var km = $('input[name="units"]:checked').val();
         var climbing = $('input[name="climbs"]:checked').val();
+        var notifications = $('input[name="notify"]:checked').val();
 
         if (c === undefined || c === '') { c = 0; }
 
@@ -218,7 +224,7 @@ var login = (function () {
         }
 
         if (u !== '' && p1 === p2 && p1 !== '' && e !== '') {
-            creds = { name: u, pw: p1, email: e, code: c, units: km, climbs: climbing };
+            creds = { name: u, pw: p1, email: e, code: c, units: km, climbs: climbing, notify: notifications };
             rideData.myAjax('Signup', "POST", creds, function (res) {
                 qPopup.Alert(res);
                 $("#button-register").removeAttr("disabled");
@@ -247,6 +253,7 @@ var login = (function () {
         e = $("#email2", form).val();
         var km = $('input[name="units"]:checked').val();
         var climbing = $('input[name="climbs"]:checked').val();
+        var notifications = $('input[name="notify"]:checked').val();
 
         if (checkdetails(u, p1, p2, true) === false)
             return false;
@@ -254,7 +261,7 @@ var login = (function () {
             e = '';
         }
         var myid = id;
-        creds = { id: myid, name: u, pw: p1, email: e, units: km, climbs: climbing };
+        creds = { id: myid, name: u, pw: p1, email: e, units: km, climbs: climbing, notify: notifications};
         var success = false;
         rideData.myAjax('ChangeAccount', "POST", creds, function (res) {
 

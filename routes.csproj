@@ -175,6 +175,7 @@
     <Content Include="www\js-lib\ie10-viewport-bug-workaround.js" />
     <Content Include="www\js-lib\ion.rangeSlider.js" />
     <Content Include="www\js-lib\jquery-1.11.1.min.js" />
+    <Content Include="www\js-lib\jquery-ui.min.js" />
     <Content Include="www\js-lib\jquery.dataTables.min.js" />
     <Content Include="www\js-lib\leaflet-distance-marker.js" />
     <Content Include="www\js-lib\leaflet.js" />

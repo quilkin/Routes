@@ -69,7 +69,7 @@ namespace Routes
             string result = "";
 
             // can now login with either username or email
-            string query = string.Format("SELECT Id, name, pw, email, role, units, climbs FROM logins where name = '{0}'  or email = '{0}'", login.Name);
+            string query = string.Format("SELECT Id, name, pw, email, role, units, climbs, notifications FROM logins where name = '{0}'  or email = '{0}'", login.Name);
             if (gpxConnection.IsConnect())
             {
                 try
@@ -103,6 +103,7 @@ namespace Routes
                                 login.Email = (string)dr["email"];
                                 login.Units = ((string)dr["units"])[0];
                                 login.Climbs = (int)dr["climbs"];
+                                login.Notify = (int)dr["notifications"];
                                 // don't need to return the password
                                 login.PW = String.Empty;
                                 break;
@@ -219,7 +220,7 @@ namespace Routes
 
 
             MailAddress emailAddr;
-            string result = "OK, now please wait for an email and click the link to complete your registration";
+            string result = "OK, now please wait for an email and click the link to complete your registration. Please check that rides@truro.cc is in your contact list and not treated as junk mail";
             try
             {
                 emailAddr = new MailAddress(login.Email);
@@ -304,14 +305,14 @@ namespace Routes
 
                         // save the login details but with role as zero so login won't yet work
                         log = new LogEntry("Register1", login.Name + " " + login.EmailCode);
-                        query = string.Format("insert into logins (name, pw, email,role,messagetime,units,climbs) values ('{0}','{1}','{2}',{3},'{4}','{5}',{6})",
-                            login.Name, hash, login.Email, 0, Logdata.DBTimeString(DateTime.Now), login.Units, login.Climbs);
+                        query = string.Format("insert into logins (name, pw, email,role,messagetime,units,climbs,notifications) values ('{0}','{1}','{2}',{3},'{4}','{5}',{6},{7})",
+                            login.Name, hash, login.Email, 0, Logdata.DBTimeString(DateTime.Now), login.Units, login.Climbs, login.Notify);
 
                         try
                         {
                             var cmd = new MySqlCommand(query, gpxConnection.Connection);
                             cmd.ExecuteNonQuery();
-                            result = "Thank you, please wait for an email and click link to complete registration. Please check your spam folder if you don't receive an email within 5 minutes.";
+                            result = "Thank you, please wait for an email and click link to complete registration. Please check that rides@truro.cc is in your contact list and not treated as junk mail";
                         }
                         catch (Exception ex2)
                         {
@@ -378,7 +379,7 @@ namespace Routes
                     }
                     if (true)
                     {
-                        query = string.Format("update logins set units = '{0}', climbs={1} where id = {2}", login.Units, login.Climbs, login.ID);
+                        query = string.Format("update logins set units = '{0}', climbs={1}, notifications={2} where id = {3}", login.Units, login.Climbs, login.Notify,login.ID);
                         var cmd = new MySqlCommand(query, gpxConnection.Connection);
                         cmd.ExecuteNonQuery();
                     }
@@ -408,7 +409,7 @@ namespace Routes
         {
             LogEntry log = new LogEntry("ForgetPassword", email);
 
-            string result = "OK, now please wait for an email and click the link to set a new password. Please check your spam folder if you don't receive an email within 5 minutes.";
+            string result = "OK, now please wait for an email and click the link to set a new password.  Please check that rides@truro.cc is in your contact list and not teated as junk mail";
             string username = "";
             MailAddress emailAddr;
             try
