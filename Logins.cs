@@ -409,7 +409,7 @@ namespace Routes
         {
             LogEntry log = new LogEntry("ForgetPassword", email);
 
-            string result = "OK, now please wait for an email and click the link to set a new password.  Please check that rides@truro.cc is in your contact list and not teated as junk mail";
+            string result = "OK, now please wait for an email and click the link to set a new password.  Please check that rides@truro.cc is in your contact list and not treated as junk mail";
             string username = "";
             MailAddress emailAddr;
             try
