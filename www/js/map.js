@@ -27,7 +27,7 @@
                 "valueAxes": [{
                     "gridColor": "#FFFFFF",
                     "gridAlpha": 0.2,
-                    "title": metric? "metres": "feet",
+                    "title": metric ? "metres" : "feet",
                     "maximum": maxheight,
                     "minimum": 0,
                     "dashLength": 0
@@ -35,7 +35,7 @@
                 "gridAboveGraphs": true,
                 "startDuration": 1,
                 "graphs": [{
-                    "balloonText": "[[category]]"+dist+"<br><b>[[value]]"+height+"</b>",
+                    "balloonText": "[[category]]" + dist + "<br><b>[[value]]" + height + "</b>",
                     "fillAlphas": 0.8,
                     "lineAlpha": 0.2,
                     "type": "line",
@@ -60,8 +60,8 @@
 
 
 
-        TCCMap.showRouteStage2 = function (gpxdata,listedRoute) {
-            // listedRoute is true only if teh route has already been added to the list of routes
+    TCCMap.showRouteStage2 = function (gpxdata, listedRoute) {
+        // listedRoute is true only if teh route has already been added to the list of routes
         var tab = rideData.getCurrentTab();
         var mapid = "routes-map";
         var elevid = "routes-elev";
@@ -79,15 +79,14 @@
             elevid = "rides-elev";
             map_pane = document.getElementById('rides');
         }
-        if (gpxdata === null ||  gpxdata === 'none' || gpxdata.length < 100) {
+        if (gpxdata === null || gpxdata === 'none' || gpxdata.length < 100) {
             $("#" + mapid).hide();
             $("#" + elevid).hide();
             _t('h4').textContent = TCCroutes.currentRoute().dest + ": No route map provided";
             $('.info').hide();
             return;
         }
-        else
-        {
+        else {
             $("#" + mapid).show();
             $("#" + elevid).show();
             $('.info').show();
@@ -96,8 +95,8 @@
 
         _t('h4').textContent = "please wait...";
 
-            function _t(t) { return map_pane.getElementsByTagName(t)[0]; }
-            function _c(c) { return map_pane.getElementsByClassName(c)[0];  }
+        function _t(t) { return map_pane.getElementsByTagName(t)[0]; }
+        function _c(c) { return map_pane.getElementsByClassName(c)[0]; }
 
         if (map !== undefined) { map.remove(); }
         map = L.map(mapid);
@@ -107,46 +106,64 @@
 
         //  var control = L.control.layers(null, null).addTo(map);
 
-        new L.GPX(gpxdata, {
+        var pl = new L.GPX(gpxdata, {
             async: true,
             marker_options: {
                 startIconUrl: '',
                 endIconUrl: '',
                 shadowUrl: ''
             }
-        }).on('addline', function (e) {
-            //console.log(e.line);
-            e.line.on('mouseover', function (e) {
-                var lat = e.latlng.lat;
-                var lng = e.latlng.lng;
-                $.each(latlng_data, function (index, data) {
-                    if (Math.abs(data.lat - lat) < 0.001) {
-                        if (Math.abs(data.lng - lng) < 0.001) {
-                            var dist = Math.round(elev_data[index][0]);
-                            var metric = (login.Units() === 'k');
-                            var popup = L.popup(
-                                {
-                                    maxWidth: 100,
-                                    className: 'custompopup',
-                                    closeButton: false
-                                })
-                                .setLatLng(data)
-                                .setContent(metric ? dist + ' km' : Math.round(dist * 0.62137) + ' miles')
-                                .openOn(map);
-                            return false;
-                            //var chartPoint = categoryAxis.categoryToPoint(dist);  // not available in this version of AMCharts
-                            //chart.cursor.triggerMove(chartPoint, false);
-                        }
-                    }
-                });
 
-            });
+            // removed popuop distances because we now have direction arrows instead
+
+            //}).on('addline', function (e) {
+            //    //console.log(e.line);
+            //    e.line.on('mouseover', function (e) {
+            //        var lat = e.latlng.lat;
+            //        var lng = e.latlng.lng;
+            //        $.each(latlng_data, function (index, data) {
+            //            if (Math.abs(data.lat - lat) < 0.001) {
+            //                if (Math.abs(data.lng - lng) < 0.001) {
+            //                    var dist = Math.round(elev_data[index][0]);
+            //                    var metric = (login.Units() === 'k');
+            //                    var popup = L.popup(
+            //                        {
+            //                            maxWidth: 100,
+            //                            className: 'custompopup',
+            //                            closeButton: false
+            //                        })
+            //                        .setLatLng(data)
+            //                        .setContent(metric ? dist + ' km' : Math.round(dist * 0.62137) + ' miles')
+            //                        .openOn(map);
+            //                    return false;
+            //                    //var chartPoint = categoryAxis.categoryToPoint(dist);  // not available in this version of AMCharts
+            //                    //chart.cursor.triggerMove(chartPoint, false);
+            //                }
+            //            }
+            //        });
+
+            //    });
         }).on('loaded', function (e) {
+
+
+
             var gpx = e.target;
-            //var elev_data;
+            var elev_data;
+            // add direction arrows to GPX polyline
+            L.polylineDecorator(gpx.get_latlngs(), {
+                patterns: [{
+                    offset: 50,
+                    repeat: 50,
+                    symbol: L.Symbol.arrowHead({
+                        pixelSize: 10,
+                        polygon: false,
+                        pathOptions: { stroke: true, color: 'blue', }
+                    })
+                }]
+            }).addTo(map);
             var bounds = gpx.getBounds();
             map.fitBounds(bounds);
-            console.log('bounds: ' +bounds._southWest.lat);
+            console.log('bounds: ' + bounds._southWest.lat);
 
 
             var distance = (gpx.get_distance() / 1000).toFixed(0);
@@ -163,7 +180,7 @@
             if (listedRoute === true) {
                 // get some details from the GPX to hand back to the app
                 var route = TCCroutes.currentRoute();
-                if (route.distance === 0 || isNaN(route.distance) || route.dest === '' || (route.climbing===0 && elev_gain > 0)) {
+                if (route.distance === 0 || isNaN(route.distance) || route.dest === '' || (route.climbing === 0 && elev_gain > 0)) {
                     route.distance = distance;
                     route.dest = name;
                     route.climbing = elev_gain;
@@ -261,7 +278,7 @@
 
                     }
                     _c('elevation-none').textContent = "";
-                    drawProfile(elevid, json_elev,maxheight,metric);
+                    drawProfile(elevid, json_elev, maxheight, metric);
                 }
                 else {
                     clearChart();
@@ -271,6 +288,9 @@
             }
 
         }).addTo(map);
+
+
+
     };
 
     TCCMap.showRoute = function () {
@@ -301,13 +321,13 @@
                 TCCMap.showRouteStage2(null, false);
                 return null;
             }
-            TCCMap.showRouteStage2(gpxdata,true);
+            TCCMap.showRouteStage2(gpxdata, true);
             currentroute.url = gpxdata;
             return gpxdata;
         });
 
     };
-    
+
 
     return TCCMap;
 }(jQuery));

@@ -134,7 +134,8 @@ namespace Routes
                             }
                             // return id of new route
                             result = rideID.ToString();
-                            SendNotificationEmails(ride);
+                            if (ride.LeaderName.ToLower().StartsWith("tester") == false)
+                                SendNotificationEmails(ride);
                         }
                         //}
                     }
@@ -173,17 +174,8 @@ namespace Routes
 
                 EmailConnection ec = new EmailConnection();
                 MailAddress from = new MailAddress("rides@truro.cc");
-                MailAddress to = new MailAddress("chris@quilkin.co.uk");
+                MailAddress to = new MailAddress("rides@truro.cc");
 
-
-                //MailAddress bcc1 = new MailAddress("quilkin2@gmail.com");
-                //MailAddress bcc2 = new MailAddress("quilkin@btinternet.com");
-                //MailAddress bcc3 = new MailAddress("chrisfearnley1@gmail.com");
-                //MailAddress bcc4 = new MailAddress("davidanthonybennett@outlook.com");
-                //MailAddress bcc5 = new MailAddress("rickettfamily@btconnect.com");
-                //MailAddress bcc6 = new MailAddress("m_higman@sky.com");
-                //MailAddress bcc7 = new MailAddress("consultpca@btconnect.com");
-                //MailAddress bcc8 = new MailAddress("janerickard@googlemail.com");
 
 
                 String time = Logdata.JSDateToDateTime(ride.Date).ToLongDateString();
@@ -191,8 +183,6 @@ namespace Routes
                 body += "============================================================================================\n\r";
                 body += "If you no longer wish to receive these emails please reply with 'unsubscribe' in the message\n\r";
 
-                //body += "****** This is an auto generated test email at this stage **************************\n\r";
-                //body += "Please reply to rides@truro.cc so that I can check if it is working correctly\n\r";
                 MailMessage message = new MailMessage(from, to)
                 {
                     Subject = "TCC Ride Hub",
@@ -201,7 +191,7 @@ namespace Routes
                     ride.Descrip)
                 };
                 // get email lsit from DB
-                string query = string.Format("SELECT email FROM logins where notifications>0 ");
+                string query = string.Format("SELECT email FROM logins where notifications > 0 ");
                 using (MySqlDataAdapter routeAdapter = new MySqlDataAdapter(query, gpxConnection.Connection))
                 {
                     dataRoutes = new DataTable();

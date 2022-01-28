@@ -68,7 +68,7 @@ var newRoute = (function ($) {
             }
             else {
                 //   qPopup.Alert("Route file OK");
-                $("#route-url").html('Route file OK! ' + myXML.length + ' bytes');
+               // $("#route-url").html('Route file OK! ' + myXML.length + ' bytes');
                 //console.log('Route file OK! ' + myXML.length + ' bytes');
                 TCCMap.showRouteStage2(myXML,false);
             }
@@ -141,7 +141,8 @@ var newRoute = (function ($) {
             return;
         }
         var dest = $("#route-dest").val();
-        var url = $("#route-url").val();
+        //var url = $("#route-url").val();
+        var url = "";       // URLs not supported any longer, only full files
         var owner = login.User();
 
         temproute = new TCCroutes.Route(url, dest, '', 0, 0, owner, 0);

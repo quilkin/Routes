@@ -140,6 +140,7 @@
 
     Ride.leadRide = function () {
 
+        var newRideDate = null;
         $('#convertToRide').show();
         $("#meet2").prop('checked', true);
         $('#start-time').timepicker('setTime', '08:00 AM');
@@ -158,7 +159,14 @@
             'setDate': thisRideDate
         });
         $("#rideDate1").change(function () {
-            thisRideDate = new Date($("#rideDate1").val());
+            newRideDate = new Date($("#rideDate1").val());
+            if (newRideDate < thisRideDate) {
+                qPopup.Alert("Chosen date is in the past!");
+            }
+            else {
+                thisRideDate = newRideDate;
+            }
+
         });
         getLeader("#ride-leader");
 
