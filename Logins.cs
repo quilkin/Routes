@@ -5,7 +5,7 @@ using System.Net.Mail;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 
-namespace Routes
+namespace WebRing
 {
 
     [DataContract]
@@ -53,7 +53,7 @@ namespace Routes
     }
 
 
-    public partial class Routes : IRoutes, IDisposable
+    public partial class WebRing : IWebRing, IDisposable
     {
 
         /// <summary>

@@ -1,0 +1,3 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="Skc" AssemblyFile="C:\Projects\SharpKit\trunk\src\SharpKit.Build.Tasks.v4\bin\Debug\SharpKit.Build.Tasks.v4.dll"/>
+</Project>

@@ -4,7 +4,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using MySql.Data.MySqlClient;
 
-namespace Routes
+namespace WebRing
 {
     public class EmailConnection
     {
